@@ -1,6 +1,6 @@
 <% const current = locals.active || null; %>
 <aside class="sidebar" id="main-navigation" aria-label="Menú principal">
-    <a class="brand" href="/" aria-label="<%= clinicName %>, ir al inicio">
+    <a class="brand<%= clinicName.length > 12 ? ' brand-largo' : '' %>" href="/" aria-label="<%= clinicName %>, ir al inicio">
         <span class="brand-mark" aria-hidden="true">+</span>
         <span><%= clinicName %></span>
     </a>

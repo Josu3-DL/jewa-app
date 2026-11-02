@@ -24,6 +24,10 @@ a.button { display: inline-block; text-decoration: none; }
 .sidebar-logout { margin: 0.6rem 0 0 0.9rem; padding: 0.5rem 0; color: var(--sidebar-muted); background: transparent; border: 0; font-size: 0.78rem; text-decoration: underline; cursor: pointer; }
 .sidebar-logout:hover { color: #fff; }
 .sidebar-footer .nav-link { margin-bottom: 0.25rem; }
+/* Nombre de clínica largo: letra menor, logo arriba y salto de línea sin desbordar la barra */
+.brand-largo { align-items: flex-start; font-size: 1.05rem; line-height: 1.2; }
+.brand-largo .brand-mark { flex: 0 0 30px; margin-top: 0.05rem; }
+.brand-largo > span:last-child { min-width: 0; overflow-wrap: anywhere; }
 .sidebar-backdrop { position: fixed; z-index: 2; inset: 0; background: rgba(20, 38, 52, 0.55); }
 
 /* ───── Estados de cita que faltaban (misma paleta que los avatares de mascotas) ───── */
@@ -66,6 +70,23 @@ a.record-confirm { display: inline-flex; align-items: center; text-decoration: n
 .pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: 1.2rem; color: var(--muted); font-size: 0.74rem; }
 .pagination-off { color: #a9b6bf; font-size: 0.78rem; }
 
+/* ───── Ajustes de la clínica: formulario ancho, columnas y horario ───── */
+.form-ancho { max-width: 820px; }
+.form-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 1.2rem; }
+.form-seccion { margin: 1.6rem 0 1rem; padding-top: 1.2rem; border-top: 1px solid var(--line); }
+.horario { margin: 0 0 1.2rem; padding: 0; border: 0; }
+.horario legend { padding: 0; margin-bottom: 0.7rem; color: var(--muted); font-size: 0.68rem; font-weight: 700; }
+.horario-dia { display: grid; grid-template-columns: minmax(130px, 1.2fr) minmax(110px, 1fr) minmax(110px, 1fr); align-items: end; gap: 0.2rem 0.9rem; padding: 0.55rem 0; border-bottom: 1px solid var(--line); }
+.horario-dia .check-row { margin: 0 0 0.65rem; }
+.horario-dia .horario-hora { margin-bottom: 0.2rem; }
+.horario-error { grid-column: 1 / -1; margin: 0 0 0.4rem; }
+.horario .form-note { margin: 1rem 0 0; }
+.sin-precio { color: #a86049; font-weight: 700; }
+@media (max-width: 640px) {
+    .horario-dia { grid-template-columns: 1fr 1fr; }
+    .horario-dia .horario-nombre { grid-column: 1 / -1; margin-bottom: 0.2rem; }
+}
+
 /* ───── Inicio de sesión y páginas de error (sin barra lateral) ───── */
 .auth-page { display: grid; min-height: 100vh; place-content: center; gap: 1.5rem; padding: 1.5rem 1rem; }
 .auth-brand { display: flex; flex-direction: column; align-items: center; }
@@ -101,6 +122,7 @@ a.record-confirm { display: inline-flex; align-items: center; text-decoration: n
     /* 16 px evita el zoom automático de iOS al enfocar un campo */
     .data-form input, .data-form select, .data-form textarea { min-height: 44px; font-size: 1rem; }
     .data-form input[type="checkbox"], .data-form input[type="radio"] { min-height: 0; width: 1.4rem; height: 1.4rem; }
+    .check-row { min-height: 44px; }
 }
 
 /* ───── Teléfono (≤ 640 px) ───── */

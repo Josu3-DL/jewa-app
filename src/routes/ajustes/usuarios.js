@@ -1,16 +1,10 @@
 'use strict';
 const express = require('express');
-const { z } = require('../utils/validation');
-const { ROLES, ROLE_LABELS } = require('../roles');
-const { requireModule } = require('../middleware/user');
-const { HttpError } = require('../middleware/errors');
-const users = require('../services/users');
-const audit = require('../services/audit');
-const { initials, formatDateTime } = require('../utils/dates');
-const { pager } = require('../utils/pagination');
-
-const idSchema = z.coerce.number().int().positive();
-const texto = (v) => (typeof v === 'string' ? v : '');
+const { ROLES, ROLE_LABELS } = require('../../roles');
+const { HttpError } = require('../../middleware/errors');
+const users = require('../../services/users');
+const { initials, formatDateTime } = require('../../utils/dates');
+const { idParam, contexto, texto } = require('./comun');
 
 /** Usuario listo para la vista (rol legible, iniciales, estado). */
 function vista(u, now) {
@@ -24,41 +18,28 @@ function vista(u, now) {
     };
 }
 
-function ajustesRoutes({ db, now }) {
+// Montado en /ajustes/usuarios (el acceso solo para administradores lo exige routes/ajustes/index.js).
+function usuariosRoutes({ db, now }) {
     const router = express.Router();
-    // Todo /ajustes es solo para administradores (T-03).
-    router.use('/ajustes', requireModule('ajustes'));
-
-    const ctx = (req) => ({ actorId: req.user.id, ip: req.ip });
-    const userId = (req) => {
-        const r = idSchema.safeParse(req.params.id);
-        if (!r.success) throw new HttpError(404);
-        return r.data;
-    };
     const roles = ROLES.map((valor) => ({ valor, texto: ROLE_LABELS[valor] }));
 
-    router.get('/ajustes', (req, res) => {
-        res.render('ajustes/clinica', { title: 'Ajustes', active: 'ajustes', tab: 'clinica' });
-    });
-
-    // ───────── Usuarios
-    const renderUsuarios = (req, res, status, { errors = {}, values = {} } = {}) => {
+    const renderLista = (req, res, status, { errors = {}, values = {} } = {}) => {
         res.status(status).render('ajustes/usuarios', {
             title: 'Usuarios', active: 'ajustes', tab: 'usuarios',
             usuarios: users.listUsers(db).map((u) => vista(u, now())), roles, errors, values,
         });
     };
 
-    router.get('/ajustes/usuarios', (req, res) => renderUsuarios(req, res, 200));
+    router.get('/', (req, res) => renderLista(req, res, 200));
 
-    router.post('/ajustes/usuarios', async (req, res) => {
+    router.post('/', async (req, res) => {
         const body = req.body || {};
         const result = await users.createUser(db, {
             nombre: body.nombre, usuario: body.usuario, rol: body.rol, colegiado: body.colegiado,
             atiende_citas: body.atiende_citas === 'on', password: body.password, password2: body.password2,
-        }, ctx(req));
+        }, contexto(req));
         if (!result.ok) {
-            return renderUsuarios(req, res, 400, {
+            return renderLista(req, res, 400, {
                 errors: result.errors,
                 // Nunca se devuelven las contraseñas al formulario
                 values: { nombre: texto(body.nombre), usuario: texto(body.usuario), rol: texto(body.rol), colegiado: texto(body.colegiado), atiende_citas: body.atiende_citas === 'on' },
@@ -80,7 +61,7 @@ function ajustesRoutes({ db, now }) {
         });
     };
 
-    router.get('/ajustes/usuarios/:id/editar', (req, res) => renderEditar(req, res, 200, userId(req)));
+    router.get('/:id/editar', (req, res) => renderEditar(req, res, 200, idParam(req)));
 
     /** Respuesta común de las acciones sobre un usuario. */
     const responder = (req, res, id, result, mensajeOk) => {
@@ -90,10 +71,10 @@ function ajustesRoutes({ db, now }) {
         return res.redirect(`/ajustes/usuarios/${id}/editar`);
     };
 
-    router.post('/ajustes/usuarios/:id', (req, res) => {
-        const id = userId(req);
+    router.post('/:id', (req, res) => {
+        const id = idParam(req);
         const body = req.body || {};
-        const result = users.updateUser(db, id, { nombre: body.nombre, rol: body.rol, colegiado: body.colegiado, atiende_citas: body.atiende_citas === 'on' }, ctx(req));
+        const result = users.updateUser(db, id, { nombre: body.nombre, rol: body.rol, colegiado: body.colegiado, atiende_citas: body.atiende_citas === 'on' }, contexto(req));
         if (result.errors) {
             return renderEditar(req, res, 400, id, {
                 errDatos: result.errors,
@@ -103,50 +84,28 @@ function ajustesRoutes({ db, now }) {
         return responder(req, res, id, result, 'Datos guardados.');
     });
 
-    router.post('/ajustes/usuarios/:id/contrasena', async (req, res) => {
-        const id = userId(req);
+    router.post('/:id/contrasena', async (req, res) => {
+        const id = idParam(req);
         const body = req.body || {};
-        const result = await users.resetPassword(db, id, { password: body.password, password2: body.password2 }, ctx(req));
+        const result = await users.resetPassword(db, id, { password: body.password, password2: body.password2 }, contexto(req));
         if (result.errors) return renderEditar(req, res, 400, id, { errPass: result.errors });
         return responder(req, res, id, result, 'Contraseña restablecida. Se cerraron las sesiones abiertas de ese usuario.');
     });
 
-    router.post('/ajustes/usuarios/:id/estado', (req, res) => {
-        const id = userId(req);
+    router.post('/:id/estado', (req, res) => {
+        const id = idParam(req);
         const accion = req.body && req.body.accion;
         if (accion !== 'activar' && accion !== 'desactivar') throw new HttpError(400, 'Acción no válida.');
-        const result = users.setActive(db, id, accion === 'activar', ctx(req));
+        const result = users.setActive(db, id, accion === 'activar', contexto(req));
         return responder(req, res, id, result, accion === 'activar' ? 'Usuario reactivado.' : 'Usuario desactivado. Se cerraron sus sesiones.');
     });
 
-    router.post('/ajustes/usuarios/:id/desbloquear', (req, res) => {
-        const id = userId(req);
-        return responder(req, res, id, users.unlockUser(db, id, ctx(req)), 'Cuenta desbloqueada.');
-    });
-
-    // ───────── Bitácora
-    router.get('/ajustes/bitacora', (req, res) => {
-        const { filtros, errores } = audit.leerFiltros(req.query);
-        const datos = audit.consultar(db, filtros);
-        const filas = datos.filas.map((f) => ({
-            id: f.id,
-            fecha: formatDateTime(f.fecha),
-            usuario: f.usuario_nombre ? `${f.usuario_nombre} (${f.usuario_login})` : 'Sistema / sin sesión',
-            accion: audit.etiquetaAccion(f.accion),
-            entidad: `${audit.etiquetaEntidad(f.entidad)}${f.entidad_id ? ` #${f.entidad_id}` : ''}`,
-            detalle: audit.detalleATexto(f.detalle),
-            ip: f.ip || '',
-        }));
-        res.render('ajustes/bitacora', {
-            title: 'Bitácora', active: 'ajustes', tab: 'bitacora',
-            filas, total: datos.total, errores, filtros,
-            usuarios: users.listUsers(db),
-            entidades: audit.entidadesRegistradas(db).map((valor) => ({ valor, texto: audit.etiquetaEntidad(valor) })),
-            pager: pager({ pagina: datos.pagina, paginas: datos.paginas, total: datos.total, ruta: '/ajustes/bitacora', filtros: { usuario: filtros.usuario, entidad: filtros.entidad, desde: filtros.desde, hasta: filtros.hasta } }),
-        });
+    router.post('/:id/desbloquear', (req, res) => {
+        const id = idParam(req);
+        return responder(req, res, id, users.unlockUser(db, id, contexto(req)), 'Cuenta desbloqueada.');
     });
 
     return router;
 }
 
-module.exports = { ajustesRoutes };
+module.exports = { usuariosRoutes };

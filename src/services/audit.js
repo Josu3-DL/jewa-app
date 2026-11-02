@@ -41,8 +41,13 @@ const ACCIONES = {
     usuario_activado: 'Usuario reactivado',
     usuario_desbloqueado: 'Cuenta desbloqueada',
     contrasena_restablecida: 'Contraseña restablecida',
+    ajustes_editados: 'Ajustes de la clínica editados',
+    servicio_creado: 'Servicio creado',
+    servicio_editado: 'Servicio editado',
+    servicio_desactivado: 'Servicio desactivado',
+    servicio_activado: 'Servicio reactivado',
 };
-const ENTIDADES = { usuario: 'Usuario' };
+const ENTIDADES = { usuario: 'Usuario', servicio: 'Servicio', config: 'Ajustes' };
 
 const etiquetaAccion = (codigo) => ACCIONES[codigo] || codigo;
 const etiquetaEntidad = (codigo) => ENTIDADES[codigo] || codigo;

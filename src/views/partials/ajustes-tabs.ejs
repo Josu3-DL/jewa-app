@@ -1,5 +1,6 @@
 <nav class="tabs" aria-label="Secciones de ajustes">
     <a class="tab<%= tab === 'clinica' ? ' is-active' : '' %>" href="/ajustes"<% if (tab === 'clinica') { %> aria-current="page"<% } %>>Clínica</a>
+    <a class="tab<%= tab === 'servicios' ? ' is-active' : '' %>" href="/ajustes/servicios"<% if (tab === 'servicios') { %> aria-current="page"<% } %>>Servicios</a>
     <a class="tab<%= tab === 'usuarios' ? ' is-active' : '' %>" href="/ajustes/usuarios"<% if (tab === 'usuarios') { %> aria-current="page"<% } %>>Usuarios</a>
     <a class="tab<%= tab === 'bitacora' ? ' is-active' : '' %>" href="/ajustes/bitacora"<% if (tab === 'bitacora') { %> aria-current="page"<% } %>>Bitácora</a>
 </nav>

@@ -26,7 +26,7 @@ erDiagram
 ## Tablas
 
 ### Sistema
-- **config**(`clave` PK, `valor`): nombre_clinica, moneda, horario, duracion_cita_min, telefono, direccion, zona_horaria.
+- **config**(`clave` PK, `valor`): `nombre_clinica`, `telefono` (505XXXXXXXX), `direccion`, `moneda` (NIO/USD), `iva_porcentaje`, `duracion_cita_min`, `horario` (JSON por día: `{"lunes":{"abre":"08:00","cierra":"17:00"},…,"domingo":null}`). **No se siembra**: los valores por defecto viven en `src/services/settings.js` (JEWA, NIO, IVA 0, 30 min, L–V 8–17, S 8–12, domingo cerrado) y la tabla solo guarda lo que el administrador cambia.
 - **usuarios**(id, nombre, usuario UNIQUE, password_hash, rol CHECK IN ('admin','veterinario','recepcion'), colegiado NULL, atiende_citas 0/1, activo, intentos_fallidos, bloqueado_hasta NULL, creado_en).
 - **sesiones**(sid PK, datos, expira_en).
 - **bitacora**(id, usuario_id NULL, accion, entidad, entidad_id, detalle JSON, ip, fecha). Solo `INSERT`; sin `UPDATE`/`DELETE`.
@@ -78,4 +78,5 @@ erDiagram
 - Usuario administrador (por script, contraseña ingresada por consola, nunca en el repositorio).
 - Servicios base: Consulta general, Vacunación, Seguimiento, Baño, Corte.
 - Plantillas de recordatorio por defecto.
-- Configuración por defecto (nombre JEWA, moneda C$, IVA 0 %, horario y duración según Q-05).
+- Configuración por defecto (nombre JEWA, moneda C$, IVA 0 %, horario y duración según Q-05): en código, no en la base de datos.
+- **Migración `002_datos_iniciales.sql`** (se aplica una sola vez): índice único `servicios(nombre COLLATE NOCASE)`, los 5 servicios base (Consulta general 30 min, Vacunación 15, Seguimiento 20, Baño 45, Corte 60) **con precio 0** y las 3 plantillas de recordatorio (`cita`, `vacuna`, `tratamiento`) con las variables `{propietario} {mascota} {clinica} {fecha} {hora} {vacuna} {medicamento}`.

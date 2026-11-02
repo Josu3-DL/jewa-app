@@ -1,0 +1,45 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">AJUSTES</p>
+                        <h1>Servicios</h1>
+                        <p class="intro">Consultas, vacunas, grooming y otros servicios, con su precio y su duración.</p>
+                    </div>
+                </section>
+                <%- include('../partials/ajustes-tabs', { tab: tab }) %>
+                <% if (sinPrecio > 0) { %>
+                <p class="alert" role="status"><strong><%= sinPrecio %> servicio<%= sinPrecio === 1 ? '' : 's' %> sin precio.</strong> Define su precio antes de cobrar: mientras estén en <%= dinero(0) %> se venderían gratis.</p>
+                <% } %>
+                <div class="management-grid">
+                    <form class="data-form" method="post" action="/ajustes/servicios" novalidate>
+                        <h3>Nuevo servicio</h3>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                        <%- include('../partials/field', { label: 'Nombre', name: 'nombre', value: values.nombre, error: errors.nombre, maxlength: 100, required: true, autocomplete: 'off' }) %>
+                        <%- include('../partials/select', { label: 'Tipo', name: 'tipo', options: tipos, value: values.tipo, error: errors.tipo }) %>
+                        <%- include('../partials/field', { label: 'Precio', name: 'precio', value: values.precio, error: errors.precio, maxlength: 14, required: true, inputmode: 'decimal', autocomplete: 'off', hint: 'Ej. 150 o 150.50' }) %>
+                        <%- include('../partials/field', { label: 'Duración (minutos)', name: 'duracion', value: values.duracion, error: errors.duracion, maxlength: 3, required: true, inputmode: 'numeric', autocomplete: 'off', hint: 'Se usa para calcular cuándo termina la cita.' }) %>
+                        <button class="button" type="submit">Crear servicio</button>
+                    </form>
+
+                    <div class="data-list-panel">
+                        <div class="list-heading"><h3>Catálogo</h3><span><%= servicios.length %></span></div>
+                        <div class="record-list">
+                            <% servicios.forEach(function (s) { %>
+                            <article class="record">
+                                <div class="record-main">
+                                    <div class="pet-avatar pet-dog-light" aria-hidden="true"><%= s.tipoTexto.charAt(0) %></div>
+                                    <div class="record-copy">
+                                        <strong><%= s.nombre %></strong>
+                                        <span><%= s.tipoTexto %> · <%= s.duracion_min %> min · <%= s.precioTexto %><% if (s.sinPrecio) { %> · <b class="sin-precio">Sin precio</b><% } %></span>
+                                    </div>
+                                </div>
+                                <div class="record-actions">
+                                    <span class="status <%= s.estado.clase %>"><%= s.estado.texto %></span>
+                                    <a class="record-confirm" href="/ajustes/servicios/<%= s.id %>/editar" aria-label="Editar <%= s.nombre %>">Editar</a>
+                                </div>
+                            </article>
+                            <% }) %>
+                        </div>
+                    </div>
+                </div>
+<%- include('../partials/layout-end') %>
