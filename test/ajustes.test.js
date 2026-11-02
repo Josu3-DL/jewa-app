@@ -313,7 +313,7 @@ test('bitácora: filtros por usuario, entidad y fechas (y selección recordada e
     const porEntidad = await getHtml(admin, '/ajustes/bitacora?entidad=cita');
     assert.match(porEntidad.text, /cita_creada/);
     assert.doesNotMatch(porEntidad.text, /consulta_creada/);
-    assert.match(porEntidad.text, /<option value="cita" selected>cita<\/option>/);
+    assert.match(porEntidad.text, /<option value="cita" selected>Cita<\/option>/);
 
     const porUsuario = await getHtml(admin, `/ajustes/bitacora?usuario=${ids.vet}`);
     assert.match(porUsuario.text, /consulta_creada/);

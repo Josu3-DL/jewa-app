@@ -1,0 +1,14 @@
+<%# Campos del formulario de cita (alta y reprogramación). Parámetros: values, errors, avisos, responsables, servicios, duracion %>
+<% if (avisos.length) { %>
+<div class="alert" role="alert">
+    <strong>Revisa antes de guardar:</strong>
+    <ul class="avisos"><% avisos.forEach(function (a) { %><li><%= a %></li><% }) %></ul>
+    <label class="check-row"><input type="checkbox" name="confirmar"> Guardar de todos modos</label>
+</div>
+<% } %>
+<%- include('select', { label: 'Responsable', name: 'responsable', options: responsables, value: values.responsable, error: errors.responsable }) %>
+<%- include('select', { label: 'Servicio', name: 'servicio', options: servicios, value: values.servicio, blank: 'Sin servicio específico (' + duracion + ' min)', error: errors.servicio }) %>
+<%- include('field', { label: 'Fecha', name: 'fecha', type: 'date', value: values.fecha, error: errors.fecha, required: true }) %>
+<%- include('field', { label: 'Hora', name: 'hora', type: 'time', value: values.hora, error: errors.hora, required: true, hint: 'La cita termina según la duración del servicio.' }) %>
+<%- include('field', { label: 'Motivo (opcional)', name: 'motivo', value: values.motivo, error: errors.motivo, maxlength: 200, autocomplete: 'off' }) %>
+<%- include('field', { label: 'Notas (opcional)', name: 'notas', value: values.notas, error: errors.notas, maxlength: 500, autocomplete: 'off' }) %>

@@ -7,6 +7,7 @@ const { authRoutes } = require('./routes/auth');
 const { ajustesRoutes } = require('./routes/ajustes');
 const { clientesRoutes } = require('./routes/clientes');
 const { mascotasRoutes } = require('./routes/mascotas');
+const { citasRoutes } = require('./routes/citas');
 const { flash } = require('./middleware/flash');
 const { security } = require('./middleware/security');
 const { createSession } = require('./middleware/session');
@@ -50,6 +51,7 @@ function createApp({ db, config, now = () => new Date(), resolveUser } = {}) {
     app.use(ajustesRoutes({ db, now }));
     app.use(clientesRoutes({ db, now }));
     app.use(mascotasRoutes({ db, config, now }));
+    app.use(citasRoutes({ db, now }));
     app.use(pageRoutes);
 
     app.use(notFound);

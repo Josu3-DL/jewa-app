@@ -1,0 +1,42 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">CITAS</p>
+                        <h1>Nueva cita</h1>
+                        <p class="intro">Primero elige la mascota. Si todavía no está registrada, créala en Mascotas.</p>
+                    </div>
+                    <a class="text-link text-link-dark" href="/citas">← Volver a la agenda</a>
+                </section>
+                <form class="data-form filter-bar" method="get" action="/citas/nueva" role="search">
+                    <% if (fecha) { %><input type="hidden" name="fecha" value="<%= fecha %>"><% } %>
+                    <label for="f-q">Buscar mascota
+                        <input id="f-q" name="q" type="search" value="<%= q %>" maxlength="100" placeholder="Mascota, EXP-000123, propietario o teléfono" autocomplete="off">
+                    </label>
+                    <div class="filter-actions">
+                        <button class="button" type="submit">Buscar</button>
+                        <a class="text-link text-link-dark" href="/citas/nueva">Limpiar</a>
+                    </div>
+                </form>
+                <section class="panel">
+                    <div class="panel-heading"><div><p class="eyebrow">MASCOTAS ACTIVAS</p><h2><%= total %> resultado<%= total === 1 ? '' : 's' %></h2></div><a href="/mascotas/nueva">Registrar mascota nueva</a></div>
+                    <% if (filas.length) { %>
+                    <div class="record-list">
+                        <% filas.forEach(function (m) { %>
+                        <article class="record">
+                            <div class="record-main">
+                                <div class="pet-avatar pet-cat" aria-hidden="true"><%= m.nombre.charAt(0).toUpperCase() %></div>
+                                <div class="record-copy">
+                                    <strong><%= m.nombre %> · <%= m.numero_expediente %></strong>
+                                    <span><%= m.especie %> · Dueño: <%= m.propietario_nombre %> (<%= m.telefonoTexto %>)</span>
+                                </div>
+                            </div>
+                            <div class="record-actions"><a class="button" href="/citas/nueva?mascota=<%= m.id %><%= fecha ? '&fecha=' + fecha : '' %>" aria-label="Agendar cita para <%= m.nombre %>">Agendar</a></div>
+                        </article>
+                        <% }) %>
+                    </div>
+                    <%- include('../partials/pagination', { pager: pager }) %>
+                    <% } else { %>
+                    <p class="empty-state"><%= q ? 'Ninguna mascota coincide con la búsqueda.' : 'Todavía no hay mascotas registradas.' %></p>
+                    <% } %>
+                </section>
+<%- include('../partials/layout-end') %>

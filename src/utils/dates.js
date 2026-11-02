@@ -66,6 +66,44 @@ function edadTexto(nacimiento, hoy) {
     return [a, m].filter(Boolean).join(' ');
 }
 
+/** Fecha AAAA-MM-DD + hora HH:MM de Managua → instante UTC (ISO). */
+function managuaToUtc(fecha, hora) {
+    const [y, m, d] = fecha.split('-').map(Number);
+    const [h, min] = hora.split(':').map(Number);
+    return new Date(Date.UTC(y, m - 1, d, h + OFFSET_HOURS, min)).toISOString().replace('.000Z', 'Z');
+}
+
+/** Instante UTC → { fecha: 'AAAA-MM-DD', hora: 'HH:MM' } en Managua. */
+function utcToManagua(value) {
+    const shifted = new Date(new Date(value).getTime() - OFFSET_HOURS * 3600000).toISOString();
+    return { fecha: shifted.slice(0, 10), hora: shifted.slice(11, 16) };
+}
+
+/** "9:30 AM" (12 horas, como el diseño) a partir de "HH:MM". */
+function hora12(hora) {
+    const [h, m] = hora.split(':').map(Number);
+    return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
+}
+
+/** Suma días a una fecha AAAA-MM-DD. */
+function sumarDias(fecha, n) {
+    const [y, m, d] = fecha.split('-').map(Number);
+    return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
+}
+
+/** Índice del día (0 = lunes … 6 = domingo) de una fecha AAAA-MM-DD. */
+function diaSemana(fecha) {
+    const [y, m, d] = fecha.split('-').map(Number);
+    return (new Date(Date.UTC(y, m - 1, d)).getUTCDay() + 6) % 7;
+}
+
+/** "lun 2 nov" para encabezados de agenda. */
+function fechaCorta(fecha) {
+    const [y, m, d] = fecha.split('-').map(Number);
+    const t = new Intl.DateTimeFormat('es-NI', { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(Date.UTC(y, m - 1, d)));
+    return t.replace(/\./g, '');
+}
+
 /** Iniciales para el avatar: "Laura Mendez" -> "LM". */
 function initials(name) {
     const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
@@ -74,4 +112,4 @@ function initials(name) {
     return letters.toUpperCase();
 }
 
-module.exports = { ZONE, formatLongDate, formatDateTime, yearInZone, managuaDayRange, todayInZone, edadTexto, initials };
+module.exports = { ZONE, formatLongDate, formatDateTime, yearInZone, managuaDayRange, todayInZone, edadTexto, managuaToUtc, utcToManagua, hora12, sumarDias, diaSemana, fechaCorta, initials };
