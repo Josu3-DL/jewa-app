@@ -1,0 +1,50 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">CITA · <%= c.fecha %></p>
+                        <h1><%= c.mascota_nombre %></h1>
+                        <p class="intro"><%= c.horaTexto %> – <%= c.finTexto %> · <%= c.servicio_nombre || 'Sin servicio' %> · <%= c.responsable_nombre %> · <span class="status <%= c.estadoClase %>"><%= c.estadoTexto %></span></p>
+                    </div>
+                    <a class="text-link text-link-dark" href="/citas?fecha=<%= c.fecha %>">← Volver a la agenda</a>
+                </section>
+                <div class="management-grid">
+                    <% if (c.editable) { %>
+                    <form class="data-form" method="post" action="/citas/<%= c.id %>" novalidate>
+                        <h3>Reprogramar o corregir</h3>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                        <%- include('../partials/cita-campos', { values: values, errors: errors, avisos: avisos, responsables: responsables, servicios: servicios, duracion: duracion }) %>
+                        <button class="button" type="submit">Guardar cambios</button>
+                    </form>
+                    <% } else { %>
+                    <section class="data-form">
+                        <h3>Cita terminada</h3>
+                        <p class="form-note">Una cita <%= c.estadoTexto.toLowerCase() %> ya no se modifica. Si hace falta otra, crea una cita nueva.</p>
+                        <% if (c.motivo) { %><p class="form-note">Motivo: <%= c.motivo %></p><% } %>
+                        <% if (c.notas) { %><p class="form-note">Notas: <%= c.notas %></p><% } %>
+                    </section>
+                    <% } %>
+
+                    <div class="stack">
+                        <section class="data-form">
+                            <h3>Paciente</h3>
+                            <p class="form-note"><a class="text-link text-link-dark" href="/mascotas/<%= c.mascota_id %>"><%= c.mascota_nombre %> · <%= c.numero_expediente %></a><br>Dueño: <a class="text-link text-link-dark" href="/clientes/<%= c.propietario_id %>"><%= c.propietario_nombre %></a> · <%= c.telefonoTexto %></p>
+                        </section>
+                        <% if (c.acciones.length) { %>
+                        <section class="data-form">
+                            <h3>Cambiar estado</h3>
+                            <p class="form-note">Cancelar o marcar "No asistió" libera el horario del responsable.</p>
+                            <div class="cita-acciones">
+                                <% c.acciones.forEach(function (a) { %>
+                                <form method="post" action="/citas/<%= c.id %>/estado">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                                    <input type="hidden" name="estado" value="<%= a.valor %>">
+                                    <input type="hidden" name="volver" value="<%= volver %>">
+                                    <button class="button<%= a.valor === 'cancelada' || a.valor === 'no_asistio' ? ' button-danger' : '' %>" type="submit"><%= a.texto %></button>
+                                </form>
+                                <% }) %>
+                            </div>
+                        </section>
+                        <% } %>
+                    </div>
+                </div>
+<%- include('../partials/layout-end') %>

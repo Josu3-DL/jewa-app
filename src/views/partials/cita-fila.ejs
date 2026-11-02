@@ -1,0 +1,24 @@
+<%# Una cita en la agenda. Parámetros: c, volver (URL a la que regresar), compacta (sin acciones rápidas), mostrarResponsable %>
+<article class="record cita">
+    <div class="record-main">
+        <div class="cita-hora"><strong><%= c.horaTexto %></strong><span><%= c.finTexto %></span></div>
+        <div class="record-copy">
+            <strong><a class="text-link text-link-dark" href="/citas/<%= c.id %>"><%= c.mascota_nombre %></a> · <%= c.numero_expediente %></strong>
+            <span><%= c.servicio_nombre || 'Sin servicio' %> · <%= c.responsable_nombre %><% if (!locals.compacta) { %> · <%= c.propietario_nombre %><% } %></span>
+            <% if (c.motivo && !locals.compacta) { %><span>Motivo: <%= c.motivo %></span><% } %>
+        </div>
+    </div>
+    <div class="record-actions"><span class="status <%= c.estadoClase %>"><%= c.estadoTexto %></span></div>
+    <% if (!locals.compacta && c.acciones.length) { %>
+    <div class="cita-acciones">
+        <% c.acciones.forEach(function (a) { %>
+        <form method="post" action="/citas/<%= c.id %>/estado">
+            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+            <input type="hidden" name="estado" value="<%= a.valor %>">
+            <input type="hidden" name="volver" value="<%= volver %>">
+            <button class="button button-small<%= a.valor === 'cancelada' || a.valor === 'no_asistio' ? ' button-danger' : '' %>" type="submit" aria-label="<%= a.texto %> la cita de <%= c.mascota_nombre %>"><%= a.texto %></button>
+        </form>
+        <% }) %>
+    </div>
+    <% } %>
+</article>

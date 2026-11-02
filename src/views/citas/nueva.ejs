@@ -1,0 +1,19 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">CITAS</p>
+                        <h1>Nueva cita</h1>
+                        <p class="intro">Mascota: <strong><%= mascota.nombre %></strong> · <%= mascota.numero_expediente %> · Dueño: <%= mascota.propietario_nombre %> (<%= mascota.telefonoTexto %>) · <a class="text-link text-link-dark" href="/citas/nueva">cambiar</a></p>
+                    </div>
+                    <a class="text-link text-link-dark" href="/citas">← Volver a la agenda</a>
+                </section>
+                <div class="management-grid">
+                    <form class="data-form" method="post" action="/citas" novalidate>
+                        <h3>Datos de la cita</h3>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                        <input type="hidden" name="mascota" value="<%= mascota.id %>">
+                        <%- include('../partials/cita-campos', { values: values, errors: errors, avisos: avisos, responsables: responsables, servicios: servicios, duracion: duracion }) %>
+                        <button class="button" type="submit">Crear cita</button>
+                    </form>
+                </div>
+<%- include('../partials/layout-end') %>

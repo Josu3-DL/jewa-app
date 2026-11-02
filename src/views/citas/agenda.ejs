@@ -1,0 +1,81 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">AGENDA</p>
+                        <h1>Citas</h1>
+                        <p class="intro">Citas del día o de la semana. Cambia el estado con un toque.</p>
+                    </div>
+                    <a class="button" href="/citas/nueva<%= f.fecha !== todayIso ? '?fecha=' + f.fecha : '' %>">+ Nueva cita</a>
+                </section>
+
+                <form class="data-form filter-bar" method="get" action="/citas">
+                    <input type="hidden" name="vista" value="<%= f.vista %>">
+                    <input type="hidden" name="fecha" value="<%= f.fecha %>">
+                    <%- include('../partials/select', { label: 'Responsable', name: 'responsable', blank: 'Todos', options: responsables, value: f.responsable || '' }) %>
+                    <label class="check-row"><input type="checkbox" name="tipo" value="grooming"<%= f.tipo ? ' checked' : '' %>> Solo grooming</label>
+                    <div class="filter-actions">
+                        <button class="button" type="submit">Filtrar</button>
+                        <a class="text-link text-link-dark" href="/citas?vista=<%= f.vista %>&fecha=<%= f.fecha %>">Limpiar</a>
+                    </div>
+                </form>
+
+                <nav class="agenda-nav" aria-label="Navegación de la agenda">
+                    <a class="button" href="<%= enlaces.anterior %>" aria-label="Anterior">← Anterior</a>
+                    <a class="button" href="<%= enlaces.hoy %>">Hoy</a>
+                    <a class="button" href="<%= enlaces.siguiente %>" aria-label="Siguiente">Siguiente →</a>
+                    <span class="agenda-vistas">
+                        <a class="tab<%= f.vista === 'dia' ? ' is-active' : '' %>" href="<%= enlaces.dia %>"<%= f.vista === 'dia' ? ' aria-current=page' : '' %>>Día</a>
+                        <a class="tab<%= f.vista === 'semana' ? ' is-active' : '' %>" href="<%= enlaces.semana %>"<%= f.vista === 'semana' ? ' aria-current=page' : '' %>>Semana</a>
+                    </span>
+                </nav>
+                <% if (mascotaFiltro) { %><p class="alert">Mostrando solo las citas de <strong><%= mascotaFiltro %></strong>. <a href="<%= enlaces.hoy.replace(/[?&]mascota=\d+/, '') %>">Ver todas</a></p><% } %>
+
+                <section class="panel">
+                    <div class="panel-heading"><div><p class="eyebrow"><%= f.vista === 'semana' ? 'SEMANA' : 'DÍA' %><%= responsableNombre ? ' · ' + responsableNombre.toUpperCase() : '' %><%= f.tipo ? ' · GROOMING' : '' %></p><h2><%= rotulo %> · <%= total %> cita<%= total === 1 ? '' : 's' %></h2></div></div>
+                    <div class="<%= f.vista === 'semana' ? 'semana' : '' %>">
+                        <% dias.forEach(function (d) { %>
+                        <section class="agenda-dia<%= d.esHoy ? ' es-hoy' : '' %>">
+                            <% if (f.vista === 'semana') { %><h3><a class="text-link text-link-dark" href="<%= d.enlace %>"><%= d.etiqueta %><%= d.esHoy ? ' · hoy' : '' %></a></h3><% } %>
+                            <% if (d.citas.length) { %>
+                            <div class="record-list">
+                                <% d.citas.forEach(function (c) { %>
+                                <%- include('../partials/cita-fila', { c: c, volver: volver, compacta: f.vista === 'semana' }) %>
+                                <% }) %>
+                            </div>
+                            <% } else { %>
+                            <p class="empty-state">Sin citas<%= f.vista === 'semana' ? '' : ' este día' %>.</p>
+                            <% } %>
+                        </section>
+                        <% }) %>
+                    </div>
+                </section>
+
+                <div class="management-grid agenda-listas">
+                    <section class="data-list-panel">
+                        <div class="list-heading"><h3>Pendientes de confirmar</h3><span><%= pendientes.length %></span></div>
+                        <% if (pendientes.length) { %>
+                        <div class="record-list">
+                            <% pendientes.forEach(function (c) { %>
+                            <div>
+                                <p class="agenda-fecha"><%= c.fecha %></p>
+                                <%- include('../partials/cita-fila', { c: c, volver: volver }) %>
+                            </div>
+                            <% }) %>
+                        </div>
+                        <% } else { %><p class="empty-state">No hay citas pendientes de confirmar.</p><% } %>
+                    </section>
+                    <section class="data-list-panel">
+                        <div class="list-heading"><h3>Próximas citas</h3><span><%= proximas.length %></span></div>
+                        <% if (proximas.length) { %>
+                        <div class="record-list">
+                            <% proximas.forEach(function (c) { %>
+                            <div>
+                                <p class="agenda-fecha"><%= c.fecha %></p>
+                                <%- include('../partials/cita-fila', { c: c, volver: volver }) %>
+                            </div>
+                            <% }) %>
+                        </div>
+                        <% } else { %><p class="empty-state">No hay citas próximas.</p><% } %>
+                    </section>
+                </div>
+<%- include('../partials/layout-end') %>
