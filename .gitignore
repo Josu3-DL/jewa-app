@@ -1,0 +1,11 @@
+node_modules/
+*.db
+*.db-wal
+*.db-shm
+data/
+uploads/
+backups/
+.env
+prueba 1/
+.vscode/
+*.log

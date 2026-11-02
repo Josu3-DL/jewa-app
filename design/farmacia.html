@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Area de farmacia de la Clinica Veterinaria Robles">
+    <title>Farmacia | Clinica Veterinaria Robles</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar" id="main-navigation">
+            <a class="brand" href="theme1.html"><span class="brand-mark">+</span><span>Clinica <span class="brand-light">Robles</span></span></a>
+            <p class="workspace-label">CLINICA VETERINARIA ROBLES</p>
+            <nav class="main-navigation">
+                <a class="nav-link" href="theme1.html"><span>01</span> Inicio</a>
+                <a class="nav-link" href="citas.html"><span>02</span> Citas</a>
+                <a class="nav-link" href="mascotas.html"><span>03</span> Mascotas</a>
+                <a class="nav-link" href="clientes.html"><span>04</span> Clientes</a>
+                <a class="nav-link" href="grooming.html"><span>05</span> Grooming</a>
+                <a class="nav-link" href="historial.html"><span>06</span> Historial clinico</a>
+                <a class="nav-link is-active" href="farmacia.html"><span>07</span> Farmacia</a>
+                <a class="nav-link" href="facturacion.html"><span>08</span> Facturacion</a>
+            </nav>
+        </aside>
+        <div class="main-area">
+            <header class="topbar">
+                <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-navigation">Menu</button>
+                <div class="date-label" id="current-date"></div>
+                <div class="user-area"><div class="avatar">LM</div><div class="user-details"><strong>Laura Mendez</strong><span>Veterinaria</span></div></div>
+            </header>
+            <main class="dashboard">
+                <section class="welcome-row">
+                    <div><p class="eyebrow">VENTA Y SUMINISTROS</p><h1>Área de farmacia</h1><p class="intro">Administra tabletas, medicamentos y productos disponibles para el público.</p></div>
+                </section>
+                <section class="management-section">
+                    <div class="management-grid">
+                        <form class="data-form" id="product-form">
+                            <h3>Agregar producto</h3>
+                            <p class="form-note">Registra el precio público, la existencia y una imagen del producto.</p>
+                            <label>Imagen del producto<input name="image" type="file" accept="image/png,image/jpeg,image/webp"></label>
+                            <label>Nombre del producto<input name="name" type="text" placeholder="Ej. Tabletas antipulgas" required></label>
+                            <label>Categoria<select name="category"><option>Tabletas</option><option>Medicamentos</option><option>Jarabes</option><option>Alimentos</option><option>Accesorios</option><option>Higiene</option><option>Otro</option></select></label>
+                            <label>Cantidad en stock<input name="stock" type="number" min="0" placeholder="0" required></label>
+                            <label>Precio publico<input name="price" type="number" min="0" step="0.01" placeholder="0.00" required></label>
+                            <button class="button" type="submit">Guardar producto</button>
+                        </form>
+                        <div class="data-list-panel"><div class="list-heading"><h3>Productos disponibles</h3><span id="product-count">0</span></div><div class="record-list" id="product-list"><p class="empty-state">Todavia no hay productos registrados.</p></div></div>
+                    </div>
+                </section>
+            </main>
+            <footer class="site-footer"><span>Clinica Veterinaria Robles</span><span id="current-year"></span></footer>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

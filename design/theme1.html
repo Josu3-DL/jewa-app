@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Panel de gestion de la Clinica Veterinaria Robles.">
+    <title>Clinica Veterinaria Robles | Gestion veterinaria</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar" id="main-navigation">
+            <a class="brand" href="#inicio" aria-label="Clinica Veterinaria Robles inicio">
+                <span class="brand-mark">+</span>
+                <span>Clinica <span class="brand-light">Robles</span></span>
+            </a>
+            <p class="workspace-label">CLINICA VETERINARIA ROBLES</p>
+            <nav class="main-navigation" aria-label="Navegacion principal">
+                <a class="nav-link is-active" href="#inicio"><span>01</span> Inicio</a>
+                <a class="nav-link" href="citas.html"><span>02</span> Citas</a>
+                <a class="nav-link" href="mascotas.html"><span>03</span> Mascotas</a>
+                <a class="nav-link" href="clientes.html"><span>04</span> Clientes</a>
+                <a class="nav-link" href="grooming.html"><span>05</span> Grooming</a>
+                <a class="nav-link" href="historial.html"><span>06</span> Historial clinico</a>
+                <a class="nav-link" href="farmacia.html"><span>07</span> Farmacia</a>
+                <a class="nav-link" href="facturacion.html"><span>08</span> Facturacion</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a class="nav-link" href="#ajustes"><span>05</span> Ajustes</a>
+                <p>Version 1.0.0</p>
+            </div>
+        </aside>
+
+        <div class="main-area">
+            <header class="topbar">
+                <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-navigation">Menu</button>
+                <div class="date-label">Martes, 17 de septiembre de 2026</div>
+                <div class="user-area">
+                    <button class="notification-button" type="button" aria-label="Ver notificaciones">3</button>
+                    <div class="avatar">WG</div>
+                    <div class="user-details"><strong>Willy Garcia</strong><span>Veterinaria</span></div>
+                </div>
+            </header>
+
+            <main id="inicio" class="dashboard">
+                <section class="home-hero">
+                    <div class="home-hero-content">
+                        <p class="eyebrow">BIENVENIDOS A</p>
+                        <h1>Clínica Veterinaria Robles</h1>
+                        <p class="intro">Cuidamos cada historia, cada visita y cada vínculo entre las mascotas y sus familias.</p>
+                        <div class="hero-actions"><a class="button" id="action-button" href="citas.html">+ Nueva cita</a><a class="text-link" href="mascotas.html">Ver pacientes <span>→</span></a></div>
+                    </div>
+                    <div class="hero-illustration"><img src="https://images.unsplash.com/photo-1587559070757-f72a388edbba?auto=format&fit=crop&w=620&q=85" alt="Doctora veterinaria sosteniendo un perro"><span class="illustration-label">CUIDAR<br><strong>MEJOR</strong></span></div>
+                </section>
+
+                <section class="home-menu" aria-label="Accesos principales">
+                    <div class="section-heading home-menu-heading"><div><p class="eyebrow">MENU PRINCIPAL</p><h2>¿Qué necesitas hacer?</h2></div><span class="menu-note">Accesos directos de la clínica</span></div>
+                    <div class="home-menu-grid">
+                        <a class="home-menu-card card-blue" href="citas.html"><span class="menu-card-number">01</span><span class="menu-card-icon">◷</span><strong>Gestionar citas</strong><span>Organiza la agenda del día</span><b>→</b></a>
+                        <a class="home-menu-card card-white" href="mascotas.html"><span class="menu-card-number">02</span><span class="menu-card-icon">✦</span><strong>Pacientes</strong><span>Consulta fichas y mascotas</span><b>→</b></a>
+                        <a class="home-menu-card card-white" href="clientes.html"><span class="menu-card-number">03</span><span class="menu-card-icon">◎</span><strong>Clientes</strong><span>Administra tutores y contactos</span><b>→</b></a>
+                        <a class="home-menu-card card-silver" href="grooming.html"><span class="menu-card-number">04</span><span class="menu-card-icon">✧</span><strong>Grooming</strong><span>Reserva cuidados y estética</span><b>→</b></a>
+                        <a class="home-menu-card card-white" href="farmacia.html"><span class="menu-card-number">05</span><span class="menu-card-icon">+</span><strong>Área de farmacia</strong><span>Productos y medicamentos</span><b>→</b></a>
+                    </div>
+                </section>
+
+                <section class="visits-section">
+                    <div class="section-heading"><div><p class="eyebrow">ACTIVIDAD CLINICA</p><h2>Historial de visitas</h2><p>Distribución de consultas registradas durante la semana.</p></div><span class="menu-note">Últimos 7 días</span></div>
+                    <div class="visits-panel">
+                        <div class="chart-wrap"><div class="pie-chart" role="img" aria-label="Gráfico de visitas: lunes 18 por ciento, martes 14 por ciento, miércoles 22 por ciento, jueves 16 por ciento, viernes 20 por ciento, sábado 10 por ciento"></div><div class="chart-total"><strong>86</strong><span>visitas</span></div></div>
+                        <div class="chart-legend"><div><span class="legend-dot dot-monday"></span><span>Lunes</span><strong>16</strong></div><div><span class="legend-dot dot-tuesday"></span><span>Martes</span><strong>12</strong></div><div><span class="legend-dot dot-wednesday"></span><span>Miércoles</span><strong>19</strong></div><div><span class="legend-dot dot-thursday"></span><span>Jueves</span><strong>14</strong></div><div><span class="legend-dot dot-friday"></span><span>Viernes</span><strong>17</strong></div><div><span class="legend-dot dot-saturday"></span><span>Sábado</span><strong>8</strong></div></div>
+                    </div>
+                </section>
+
+                <section class="stats-grid" aria-label="Resumen de actividad">
+                    <article class="stat-card stat-card-highlight"><span class="stat-icon">+</span><p>Citas de hoy</p><strong>12</strong><span class="trend">+2 respecto a ayer</span></article>
+                    <article class="stat-card"><span class="stat-icon icon-teal">P</span><p>Pacientes activos</p><strong>248</strong><span class="trend">+8 este mes</span></article>
+                    <article class="stat-card"><span class="stat-icon icon-blue">!</span><p>Recordatorios</p><strong>07</strong><span class="trend trend-neutral">Para esta semana</span></article>
+                    <article class="stat-card"><span class="stat-icon icon-yellow">$</span><p>Ingresos del mes</p><strong>$8,420</strong><span class="trend">+12.5% este mes</span></article>
+                </section>
+
+                <div class="dashboard-grid">
+                    <section id="citas" class="panel appointments-panel">
+                        <div class="panel-heading"><div><p class="eyebrow">AGENDA</p><h2>Proximas citas</h2></div><a href="citas.html">Ver agenda completa</a></div>
+                        <div class="appointment-list">
+                            <article class="appointment"><div class="time">09:00<span>AM</span></div><div class="pet-avatar pet-cat">M</div><div class="appointment-info"><strong>Milo</strong><span>Gato siames - Consulta general</span></div><span class="status status-confirmed">Confirmada</span></article>
+                            <article class="appointment"><div class="time">10:30<span>AM</span></div><div class="pet-avatar pet-dog">B</div><div class="appointment-info"><strong>Bruno</strong><span>Golden retriever - Vacunacion</span></div><span class="status status-waiting">En espera</span></article>
+                            <article class="appointment"><div class="time">12:00<span>PM</span></div><div class="pet-avatar pet-rabbit">N</div><div class="appointment-info"><strong>Nube</strong><span>Bulldog frances - Seguimiento</span></div><span class="status status-confirmed">Confirmada</span></article>
+                            <article class="appointment"><div class="time">04:15<span>PM</span></div><div class="pet-avatar pet-dog-light">L</div><div class="appointment-info"><strong>Luna</strong><span>Labrador - Dermatologia</span></div><span class="status status-new">Nueva</span></article>
+                        </div>
+                    </section>
+
+                    <section id="pacientes" class="panel patients-panel">
+                        <div class="panel-heading"><div><p class="eyebrow">REGISTRO</p><h2>Pacientes recientes</h2></div><a href="mascotas.html">Ver todos</a></div>
+                        <div class="patient-list"><article class="patient"><div class="pet-avatar pet-cat">M</div><div><strong>Milo</strong><span>Gato siames</span></div><time>Hoy, 08:42</time></article><article class="patient"><div class="pet-avatar pet-dog">B</div><div><strong>Bruno</strong><span>Golden retriever</span></div><time>Ayer, 17:20</time></article><article class="patient"><div class="pet-avatar pet-rabbit">N</div><div><strong>Nube</strong><span>Bulldog frances</span></div><time>Ayer, 11:05</time></article></div>
+                    </section>
+                </div>
+
+                <section class="quick-actions"><p class="eyebrow">ACCESOS RAPIDOS</p><div class="quick-action-grid"><a class="quick-action" href="mascotas.html"><strong>+ Agregar paciente</strong><span>Crea una ficha nueva</span></a><a class="quick-action" href="historial.html"><strong>▣ Abrir historial</strong><span>Busca por nombre o ID</span></a><a class="quick-action" href="facturacion.html"><strong>▤ Nueva factura</strong><span>Registra un pago</span></a></div></section>
+
+            </main>
+
+            <footer class="site-footer"><span>Clinica Veterinaria Robles</span><span>Ultima sincronizacion: hace 2 min</span><span id="current-year"></span></footer>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
