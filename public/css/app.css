@@ -44,6 +44,28 @@ a.button { display: inline-block; text-decoration: none; }
 .alert-ok { border-left-color: #47796c; background: #d7eee6; color: #2c5248; }
 .field-error { display: block; margin-top: 0.3rem; color: #a05035; font-size: 0.68rem; font-weight: 400; }
 
+/* ───── Ajustes: pestañas, formularios, filtros y paginación ───── */
+.tabs { display: flex; flex-wrap: wrap; gap: 0.25rem; margin: -1rem 0 1.6rem; border-bottom: 1px solid var(--line); }
+.tab { display: inline-flex; align-items: center; min-height: 44px; padding: 0.5rem 1rem; color: var(--muted); border-bottom: 2px solid transparent; font-size: 0.82rem; text-decoration: none; }
+.tab:hover { color: var(--ink); }
+.tab.is-active { color: var(--accent-dark); border-bottom-color: var(--accent-dark); font-weight: 700; }
+.stack { display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
+.data-form.stack-item, .stack > .data-form { width: 100%; }
+.check-row { display: flex !important; align-items: center; gap: 0.6rem; margin: 0.4rem 0 1rem; color: var(--ink) !important; font-size: 0.78rem !important; font-weight: 400 !important; cursor: pointer; }
+.data-form .check-row input[type="checkbox"] { display: inline-block; flex: 0 0 auto; width: 1.2rem; height: 1.2rem; margin: 0; }
+.field-hint { display: block; margin-top: 0.3rem; color: var(--muted); font-size: 0.66rem; font-weight: 400; }
+.button-danger { background: #a86049; }
+.button-danger:hover, .button-danger:focus-visible { background: #8c4a36; }
+.button:disabled { opacity: 0.5; cursor: not-allowed; }
+.text-link-dark { color: var(--accent-dark); }
+a.record-confirm { display: inline-flex; align-items: center; text-decoration: none; }
+.filter-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); align-items: end; gap: 0.2rem 1rem; margin-bottom: 1.5rem; }
+.filter-bar label { margin-bottom: 0.6rem; }
+.filter-actions { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.6rem; }
+.nowrap { white-space: nowrap; }
+.pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: 1.2rem; color: var(--muted); font-size: 0.74rem; }
+.pagination-off { color: #a9b6bf; font-size: 0.78rem; }
+
 /* ───── Inicio de sesión y páginas de error (sin barra lateral) ───── */
 .auth-page { display: grid; min-height: 100vh; place-content: center; gap: 1.5rem; padding: 1.5rem 1rem; }
 .auth-brand { display: flex; flex-direction: column; align-items: center; }

@@ -14,7 +14,8 @@ const { parsePhoneNumberFromString } = require('libphonenumber-js/min');
 z.config(z.locales.es()); // el resto de mensajes de Zod salen en español
 
 const OBLIGATORIO = 'Este campo es obligatorio.';
-const requerido = (mensaje = OBLIGATORIO) => (issue) => (issue.input === undefined ? mensaje : 'Valor no válido.');
+// Mensaje de Zod: "obligatorio" si no llegó nada (o llegó vacío); si llegó algo incorrecto, el mensaje `invalido`.
+const requerido = (invalido = 'Valor no válido.') => (issue) => (issue.input === undefined || issue.input === '' ? OBLIGATORIO : invalido);
 
 // Los formularios HTML mandan '' en los campos vacíos: se tratan como ausentes.
 const vacioAUndefined = (valor) => (typeof valor === 'string' && valor.trim() === '' ? undefined : valor);
@@ -46,12 +47,16 @@ const correo = () => z.email({ error: 'Correo no válido.' }).toLowerCase();
 
 /** Fecha AAAA-MM-DD real (rechaza 2026-02-30). */
 const fecha = () => z.iso.date({ error: requerido('Fecha no válida.') });
+// (usar opcional(fecha()) cuando la fecha no es obligatoria)
 
 /** Número desde texto de formulario; acepta coma decimal ("12,5"). Encadenar .min()/.max()/.int() según haga falta. */
 const numero = (base = z.number({ error: requerido('Debe ser un número.') })) => z.preprocess(
     (valor) => (typeof valor === 'string' ? (valor.trim() === '' ? undefined : Number(valor.trim().replace(',', '.'))) : valor),
     base,
 );
+
+/** Casilla de verificación HTML: marcada envía "on" (o "1"); desmarcada no envía nada → false. */
+const casilla = () => z.preprocess((valor) => valor === 'on' || valor === '1' || valor === 'true' || valor === true, z.boolean());
 
 /**
  * Valida la entrada contra un esquema y devuelve { ok, values, errors }.
@@ -69,4 +74,4 @@ function parseForm(esquema, entrada) {
     return { ok: false, values: {}, errors };
 }
 
-module.exports = { z, texto, opcional, telefono, correo, fecha, numero, parseForm };
+module.exports = { z, texto, opcional, telefono, correo, fecha, numero, casilla, parseForm };

@@ -212,6 +212,14 @@ test('fecha: AAAA-MM-DD real; correo en minúsculas', () => {
     for (const bad of ['ana', 'ana@', 'a b@c.com']) assert.equal(check(correo(), bad).error, 'Correo no válido.', bad);
 });
 
+test('mensajes de fecha: vacía → obligatoria; mal escrita o inexistente → "Fecha no válida."', () => {
+    for (const mala of ['2026-02-30', '02/11/2026', 'ayer']) assert.equal(check(fecha(), mala).error, 'Fecha no válida.', mala);
+    assert.equal(check(fecha(), '').error, 'Este campo es obligatorio.');
+    assert.equal(check(fecha(), undefined).error, 'Este campo es obligatorio.');
+    assert.deepEqual(check(opcional(fecha()), ''), { value: undefined });
+    assert.equal(check(opcional(fecha()), '2026-02-30').error, 'Fecha no válida.');
+});
+
 test('numero: acepta coma decimal y valida rangos', () => {
     const peso = numero(z.number({ error: 'Debe ser un número.' }).min(0.1, 'Mínimo 0.1.').max(200, 'Máximo 200.'));
     assert.deepEqual(check(peso, '12,5'), { value: 12.5 });

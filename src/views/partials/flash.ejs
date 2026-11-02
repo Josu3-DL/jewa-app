@@ -1,0 +1,3 @@
+<% if (locals.flash) { %>
+                <p class="alert <%= flash.tipo === 'error' ? 'alert-error' : 'alert-ok' %>" role="<%= flash.tipo === 'error' ? 'alert' : 'status' %>"><%= flash.texto %></p>
+<% } %>

@@ -1,0 +1,60 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">AJUSTES · USUARIOS</p>
+                        <h1><%= u.nombre %></h1>
+                        <p class="intro"><%= u.usuario %> · <%= u.rolLabel %> · <span class="status <%= u.estado.clase %>"><%= u.estado.texto %></span></p>
+                    </div>
+                    <a class="text-link text-link-dark" href="/ajustes/usuarios">← Volver a usuarios</a>
+                </section>
+                <%- include('../partials/ajustes-tabs', { tab: tab }) %>
+                <div class="management-grid">
+                    <div class="stack">
+                        <form class="data-form" method="post" action="/ajustes/usuarios/<%= u.id %>" novalidate>
+                            <h3>Datos del usuario</h3>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                            <%- include('../partials/field', { label: 'Nombre completo', name: 'nombre', value: values.nombre, error: errDatos.nombre, maxlength: 100, required: true, autocomplete: 'off' }) %>
+                            <%- include('../partials/select', { label: 'Rol', name: 'rol', options: roles, value: values.rol, error: errDatos.rol }) %>
+                            <% if (esYo) { %><p class="form-note">No puedes cambiar tu propio rol.</p><% } %>
+                            <%- include('../partials/field', { label: 'Número de colegiado (solo veterinarios)', name: 'colegiado', value: values.colegiado, error: errDatos.colegiado, maxlength: 50, autocomplete: 'off' }) %>
+                            <label class="check-row"><input type="checkbox" name="atiende_citas"<%= values.atiende_citas ? ' checked' : '' %>> Atiende citas (aparece en la agenda)</label>
+                            <button class="button" type="submit">Guardar cambios</button>
+                        </form>
+
+                        <form class="data-form" method="post" action="/ajustes/usuarios/<%= u.id %>/contrasena" novalidate>
+                            <h3>Restablecer contraseña</h3>
+                            <p class="form-note">Se cerrarán las sesiones abiertas de este usuario y se quitará cualquier bloqueo.</p>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                            <%- include('../partials/field', { label: 'Nueva contraseña', name: 'password', type: 'password', error: errPass.password, maxlength: 200, required: true, autocomplete: 'new-password', hint: 'Mínimo 8 caracteres.' }) %>
+                            <%- include('../partials/field', { label: 'Repite la contraseña', name: 'password2', type: 'password', error: errPass.password2, maxlength: 200, required: true, autocomplete: 'new-password' }) %>
+                            <button class="button" type="submit">Restablecer contraseña</button>
+                        </form>
+                    </div>
+
+                    <div class="stack">
+                        <section class="data-form">
+                            <h3>Estado de la cuenta</h3>
+                            <p class="form-note">Creada el <%= creado %>.</p>
+                            <% if (u.bloqueado) { %>
+                            <p class="alert alert-error">Bloqueada por intentos fallidos hasta el <%= bloqueadoHasta %>.</p>
+                            <form method="post" action="/ajustes/usuarios/<%= u.id %>/desbloquear">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                                <button class="button" type="submit">Desbloquear cuenta</button>
+                            </form>
+                            <% } %>
+                            <form method="post" action="/ajustes/usuarios/<%= u.id %>/estado">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                                <% if (u.activo) { %>
+                                <input type="hidden" name="accion" value="desactivar">
+                                <p class="form-note">Un usuario desactivado no puede entrar, pero su historial se conserva. No se puede desactivar al último administrador ni a uno mismo.</p>
+                                <button class="button button-danger" type="submit"<%= esYo ? ' disabled' : '' %>>Desactivar usuario</button>
+                                <% } else { %>
+                                <input type="hidden" name="accion" value="activar">
+                                <p class="form-note">Este usuario está desactivado y no puede iniciar sesión.</p>
+                                <button class="button" type="submit">Reactivar usuario</button>
+                                <% } %>
+                            </form>
+                        </section>
+                    </div>
+                </div>
+<%- include('../partials/layout-end') %>

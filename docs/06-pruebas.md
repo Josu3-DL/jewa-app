@@ -44,7 +44,9 @@ Reglas: cada prueba usa una BD nueva con migraciones aplicadas; datos de prueba 
 |---|---|---|
 | T-01 Login correcto/incorrecto y bloqueo a los 5 fallos | ✅ ISS-03 | `test/auth-services.test.js`, `test/security.test.js` |
 | T-02 Ruta protegida sin sesión → login; cerrar sesión invalida en servidor | ✅ ISS-03 | `test/security.test.js`, `test/layout.test.js` |
-| T-03 Recepcionista sin acceso a módulos clínicos (403) | ✅ ISS-02/03 (módulos); se amplía con cada módulo | `test/layout.test.js`, `test/security.test.js` |
+| T-03 Recepcionista sin acceso a módulos clínicos (403) | ✅ ISS-02/03 (módulos) y ISS-04 (todas las pantallas y acciones de Ajustes, con GET y POST reales); se amplía con cada módulo | `test/layout.test.js`, `test/security.test.js`, `test/ajustes.test.js` |
+| Usuarios: alta, edición, desactivar (no al último administrador ni a uno mismo), restablecer contraseña y desbloquear; las sesiones del usuario se cierran al desactivarlo o restablecerle la clave | ✅ ISS-04 | `test/usuarios-services.test.js`, `test/ajustes.test.js` |
+| Bitácora: sin contraseñas ni hashes a ninguna profundidad; filtros por usuario, entidad y día en hora de Managua; paginación; texto escapado | ✅ ISS-04 | `test/usuarios-services.test.js`, `test/ajustes.test.js` |
 | T-04 POST sin token CSRF → 403 | ✅ ISS-03 | `test/security.test.js` |
 | T-13 Sin borrado de consultas, ventas, movimientos ni bitácora | ✅ ISS-01 (triggers de BD) | `test/db.test.js` |
 | T-21 Inyección SQL y XSS en entradas | ✅ login (ISS-03); se amplía en búsquedas | `test/security.test.js` |
