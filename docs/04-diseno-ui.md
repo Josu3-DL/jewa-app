@@ -2,6 +2,22 @@
 
 Fuente: carpeta `design/` (copiada de `prueba 1`). **Se reutilizan los mismos estilos** (`styles.css`), el mismo layout y los mismos componentes. No se rediseña la estética.
 
+## Cómo está implementado (ISS-02)
+- `public/css/styles.css` es **idéntico** a `design/styles.css` (una prueba automática lo verifica). No se edita.
+- Todo lo nuevo va en `public/css/app.css`, que se carga después: menú plegable, controles de 44 px, estados de cita, tablas con desplazamiento, mensajes, impresión y accesibilidad (foco visible, "Saltar al contenido").
+- Plantilla EJS en `src/views/partials/`: `layout-start.ejs` (cabecera, barra lateral y barra superior) y `layout-end.ejs` (pie). Cada página la envuelve así:
+  ```ejs
+  <%- include('partials/layout-start', { title: 'Citas', active: 'citas' }) %>
+  ...contenido...
+  <%- include('partials/layout-end') %>
+  ```
+  `<%-` se usa **solo** para `include`, nunca con datos de usuario.
+- El menú, los permisos por módulo y los accesos de la página de inicio salen de un solo archivo: `src/modules.js`. Para agregar un módulo se agrega una fila allí.
+- Menú plegable en ≤ 900 px (tablet y teléfono) con `public/js/app.js`: botón "Menú", fondo oscurecido, se cierra al tocar fuera, al elegir una opción o con Escape.
+- Controles táctiles de al menos 44 px en pantallas táctiles o ≤ 900 px; en campos de formulario 16 px de letra para evitar el zoom automático de iOS.
+- Imagen de inicio local (`public/img/hero.svg`), sin recursos externos.
+- Mientras no exista el login (ISS-03), `DEV_ROLE=admin|veterinario|recepcion` en `.env` simula un usuario **solo en desarrollo**; en producción la app lo rechaza. Sin usuario, todos los módulos responden 403.
+
 ## Tokens (de `styles.css`)
 | Token | Valor | Uso |
 |---|---|---|

@@ -1,0 +1,28 @@
+<% const current = locals.active || null; %>
+<aside class="sidebar" id="main-navigation" aria-label="Menú principal">
+    <a class="brand" href="/" aria-label="<%= clinicName %>, ir al inicio">
+        <span class="brand-mark" aria-hidden="true">+</span>
+        <span><%= clinicName %></span>
+    </a>
+    <p class="workspace-label">CLÍNICA VETERINARIA</p>
+    <nav class="main-navigation" aria-label="Navegación principal">
+        <% nav.main.forEach(function (item) { %>
+        <a class="nav-link<%= current === item.key ? ' is-active' : '' %>" href="<%= item.path %>"<% if (current === item.key) { %> aria-current="page"<% } %>><span><%= item.number %></span> <%= item.label %></a>
+        <% }) %>
+    </nav>
+    <div class="sidebar-footer">
+        <% nav.footer.forEach(function (item) { %>
+        <a class="nav-link<%= current === item.key ? ' is-active' : '' %>" href="<%= item.path %>"<% if (current === item.key) { %> aria-current="page"<% } %>><span><%= item.number %></span> <%= item.label %></a>
+        <% }) %>
+        <% if (user) { %>
+        <div class="sidebar-user">
+            <strong><%= user.nombre %></strong>
+            <span><%= roleLabel %></span>
+        </div>
+        <% if (!user.simulated) { %>
+        <form method="post" action="/logout"><button class="sidebar-logout" type="submit">Cerrar sesión</button></form>
+        <% } %>
+        <% } %>
+        <p>Versión <%= appVersion %></p>
+    </div>
+</aside>

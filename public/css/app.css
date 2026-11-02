@@ -1,0 +1,91 @@
+/*
+ * Adiciones de JEWA sobre styles.css (que es idéntico a design/styles.css y no se edita).
+ * Se carga DESPUÉS de styles.css. Aquí van: menú plegable en tablet/teléfono,
+ * controles táctiles, estados de cita que faltaban y componentes nuevos.
+ */
+
+/* ───── Accesibilidad ───── */
+.skip-link { position: absolute; z-index: 10; top: -100px; left: 0.75rem; padding: 0.6rem 0.9rem; color: #fff; background: var(--accent-dark); border-radius: 0 0 4px 4px; font-size: 0.8rem; }
+.skip-link:focus { top: 0; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid #8fb3c9; outline-offset: 2px; }
+.sidebar a:focus-visible, .sidebar button:focus-visible { outline-color: #fff; }
+
+/* ───── Evita desbordes horizontales ───── */
+.main-area { min-width: 0; }
+img, svg, video { max-width: 100%; }
+.dashboard, .panel, .data-form, .data-list-panel { min-width: 0; }
+
+/* Los enlaces con aspecto de botón no se subrayan */
+a.button { display: inline-block; text-decoration: none; }
+
+/* ───── Barra lateral: bloque de usuario ───── */
+.sidebar-user { display: flex; flex-direction: column; margin: 1.25rem 0 0 0.9rem; color: #fff; font-size: 0.78rem; }
+.sidebar-user span { color: var(--sidebar-muted); font-size: 0.68rem; }
+.sidebar-logout { margin: 0.6rem 0 0 0.9rem; padding: 0.5rem 0; color: var(--sidebar-muted); background: transparent; border: 0; font-size: 0.78rem; text-decoration: underline; cursor: pointer; }
+.sidebar-logout:hover { color: #fff; }
+.sidebar-footer .nav-link { margin-bottom: 0.25rem; }
+.sidebar-backdrop { position: fixed; z-index: 2; inset: 0; background: rgba(20, 38, 52, 0.55); }
+
+/* ───── Estados de cita que faltaban (misma paleta que los avatares de mascotas) ───── */
+.status-done { color: #47796c; background: #d7eee6; }
+.status-cancelled { color: #a86049; background: #f8ded5; }
+.status-noshow { color: #a27035; background: #f5e9c9; }
+
+/* ───── Tablas: contenedor con desplazamiento propio ───── */
+.table-scroll { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+.data-table th { padding: 0.7rem 0.8rem; color: var(--muted); border-bottom: 1px solid var(--line); font-size: 0.66rem; letter-spacing: 0.06em; text-align: left; text-transform: uppercase; white-space: nowrap; }
+.data-table td { padding: 0.8rem; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.data-table tr:last-child td { border-bottom: 0; }
+
+/* ───── Mensajes ───── */
+.alert { margin: 0 0 1.2rem; padding: 0.85rem 1rem; border-left: 3px solid var(--accent); background: #edf3f6; color: #3a4f5e; font-size: 0.8rem; }
+.alert-error { border-left-color: #a86049; background: #f8ded5; color: #6e3a2a; }
+.alert-ok { border-left-color: #47796c; background: #d7eee6; color: #2c5248; }
+.field-error { display: block; margin-top: 0.3rem; color: #a05035; font-size: 0.68rem; font-weight: 400; }
+
+/* ───── Tablet y teléfono (≤ 900 px): menú plegable ───── */
+@media (max-width: 900px) {
+    .sidebar { display: flex; position: fixed; z-index: 4; top: 0; bottom: 0; left: 0; width: min(280px, 85vw); height: auto; overflow-y: auto; transform: translateX(-105%); visibility: hidden; transition: transform 200ms ease, visibility 0s linear 200ms; }
+    .sidebar.is-open { transform: none; visibility: visible; box-shadow: 0 0 40px rgba(10, 25, 38, 0.35); transition: transform 200ms ease; }
+    .main-area { width: 100%; margin-left: 0; }
+    .menu-toggle { display: inline-flex; align-items: center; min-height: 44px; padding: 0.45rem 0.9rem; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 3px; font-size: 0.8rem; cursor: pointer; }
+    .topbar { padding-right: 1.25rem; padding-left: 1.25rem; }
+    .dashboard { padding-right: 1.5rem; padding-left: 1.5rem; }
+    .site-footer { padding-right: 1.5rem; padding-left: 1.5rem; }
+}
+
+/* ───── Pantallas táctiles o estrechas: controles de al menos 44 px ───── */
+@media (pointer: coarse), (max-width: 900px) {
+    .nav-link { min-height: 44px; }
+    .button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding-right: 1.3rem; padding-left: 1.3rem; }
+    .text-link, .panel-heading a { display: inline-flex; align-items: center; min-height: 44px; }
+    .quick-action { min-height: 44px; }
+    .record-confirm, .record-delete, .sidebar-logout { min-height: 44px; padding-right: 0.8rem; padding-left: 0.8rem; }
+    .notification-button { width: 44px; height: 44px; }
+    /* 16 px evita el zoom automático de iOS al enfocar un campo */
+    .data-form input, .data-form select, .data-form textarea { min-height: 44px; font-size: 1rem; }
+    .data-form input[type="checkbox"], .data-form input[type="radio"] { min-height: 0; width: 1.4rem; height: 1.4rem; }
+}
+
+/* ───── Teléfono (≤ 640 px) ───── */
+@media (max-width: 640px) {
+    .dashboard { padding-top: 1.5rem; padding-right: 1rem; padding-left: 1rem; }
+    .topbar, .site-footer { padding-right: 1rem; padding-left: 1rem; }
+    .home-menu-grid { grid-template-columns: 1fr 1fr; }
+    .table-scroll { margin-right: -0.25rem; margin-left: -0.25rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sidebar, .sidebar.is-open { transition: none; }
+    html { scroll-behavior: auto; }
+}
+
+/* ───── Impresión: recetas, carnés y recibos ───── */
+@media print {
+    .sidebar, .sidebar-backdrop, .topbar, .site-footer, .skip-link, .no-print, .button { display: none !important; }
+    .main-area { width: 100%; margin: 0; }
+    body { background: #fff; }
+    .dashboard { max-width: none; padding: 0; }
+    .panel, .data-form, .data-list-panel { box-shadow: none; }
+}

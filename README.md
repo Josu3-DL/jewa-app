@@ -39,6 +39,8 @@ npm start           # http://localhost:3000
 npm test
 ```
 
+Mientras no exista el inicio de sesión (ISS-03), para ver la interfaz en desarrollo copia `.env.example` a `.env` y descomenta `DEV_ROLE=admin` (o `veterinario` / `recepcion` para probar los otros menús). En producción esa variable se rechaza.
+
 ## Carpetas
 
 - `design/` – diseño de referencia (HTML y `styles.css`). **No se ejecuta**, solo se consulta.
