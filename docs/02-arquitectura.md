@@ -11,7 +11,23 @@
 | Gráficas | Chart.js (archivo local en `public/vendor/`) | Sin CDN en producción. |
 | Pruebas | `node:test` + `supertest` | Sin framework pesado. |
 
-Dependencias previstas (mantenerlas pocas): `express`, `ejs`, `express-session` (con almacén propio en SQLite), `multer` (subida de archivos), `helmet`. Desarrollo: `supertest`.
+### Librerías: adoptadas, descartadas y pendientes de evaluar
+Regla (D-28): antes de escribir algo genérico, se busca una librería mantenida y sin módulos nativos.
+
+| Necesidad | Decisión | Motivo |
+|---|---|---|
+| Servidor web | `express` 5 + `ejs` | Estándar y conocido. |
+| Sesiones | `express-session` + almacén **propio** en SQLite (~60 líneas, `src/middleware/session.js`) | Los almacenes conocidos usan `sqlite3` (módulo nativo); el único paquete para `node:sqlite` que se encontró tiene ~14 descargas al mes: no se confía un componente de seguridad a eso. |
+| CSRF | `csrf-sync` | Es el reemplazo mantenido de `csurf` para tokens guardados en la sesión. |
+| Límite de intentos | `express-rate-limit` (por IP) + bloqueo por cuenta propio (regla de negocio) | Evita probar claves contra muchas cuentas desde un equipo. |
+| Cabeceras / CSP | `helmet` | Estándar. |
+| Validación | `zod` (+ `z.locales.es()`) y `libphonenumber-js` para teléfonos | Esquemas declarativos; resuelven listas (carrito de ventas) y reglas entre campos (fin > inicio) sin código propio. |
+| Hash de contraseñas | `scrypt` de `node:crypto` | Aceptado por OWASP; argon2/bcrypt requieren módulos nativos. |
+| Base de datos | `node:sqlite` + SQL propio detrás de `services/` | **Drizzle** soporta `node:sqlite`, pero el esquema ya vive en SQL con triggers y `CHECK` que Drizzle no expresa; se reconsidera si las consultas con filtros dinámicos se vuelven repetitivas. |
+| Migraciones | ejecutor propio (~30 líneas) | Aplica archivos `.sql` en orden; las herramientas del mercado exigen un ORM o un driver distinto. |
+| Pruebas | `node:test` + `supertest` | Sin framework adicional. |
+
+Pendientes de evaluar **antes** de implementarlos (no están verificados todavía): subida de archivos (`multer`) y validación del tipo real del archivo (ISS-09), CSV (`csv-stringify`, ISS-16), registro de eventos con rotación (`pino`, ISS-20), planificación del respaldo (Programador de tareas de Windows frente a `node-cron`, ISS-18).
 
 ## Estructura de carpetas
 ```

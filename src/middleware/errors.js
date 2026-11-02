@@ -1,11 +1,13 @@
 'use strict';
 
 const TITLES = {
+    401: 'Inicia sesión',
     403: 'Acceso denegado',
     404: 'Página no encontrada',
     500: 'Algo salió mal',
 };
 const MESSAGES = {
+    401: 'Inicia sesión para continuar.',
     403: 'No tienes permiso para ver esta página.',
     404: 'La página que buscas no existe o fue movida.',
     500: 'Ocurrió un error inesperado. Intenta de nuevo; si continúa, avisa al administrador.',

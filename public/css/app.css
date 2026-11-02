@@ -44,6 +44,19 @@ a.button { display: inline-block; text-decoration: none; }
 .alert-ok { border-left-color: #47796c; background: #d7eee6; color: #2c5248; }
 .field-error { display: block; margin-top: 0.3rem; color: #a05035; font-size: 0.68rem; font-weight: 400; }
 
+/* ───── Inicio de sesión y páginas de error (sin barra lateral) ───── */
+.auth-page { display: grid; min-height: 100vh; place-content: center; gap: 1.5rem; padding: 1.5rem 1rem; }
+.auth-brand { display: flex; flex-direction: column; align-items: center; }
+.auth-brand .brand { color: var(--sidebar); }
+.auth-brand .brand-mark { color: #fff; background: var(--sidebar); }
+.auth-brand .workspace-label { margin: 0.6rem 0 0; color: var(--muted); }
+.auth-card { width: min(420px, 100%); }
+.auth-title { margin-bottom: 0.6rem; font-size: 1.6rem; }
+.auth-card .form-note { margin-top: 0; }
+.auth-card .button { width: 100%; }
+.center-page { max-width: 560px; margin: 10vh auto; padding: 0 1rem; }
+.center-card { text-align: center; }
+
 /* ───── Tablet y teléfono (≤ 900 px): menú plegable ───── */
 @media (max-width: 900px) {
     .sidebar { display: flex; position: fixed; z-index: 4; top: 0; bottom: 0; left: 0; width: min(280px, 85vw); height: auto; overflow-y: auto; transform: translateX(-105%); visibility: hidden; transition: transform 200ms ease, visibility 0s linear 200ms; }

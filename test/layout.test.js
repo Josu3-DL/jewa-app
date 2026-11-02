@@ -15,8 +15,8 @@ const ROOT = path.join(__dirname, '..');
 const NOW = new Date('2026-11-02T03:00:00Z');
 
 function appAs(role, extra = {}) {
-    const config = testConfig({ DEV_ROLE: role });
-    return createApp({ db: extra.db || testDb(), config, now: () => NOW, ...extra.options });
+    const resolveUser = (extra.options && extra.options.resolveUser) || (() => ({ id: 1, nombre: 'Usuario de prueba', usuario: 'prueba', rol: role }));
+    return createApp({ db: extra.db || testDb(), config: testConfig(), now: () => NOW, resolveUser });
 }
 const html = (app, url) => request(app).get(url).set('Accept', 'text/html');
 const navLabels = (text) => [...text.matchAll(/class="nav-link[^"]*"[^>]*><span>(\d+)<\/span> ([^<]+)</g)].map((m) => ({ n: m[1], label: m[2].trim() }));
@@ -72,7 +72,7 @@ test('las tarjetas de inicio respetan el rol', () => {
     assert.ok(homeCardsFor('recepcion').every((c) => canAccess('recepcion', c.module)));
 });
 
-test('GET / con sesión simulada muestra el layout completo', async () => {
+test('GET / con sesión muestra el layout completo', async () => {
     const res = await html(appAs('admin'), '/');
     assert.equal(res.status, 200);
     assert.match(res.text, /<meta name="viewport" content="width=device-width, initial-scale=1.0">/);
@@ -109,9 +109,9 @@ test('usuario y rol reales en la barra superior; iniciales en el avatar', async 
     assert.deepEqual(['Ana', 'Laura Mendez', '  juan  carlos  perez ', ''].map(initials), ['AN', 'LM', 'JP', '?']);
 });
 
-test('el usuario simulado no muestra "Cerrar sesión"', async () => {
+test('el formulario de cierre de sesión lleva token CSRF', async () => {
     const res = await html(appAs('admin'), '/');
-    assert.doesNotMatch(res.text, /action="\/logout"/);
+    assert.match(res.text, /action="\/logout"[^>]*><input type="hidden" name="_csrf" value="[A-Za-z0-9_-]{100,}">/);
 });
 
 test('el nombre del usuario y de la clínica se escapan (XSS)', async () => {
@@ -131,13 +131,15 @@ test('el nombre de la clínica sale de Ajustes (config) y por defecto es JEWA', 
     assert.match((await html(appAs('admin', { db }), '/')).text, /<h1>Veterinaria Sur<\/h1>/);
 });
 
-test('sin usuario (sin DEV_ROLE) todos los módulos responden 403', async () => {
+test('T-02: sin sesión las páginas redirigen a /login (y las no-HTML dan 401)', async () => {
     const app = createApp({ db: testDb(), config: testConfig(), now: () => NOW });
     for (const url of ['/', '/citas', '/historial', '/ajustes']) {
         const res = await html(app, url);
-        assert.equal(res.status, 403, url);
-        assert.match(res.text, /Acceso denegado/);
+        assert.equal(res.status, 302, url);
+        assert.match(res.headers.location, url === '/' ? /^\/login$/ : /^\/login\?next=%2F/);
     }
+    const api = await request(app).get('/citas').set('Accept', 'application/json');
+    assert.equal(api.status, 401);
 });
 
 test('T-03 (parcial): la recepcionista recibe 403 en historial, reportes y ajustes', async () => {
@@ -183,14 +185,6 @@ test('ninguna página carga recursos externos (sin Unsplash ni CDN)', async () =
 test('los activos estáticos y el JS del menú se sirven', async () => {
     const app = appAs('admin');
     for (const url of ['/css/styles.css', '/css/app.css', '/js/app.js']) assert.equal((await request(app).get(url)).status, 200, url);
-});
-
-test('DEV_ROLE: se rechaza en producción y si el rol es inválido', () => {
-    const prod = { NODE_ENV: 'production', SESSION_SECRET: 'x'.repeat(32) };
-    assert.throws(() => buildConfig({ ...prod, DEV_ROLE: 'admin' }), /DEV_ROLE/);
-    assert.throws(() => buildConfig({ DEV_ROLE: 'dios' }), /DEV_ROLE inválido/);
-    assert.equal(buildConfig({ DEV_ROLE: 'recepcion' }).devRole, 'recepcion');
-    assert.equal(buildConfig({}).devRole, null);
 });
 
 test('la versión de la app sale de package.json', () => {

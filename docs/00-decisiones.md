@@ -33,6 +33,8 @@ Estados: ✅ tomada · 🟡 propuesta (se asume si no hay objeción) · ❓ abie
 | D-25 | En la LAN se usa HTTP; la cookie `Secure` se controla con `COOKIE_SECURE` (falso en LAN). Riesgo aceptado: tráfico sin cifrar dentro de una Wi-Fi protegida. HTTPS interno queda para la v2. | Un certificado propio en cada tablet/teléfono es impráctico. | 🟡 |
 | D-26 | La PC es el único servidor: respaldo diario a una **unidad externa** (USB/disco), no al mismo disco. | Si la PC falla, sin copia externa se pierde todo. | 🟡 |
 | D-27 | Interfaz diseñada para PC, tablet (768 px) y teléfono (400 px) con controles táctiles ≥ 44 px. | Requisito del cliente. | ✅ |
+| D-28 | **Librerías antes que código propio:** para todo lo que no sea lógica de la clínica se busca una librería mantenida (sin módulos nativos). Ver `CLAUDE.md` y la tabla de `docs/02-arquitectura.md`. | Menos código que mantener, más fácil de entender para otros desarrolladores. Pedido del cliente el 2026-11-02. | ✅ |
+| D-29 | Se adoptan `csrf-sync` (CSRF), `express-rate-limit` (freno de login por IP), `zod` + `libphonenumber-js` (validación y teléfonos), `helmet` y `express-session`. Se mantiene propio: el almacén de sesiones en `node:sqlite` (no hay paquete con uso real), el hash `scrypt` de `node:crypto` y el ejecutor de migraciones. | Ver razones en `docs/02-arquitectura.md`. | ✅ |
 | D-21 | La agenda pertenece a un "responsable" (usuario con `atiende_citas = 1`), no solo a veterinarios. Sirve para el groomer. | El documento no define quién atiende grooming. | 🟡 |
 
 ## Abiertas (necesitan respuesta)

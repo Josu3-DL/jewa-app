@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title><%= title %> | <%= clinicName %></title>
+    <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+    <main class="auth-page" id="contenido">
+        <div class="auth-brand">
+            <span class="brand"><span class="brand-mark" aria-hidden="true">+</span><span><%= clinicName %></span></span>
+            <p class="workspace-label">CLÍNICA VETERINARIA</p>
+        </div>
+        <form class="data-form auth-card" method="post" action="/login" novalidate>
+            <h1 class="auth-title">Iniciar sesión</h1>
+            <p class="form-note">Ingresa con tu usuario y contraseña.</p>
+            <% if (message) { %><p class="alert alert-error" role="alert"><%= message %></p><% } %>
+            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+            <% if (next) { %><input type="hidden" name="next" value="<%= next %>"><% } %>
+            <label>Usuario
+                <input name="usuario" type="text" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="50" required autofocus value="<%= values.usuario || '' %>"<% if (errors.usuario) { %> aria-invalid="true" aria-describedby="err-usuario"<% } %>>
+                <% if (errors.usuario) { %><span class="field-error" id="err-usuario"><%= errors.usuario %></span><% } %>
+            </label>
+            <label>Contraseña
+                <input name="password" type="password" autocomplete="current-password" maxlength="200" required<% if (errors.password) { %> aria-invalid="true" aria-describedby="err-password"<% } %>>
+                <% if (errors.password) { %><span class="field-error" id="err-password"><%= errors.password %></span><% } %>
+            </label>
+            <button class="button" type="submit">Entrar</button>
+        </form>
+    </main>
+</body>
+</html>

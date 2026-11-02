@@ -39,7 +39,7 @@ npm start           # http://localhost:3000
 npm test
 ```
 
-Mientras no exista el inicio de sesión (ISS-03), para ver la interfaz en desarrollo copia `.env.example` a `.env` y descomenta `DEV_ROLE=admin` (o `veterinario` / `recepcion` para probar los otros menús). En producción esa variable se rechaza.
+**Primer arranque:** `npm run seed:admin` pide usuario, nombre y contraseña (no se muestra al escribirla; mínimo 8 caracteres) y crea el primer administrador. Después se entra en `/login`. Con `.env.example` como base crea tu `.env` (en producción `SESSION_SECRET` es obligatorio, 32+ caracteres).
 
 ## Carpetas
 
