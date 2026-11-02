@@ -1,0 +1,25 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">MASCOTAS</p>
+                        <h1>Nueva mascota</h1>
+                        <p class="intro">Propietario: <strong><%= propietario.nombre %></strong> · <%= propietario.telefonoTexto %> · <a class="text-link text-link-dark" href="/mascotas/nueva">cambiar</a></p>
+                    </div>
+                    <a class="text-link text-link-dark" href="/mascotas">← Volver a mascotas</a>
+                </section>
+
+                <div class="management-grid">
+                    <form class="data-form" method="post" action="/mascotas" enctype="multipart/form-data" novalidate>
+                        <h3>Datos de la mascota</h3>
+                        <p class="form-note">El número de expediente (EXP-000123) se asigna solo al guardar.</p>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                        <input type="hidden" name="propietario" value="<%= propietario.id %>">
+                        <%- include('../partials/mascota-campos', { values: values, errors: errors, especies: especies, sexos: sexos }) %>
+                        <label for="f-foto">Foto (opcional)
+                            <input id="f-foto" name="foto" type="file" accept="image/jpeg,image/png,image/webp"<% if (errors.foto) { %> aria-invalid="true" aria-describedby="f-foto-err"<% } %>>
+                            <% if (errors.foto) { %><span class="field-error" id="f-foto-err"><%= errors.foto %></span><% } else { %><span class="field-hint">JPG, PNG o WebP de hasta 2 MB. En el teléfono puedes tomarla con la cámara.</span><% } %>
+                        </label>
+                        <button class="button" type="submit">Crear mascota</button>
+                    </form>
+                </div>
+<%- include('../partials/layout-end') %>

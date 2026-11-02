@@ -42,6 +42,30 @@ function managuaDayRange(dateStr) {
     return { from: from.toISOString(), to: to.toISOString() };
 }
 
+/** Hoy como AAAA-MM-DD en la zona de Managua. */
+function todayInZone(date, zone = ZONE) {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
+}
+
+/** Edad legible entre dos fechas AAAA-MM-DD: "2 años 3 meses", "5 meses", "12 días". Vacío si no hay fecha. */
+function edadTexto(nacimiento, hoy) {
+    if (!nacimiento) return '';
+    const [ya, ma, da] = nacimiento.split('-').map(Number);
+    const [yb, mb, db] = hoy.split('-').map(Number);
+    if (!ya || !yb) return '';
+    let meses = (yb - ya) * 12 + (mb - ma) - (db < da ? 1 : 0);
+    if (meses < 0) return '';
+    if (meses < 1) {
+        const dias = Math.round((Date.UTC(yb, mb - 1, db) - Date.UTC(ya, ma - 1, da)) / 86400000);
+        return `${dias} ${dias === 1 ? 'día' : 'días'}`;
+    }
+    const anios = Math.floor(meses / 12);
+    meses %= 12;
+    const a = anios ? `${anios} ${anios === 1 ? 'año' : 'años'}` : '';
+    const m = meses ? `${meses} ${meses === 1 ? 'mes' : 'meses'}` : '';
+    return [a, m].filter(Boolean).join(' ');
+}
+
 /** Iniciales para el avatar: "Laura Mendez" -> "LM". */
 function initials(name) {
     const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
@@ -50,4 +74,4 @@ function initials(name) {
     return letters.toUpperCase();
 }
 
-module.exports = { ZONE, formatLongDate, formatDateTime, yearInZone, managuaDayRange, initials };
+module.exports = { ZONE, formatLongDate, formatDateTime, yearInZone, managuaDayRange, todayInZone, edadTexto, initials };

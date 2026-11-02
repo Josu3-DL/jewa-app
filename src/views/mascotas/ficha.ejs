@@ -1,0 +1,75 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">EXPEDIENTE <%= m.numero_expediente %></p>
+                        <h1><%= m.nombre %></h1>
+                        <p class="intro"><%= m.especie %><% if (m.raza) { %> · <%= m.raza %><% } %> · <span class="status <%= m.estadoClase %>"><%= m.estadoTexto %></span></p>
+                    </div>
+                    <a class="text-link text-link-dark" href="/mascotas">← Volver a mascotas</a>
+                </section>
+
+                <div class="management-grid">
+                    <div class="stack">
+                        <section class="data-form ficha-resumen">
+                            <h3>Ficha</h3>
+                            <div class="ficha-foto">
+                                <% if (m.foto) { %>
+                                <img class="pet-photo" src="/mascotas/<%= m.id %>/foto" alt="Foto de <%= m.nombre %>" width="160" height="160">
+                                <% } else { %>
+                                <div class="pet-photo pet-photo-vacia" aria-hidden="true"><%= m.inicial %></div>
+                                <% } %>
+                                <dl class="ficha-datos">
+                                    <dt>Propietario</dt><dd><a class="text-link text-link-dark" href="/clientes/<%= m.propietario_id %>"><%= m.propietario_nombre %></a> · <%= m.telefonoTexto %></dd>
+                                    <dt>Edad</dt><dd><%= m.edad || 'Sin fecha de nacimiento' %></dd>
+                                    <dt>Sexo</dt><dd><%= m.sexo.charAt(0).toUpperCase() + m.sexo.slice(1) %><%= m.esterilizado ? ' · Esterilizado' : '' %></dd>
+                                    <% if (m.color) { %><dt>Color</dt><dd><%= m.color %></dd><% } %>
+                                </dl>
+                            </div>
+                            <p class="ficha-accesos">
+                                <% if (puedeHistorial) { %><a class="button" href="/historial?mascota=<%= m.id %>">Historial y vacunas</a><% } %>
+                                <% if (puedeCitas) { %><a class="button" href="/citas?mascota=<%= m.id %>">Citas</a><% } %>
+                                <a class="button" href="/mascotas/<%= m.id %>/transferir">Transferir</a>
+                            </p>
+                        </section>
+
+                        <section class="data-form">
+                            <h3>Foto</h3>
+                            <form method="post" action="/mascotas/<%= m.id %>/foto" enctype="multipart/form-data">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                                <label for="f-foto">Subir o cambiar la foto
+                                    <input id="f-foto" name="foto" type="file" accept="image/jpeg,image/png,image/webp" required>
+                                    <span class="field-hint">JPG, PNG o WebP de hasta 2 MB.</span>
+                                </label>
+                                <button class="button" type="submit">Guardar foto</button>
+                            </form>
+                            <% if (m.foto) { %>
+                            <form method="post" action="/mascotas/<%= m.id %>/foto/quitar" class="ficha-quitar">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                                <button class="button button-danger" type="submit">Quitar foto</button>
+                            </form>
+                            <% } %>
+                        </section>
+
+                        <div class="data-list-panel">
+                            <div class="list-heading"><h3>Propietarios anteriores y actual</h3><span><%= historial.length %></span></div>
+                            <div class="record-list">
+                                <% historial.forEach(function (h) { %>
+                                <article class="record">
+                                    <div class="record-copy">
+                                        <strong><%= h.nombre %></strong>
+                                        <span>Desde <%= h.desde %><%= h.hasta ? ' hasta ' + h.hasta : ' · actual' %></span>
+                                    </div>
+                                </article>
+                                <% }) %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form class="data-form" method="post" action="/mascotas/<%= m.id %>" novalidate>
+                        <h3>Datos de la mascota</h3>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                        <%- include('../partials/mascota-campos', { values: values, errors: errors, especies: especies, sexos: sexos, estados: estados }) %>
+                        <button class="button" type="submit">Guardar cambios</button>
+                    </form>
+                </div>
+<%- include('../partials/layout-end') %>

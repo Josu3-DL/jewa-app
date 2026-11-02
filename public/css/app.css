@@ -146,3 +146,14 @@ a.record-confirm { display: inline-flex; align-items: center; text-decoration: n
     .dashboard { max-width: none; padding: 0; }
     .panel, .data-form, .data-list-panel { box-shadow: none; }
 }
+
+/* ───── Clientes y mascotas (ISS-06) ───── */
+.pet-photo { display: block; width: 160px; height: 160px; object-fit: cover; border: 1px solid var(--line); border-radius: 50%; }
+.pet-photo-vacia { display: grid; place-items: center; color: #a86049; background: #f8ded5; font-size: 3rem; font-weight: 700; }
+.ficha-foto { display: flex; flex-direction: column; align-items: flex-start; gap: 1.2rem; margin-bottom: 1.2rem; }
+.ficha-datos { display: grid; grid-template-columns: auto 1fr; gap: 0.35rem 0.9rem; min-width: 0; margin: 0; font-size: 0.78rem; }
+.ficha-datos dt { color: var(--muted); }
+.ficha-datos dd { margin: 0; overflow-wrap: anywhere; }
+.ficha-accesos { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0; }
+.ficha-quitar { margin-top: 0.8rem; }
+.record-actions form { margin: 0; }

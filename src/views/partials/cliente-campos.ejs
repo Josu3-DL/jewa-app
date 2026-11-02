@@ -1,0 +1,7 @@
+<%# Campos del formulario de cliente (alta y edición). Parámetros: values, errors %>
+<%- include('field', { label: 'Nombre completo', name: 'nombre', value: values.nombre, error: errors.nombre, maxlength: 100, required: true, autocomplete: 'off' }) %>
+<%- include('field', { label: 'Teléfono', name: 'telefono', type: 'tel', value: values.telefono, error: errors.telefono, maxlength: 20, required: true, autocomplete: 'off', hint: 'Ej. 8888 7777. Se usa para los avisos por WhatsApp.' }) %>
+<%- include('field', { label: 'Cédula (opcional)', name: 'cedula', value: values.cedula, error: errors.cedula, maxlength: 20, autocomplete: 'off', hint: 'Ej. 001-010101-0001A. No se puede repetir.' }) %>
+<%- include('field', { label: 'Correo (opcional)', name: 'correo', type: 'email', value: values.correo, error: errors.correo, maxlength: 120, autocomplete: 'off' }) %>
+<%- include('field', { label: 'Dirección (opcional)', name: 'direccion', value: values.direccion, error: errors.direccion, maxlength: 200, autocomplete: 'off' }) %>
+<label class="check-row"><input type="checkbox" name="acepta_notificaciones"<%= values.acepta_notificaciones ? ' checked' : '' %>> El cliente acepta recibir recordatorios (citas, vacunas, tratamientos)</label>

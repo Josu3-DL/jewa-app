@@ -107,3 +107,4 @@ Reglas:
 - Estados vacíos con `empty-state`; errores con mensaje claro y qué hacer.
 - Accesibilidad: `label` asociado a cada campo, foco visible, contraste del diseño original, `aria-*` ya presentes en el menú.
 - Impresión: `@media print` oculta barra lateral, barra superior y botones.
+- **Clientes y mascotas (ISS-06):** `/clientes` (búsqueda + alta + lista paginada de 25), `/clientes/:id` (ficha con edición, mascotas y desactivar), `/mascotas` (búsqueda por mascota, expediente o datos del dueño, filtro de estado), `/mascotas/nueva` (primero se elige el propietario; sin texto libre), `/mascotas/:id` (ficha: foto, edad, accesos, historial de propietarios, edición) y `/mascotas/:id/transferir`. Piezas nuevas: `partials/cliente-campos.ejs` y `mascota-campos.ejs` (campos compartidos alta/edición). Los enlaces dentro de frases usan `text-link` para cumplir los 44 px táctiles.

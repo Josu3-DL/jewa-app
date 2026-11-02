@@ -1,0 +1,63 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">CLIENTE</p>
+                        <h1><%= c.nombre %></h1>
+                        <p class="intro"><%= c.telefonoTexto %><% if (c.cedula) { %> · <%= c.cedula %><% } %> · <span class="status <%= c.estado.clase %>"><%= c.estado.texto %></span> · <%= c.acepta_notificaciones ? 'Acepta recordatorios' : 'No quiere recordatorios' %></p>
+                    </div>
+                    <a class="text-link text-link-dark" href="/clientes">← Volver a clientes</a>
+                </section>
+
+                <div class="management-grid">
+                    <form class="data-form" method="post" action="/clientes/<%= c.id %>" novalidate>
+                        <h3>Datos del cliente</h3>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                        <%- include('../partials/cliente-campos', { values: values, errors: errors }) %>
+                        <button class="button" type="submit">Guardar cambios</button>
+                    </form>
+
+                    <div class="stack">
+                        <div class="data-list-panel">
+                            <div class="list-heading"><h3>Mascotas</h3><span><%= mascotas.length %></span></div>
+                            <% if (mascotas.length) { %>
+                            <div class="record-list">
+                                <% mascotas.forEach(function (m) { %>
+                                <article class="record">
+                                    <div class="record-main">
+                                        <div class="pet-avatar pet-cat" aria-hidden="true"><%= m.nombre.charAt(0).toUpperCase() %></div>
+                                        <div class="record-copy">
+                                            <strong><%= m.nombre %></strong>
+                                            <span><%= m.especie %> · <%= m.numero_expediente %><% if (m.edad) { %> · <%= m.edad %><% } %></span>
+                                        </div>
+                                    </div>
+                                    <div class="record-actions">
+                                        <% if (m.estado !== 'activa') { %><span class="status status-waiting"><%= m.estadoTexto %></span><% } %>
+                                        <a class="record-confirm" href="/mascotas/<%= m.id %>" aria-label="Ver ficha de <%= m.nombre %>">Ver ficha</a>
+                                    </div>
+                                </article>
+                                <% }) %>
+                            </div>
+                            <% } else { %>
+                            <p class="empty-state">Este cliente todavía no tiene mascotas.</p>
+                            <% } %>
+                            <% if (c.activo) { %><p><a class="button" href="/mascotas/nueva?propietario=<%= c.id %>">Agregar mascota</a></p><% } %>
+                        </div>
+
+                        <section class="data-form">
+                            <h3>Estado</h3>
+                            <form method="post" action="/clientes/<%= c.id %>/estado">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                                <% if (c.activo) { %>
+                                <input type="hidden" name="accion" value="desactivar">
+                                <p class="form-note">Un cliente desactivado deja de aparecer en las búsquedas y no puede recibir mascotas nuevas. Su historial se conserva. <% if (activas > 0) { %><strong>Tiene <%= activas %> mascota<%= activas === 1 ? '' : 's' %> activa<%= activas === 1 ? '' : 's' %>: primero transfiérelas o márcalas como inactivas o fallecidas.</strong><% } %></p>
+                                <button class="button button-danger" type="submit">Desactivar cliente</button>
+                                <% } else { %>
+                                <input type="hidden" name="accion" value="activar">
+                                <p class="form-note">Este cliente está desactivado.</p>
+                                <button class="button" type="submit">Reactivar cliente</button>
+                                <% } %>
+                            </form>
+                        </section>
+                    </div>
+                </div>
+<%- include('../partials/layout-end') %>
