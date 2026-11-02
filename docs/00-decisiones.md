@@ -51,3 +51,17 @@ Estados: ✅ tomada · 🟡 propuesta (se asume si no hay objeción) · ❓ abie
 | Q-08 | ¿Hay datos existentes (Excel) para importar? | Sí / No | No, carga manual |
 
 > Si en el chat no se responde una pregunta, se asume el valor por defecto y se anota aquí.
+
+### Confirmación del 2026-11-02
+El cliente autorizó empezar el Día 1 con estos valores. Se revisan si algo cambia:
+
+| Pregunta | Valor adoptado |
+|---|---|
+| IVA | 0 % (configurable en Ajustes) |
+| Q-04 Colegiado en receta | Campo opcional |
+| Q-05 Horario y cita | L–V 8:00–17:00, S 8:00–12:00, 30 min |
+| Q-06 Pagos parciales o crédito | No: pago completo al cobrar |
+| Q-07 Usuarios | 5 simultáneos, 2 veterinarios |
+| Q-08 Importación | No: carga manual |
+| Q-09 PC encendida, UPS, unidad externa | Sí: PC siempre encendida en horario y unidad externa disponible |
+| Q-10 IP fija y Wi-Fi | Sí: IP reservada en el router |
