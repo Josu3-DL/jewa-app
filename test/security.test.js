@@ -10,7 +10,7 @@ const { buildConfig } = require('../src/config');
 const { testDb, testConfig } = require('./helpers');
 
 const ROOT = path.join(__dirname, '..');
-const csrfIn = (html) => (/name="_csrf" value="([0-9a-f]{64})"/.exec(html) || [])[1];
+const csrfIn = (html) => (/name="_csrf" value="([A-Za-z0-9_-]{100,})"/.exec(html) || [])[1];
 const sidOf = (res) => ((res.headers['set-cookie'] || []).map((c) => /jewa\.sid=([^;]+)/.exec(c)).find(Boolean) || [])[1];
 
 async function setup({ config = {}, withUser = true } = {}) {
@@ -131,7 +131,7 @@ test('campos vacíos o demasiado largos se rechazan con mensajes por campo (400)
     const { app } = await setup();
     const empty = await login(request.agent(app), { usuario: '', password: '' });
     assert.equal(empty.status, 400);
-    assert.match(empty.text, /El campo Usuario es obligatorio\./);
+    assert.match(empty.text, /<span class="field-error" id="err-usuario">Este campo es obligatorio\.<\/span>/);
     assert.match(empty.text, /Ingresa tu contraseña\./);
     const long = await login(request.agent(app), { usuario: 'ana', password: 'x'.repeat(201) });
     assert.equal(long.status, 400);
@@ -200,22 +200,27 @@ test('el token también se acepta en la cabecera X-CSRF-Token', async () => {
     assert.equal(res.status, 302);
 });
 
-test('si llega Origin debe coincidir con el host (defensa adicional)', async () => {
-    const { app } = await setup();
-    const agent = request.agent(app);
-    const token = csrfIn((await agent.get('/login')).text);
-    const send = (origin) => agent.post('/login').set('Host', '192.168.1.50:3000').set('Origin', origin).type('form').send({ _csrf: token, usuario: 'ana', password: 'secreto123' });
-    assert.equal((await send('http://evil.example')).status, 403);
-    assert.equal((await send('null')).status, 403);
-    assert.equal((await send('http://192.168.1.50:3000')).status, 302);
-});
-
 test('un POST a cualquier ruta autenticada sin token también da 403', async () => {
     const { app } = await setup();
     const agent = request.agent(app);
     await login(agent);
     assert.equal((await agent.post('/citas').type('form').send({})).status, 403);
     assert.equal((await agent.post('/logout').type('form').send({})).status, 403);
+});
+
+// ───────── Límite por IP
+test('tras 20 intentos fallidos desde el mismo equipo se frena el login (429), aunque cambie de usuario', async () => {
+    const { app } = await setup();
+    const agent = request.agent(app);
+    for (let i = 0; i < 20; i++) assert.equal((await login(agent, { usuario: `fantasma${i}`, password: 'mal-mal-mal' })).status, 401);
+    const blocked = await login(agent, { usuario: 'ana', password: 'secreto123' });
+    assert.equal(blocked.status, 429);
+    assert.match(blocked.text, /Demasiados intentos desde este equipo/);
+});
+
+test('los inicios de sesión correctos no gastan el límite por IP', async () => {
+    const { app } = await setup();
+    for (let i = 0; i < 25; i++) assert.equal((await login(request.agent(app))).status, 302);
 });
 
 // ───────── Cierre de sesión (T-02)

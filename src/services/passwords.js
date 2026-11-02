@@ -1,15 +1,16 @@
 'use strict';
 const crypto = require('node:crypto');
 const { promisify } = require('node:util');
+const { z } = require('../utils/validation');
 
+// scrypt de node:crypto: aceptado por OWASP y sin dependencias nativas. Las alternativas
+// habituales (argon2, bcrypt) requieren módulos nativos que habría que compilar o descargar
+// en la PC de la clínica; bcryptjs es puro JS pero mucho más lento.
 const scrypt = promisify(crypto.scrypt);
 
 // Formato almacenado: scrypt$N$r$p$salt(hex)$hash(hex). Los parámetros viajan en el hash
 // para poder endurecerlos más adelante sin invalidar las contraseñas existentes.
 const PARAMS = { N: 16384, r: 8, p: 1, keylen: 64, saltBytes: 16 };
-
-const MIN_LENGTH = 8;
-const MAX_LENGTH = 200;
 
 async function hashPassword(password) {
     const salt = crypto.randomBytes(PARAMS.saltBytes);
@@ -29,12 +30,11 @@ async function verifyPassword(password, stored) {
     }
 }
 
-/** Devuelve un mensaje de error en español o null si la contraseña es aceptable. */
-function passwordPolicyError(password) {
-    if (typeof password !== 'string' || password.length < MIN_LENGTH) return `La contraseña debe tener al menos ${MIN_LENGTH} caracteres.`;
-    if (password.length > MAX_LENGTH) return `La contraseña no puede superar ${MAX_LENGTH} caracteres.`;
-    if (password.trim() === '') return 'La contraseña no puede estar vacía.';
-    return null;
-}
+/** Política de contraseñas nuevas (usuarios, restablecimientos). */
+const passwordSchema = z
+    .string({ error: 'Este campo es obligatorio.' })
+    .min(8, 'La contraseña debe tener al menos 8 caracteres.')
+    .max(200, 'La contraseña no puede superar 200 caracteres.')
+    .refine((valor) => valor.trim() !== '', 'La contraseña no puede estar vacía.');
 
-module.exports = { hashPassword, verifyPassword, passwordPolicyError, MIN_LENGTH, MAX_LENGTH };
+module.exports = { hashPassword, verifyPassword, passwordSchema };

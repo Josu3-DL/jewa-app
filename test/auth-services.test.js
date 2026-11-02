@@ -1,11 +1,11 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { hashPassword, verifyPassword, passwordPolicyError } = require('../src/services/passwords');
+const { hashPassword, verifyPassword, passwordSchema } = require('../src/services/passwords');
 const { authenticate, MAX_FAILED_ATTEMPTS, LOCK_MINUTES } = require('../src/services/auth');
 const { createUser, countUsers } = require('../src/services/users');
 const { SqliteStore } = require('../src/middleware/session');
-const { v, validate } = require('../src/utils/validation');
+const { z, texto, opcional, telefono, correo, fecha, numero, parseForm } = require('../src/utils/validation');
 const { testDb } = require('./helpers');
 
 const T0 = new Date('2026-11-02T15:00:00Z');
@@ -40,11 +40,12 @@ test('verifyPassword acepta la correcta y rechaza la incorrecta o un hash dañad
 });
 
 test('política de contraseña: mínimo 8 y máximo 200', () => {
-    assert.match(passwordPolicyError('corta'), /al menos 8/);
-    assert.match(passwordPolicyError('x'.repeat(201)), /superar 200/);
-    assert.match(passwordPolicyError('        '), /vacía/);
-    assert.equal(passwordPolicyError('12345678'), null);
-    assert.ok(passwordPolicyError(undefined));
+    const error = (valor) => (passwordSchema.safeParse(valor).error || { issues: [{}] }).issues[0].message;
+    assert.match(error('corta'), /al menos 8/);
+    assert.match(error('x'.repeat(201)), /superar 200/);
+    assert.match(error('        '), /vacía/);
+    assert.equal(passwordSchema.safeParse('12345678').success, true);
+    assert.equal(passwordSchema.safeParse(undefined).success, false);
 });
 
 // ───────── Servicio de autenticación (T-01)
@@ -166,77 +167,69 @@ test('SqliteStore descarta las sesiones vencidas', async () => {
     assert.ok(await call(store.get.bind(store), 'vivo'));
 });
 
-// ───────── Validación
-const run = (rule, raw) => rule(raw);
+// ───────── Validación (Zod + libphonenumber; solo se prueba lo propio)
+const check = (schema, valor) => {
+    const r = schema.safeParse(valor);
+    return r.success ? { value: r.data } : { error: r.error.issues[0].message };
+};
 
-test('text: obligatorio, recorta, longitudes y caracteres de control', () => {
-    const rule = v.text({ label: 'Nombre', required: true, min: 2, max: 5 });
-    assert.deepEqual(run(rule, '  Ana '), { value: 'Ana' });
-    assert.equal(run(rule, '   ').error, 'El campo Nombre es obligatorio.');
-    assert.equal(run(rule, undefined).error, 'El campo Nombre es obligatorio.');
-    assert.match(run(rule, 'A').error, /al menos 2/);
-    assert.match(run(rule, 'abcdefg').error, /no puede superar 5/);
-    assert.match(run(rule, 'ab\u0000c').error, /no es válido/);
-    assert.match(run(rule, ['a', 'b']).error, /no es válido/);
-    assert.match(run(rule, { x: 1 }).error, /no es válido/);
-    assert.deepEqual(run(v.text({ label: 'Notas' }), ''), { value: '' });
-    assert.deepEqual(run(v.text({ label: 'Notas', max: 50 }), 'línea 1\nlínea 2'), { value: 'línea 1\nlínea 2' });
+test('texto: obligatorio, recorta, longitudes y caracteres de control', () => {
+    const rule = texto({ min: 2, max: 5 });
+    assert.deepEqual(check(rule, '  Ana '), { value: 'Ana' });
+    assert.equal(check(rule, '   ').error, 'Este campo es obligatorio.');
+    assert.equal(check(rule, undefined).error, 'Este campo es obligatorio.');
+    assert.equal(check(rule, 'A').error, 'Mínimo 2 caracteres.');
+    assert.equal(check(rule, 'abcdefg').error, 'Máximo 5 caracteres.');
+    assert.equal(check(rule, 'ab\u0000c').error, 'Contiene caracteres no válidos.');
+    assert.equal(check(rule, ['a', 'b']).error, 'Valor no válido.');
+    assert.equal(check(rule, { x: 1 }).error, 'Valor no válido.');
+    assert.deepEqual(check(texto({ max: 50 }), 'línea 1\nlínea 2'), { value: 'línea 1\nlínea 2' });
 });
 
-test('number: coma decimal, rangos, enteros y decimales máximos', () => {
-    const peso = v.number({ label: 'Peso', required: true, min: 0.1, max: 200 });
-    assert.deepEqual(run(peso, '12,5'), { value: 12.5 });
-    assert.deepEqual(run(peso, ' 7 '), { value: 7 });
-    assert.match(run(peso, 'abc').error, /debe ser un número/);
-    assert.match(run(peso, '1e3').error, /debe ser un número/);
-    assert.match(run(peso, '0').error, /menor que 0.1/);
-    assert.match(run(peso, '201').error, /mayor que 200/);
-    assert.match(run(peso, '1.234').error, /máximo 2 decimales/);
-    assert.match(run(peso, '').error, /obligatorio/);
-    assert.match(run(v.number({ label: 'Cantidad', integer: true }), '2.5').error, /entero/);
-    assert.deepEqual(run(v.number({ label: 'Cantidad' }), ''), { value: null });
+test('opcional: vacío o ausente es undefined; si viene, se valida', () => {
+    const rule = opcional(texto({ max: 3 }));
+    assert.deepEqual(check(rule, ''), { value: undefined });
+    assert.deepEqual(check(rule, '   '), { value: undefined });
+    assert.deepEqual(check(rule, undefined), { value: undefined });
+    assert.deepEqual(check(rule, 'abc'), { value: 'abc' });
+    assert.equal(check(rule, 'abcd').error, 'Máximo 3 caracteres.');
 });
 
-test('date: formato AAAA-MM-DD y fecha real', () => {
-    const d = v.date({ label: 'Fecha', required: true });
-    assert.deepEqual(run(d, '2026-11-02'), { value: '2026-11-02' });
-    assert.deepEqual(run(d, '2028-02-29'), { value: '2028-02-29' }, 'año bisiesto');
-    assert.match(run(d, '2026-02-30').error, /no es una fecha real/);
-    assert.match(run(d, '2027-02-29').error, /no es una fecha real/);
-    assert.match(run(d, '2026-13-01').error, /no es una fecha real/);
-    assert.match(run(d, '02/11/2026').error, /AAAA-MM-DD/);
-    assert.match(run(d, '').error, /obligatorio/);
-    assert.deepEqual(run(v.date({ label: 'Nacimiento' }), ''), { value: null });
-});
-
-test('phone: normaliza a 505XXXXXXXX y rechaza lo que no es de Nicaragua', () => {
-    const p = v.phone({ label: 'Teléfono', required: true });
+test('telefono: acepta formatos habituales y guarda 505XXXXXXXX; rechaza lo demás', () => {
     for (const ok of ['88887777', '8888 7777', '8888-7777', '+505 8888-7777', '505 88887777', '(505) 8888 7777']) {
-        assert.deepEqual(run(p, ok), { value: '50588887777' }, ok);
+        assert.deepEqual(check(telefono(), ok), { value: '50588887777' }, ok);
     }
-    assert.deepEqual(run(p, '22701234'), { value: '50522701234' }, 'fijo que empieza en 2');
-    for (const bad of ['1234', '98887777', '888877778', 'abcdefgh', '8888 777a']) assert.ok(run(p, bad).error, bad);
-    assert.match(run(p, '').error, /obligatorio/);
-    assert.deepEqual(run(v.phone({ label: 'Teléfono' }), ''), { value: '' });
+    assert.deepEqual(check(telefono(), '22701234'), { value: '50522701234' }, 'fijo que empieza en 2');
+    for (const bad of ['1234', '98887777', '888877778', 'abcdefgh', '+1 305 555 0123']) assert.match(check(telefono(), bad).error, /Teléfono no válido/, bad);
+    assert.equal(check(telefono(), '').error, 'Este campo es obligatorio.');
+    assert.deepEqual(check(opcional(telefono()), ''), { value: undefined });
 });
 
-test('email y choice', () => {
-    const e = v.email({ label: 'Correo' });
-    assert.deepEqual(run(e, ' Ana@Correo.COM '), { value: 'ana@correo.com' });
-    assert.deepEqual(run(e, ''), { value: '' });
-    for (const bad of ['ana', 'ana@', 'ana@x', 'a b@c.com']) assert.ok(run(e, bad).error, bad);
-    const c = v.choice(['macho', 'hembra'], { label: 'Sexo', required: true });
-    assert.deepEqual(run(c, 'macho'), { value: 'macho' });
-    assert.match(run(c, 'otro').error, /no permitido/);
-    assert.match(run(c, '').error, /obligatorio/);
+test('fecha: AAAA-MM-DD real; correo en minúsculas', () => {
+    assert.deepEqual(check(fecha(), '2028-02-29'), { value: '2028-02-29' }, 'año bisiesto');
+    for (const bad of ['2026-02-30', '2027-02-29', '2026-13-01', '02/11/2026', '']) assert.ok(check(fecha(), bad).error, bad);
+    assert.deepEqual(check(correo(), 'Ana@Correo.COM'), { value: 'ana@correo.com' });
+    for (const bad of ['ana', 'ana@', 'a b@c.com']) assert.equal(check(correo(), bad).error, 'Correo no válido.', bad);
 });
 
-test('validate junta errores, ignora campos no declarados y no cae con prototipos', () => {
-    const schema = { nombre: v.text({ label: 'Nombre', required: true }), edad: v.number({ label: 'Edad', integer: true }) };
-    const bad = validate({ nombre: '', edad: 'x', admin: true, __proto__: { nombre: 'Heredado' } }, schema);
+test('numero: acepta coma decimal y valida rangos', () => {
+    const peso = numero(z.number({ error: 'Debe ser un número.' }).min(0.1, 'Mínimo 0.1.').max(200, 'Máximo 200.'));
+    assert.deepEqual(check(peso, '12,5'), { value: 12.5 });
+    assert.deepEqual(check(peso, ' 7 '), { value: 7 });
+    assert.equal(check(peso, 'abc').error, 'Debe ser un número.');
+    assert.equal(check(peso, '').error, 'Debe ser un número.');
+    assert.equal(check(peso, '0').error, 'Mínimo 0.1.');
+    assert.equal(check(peso, '201').error, 'Máximo 200.');
+    assert.equal(check(numero(z.number().int('Debe ser entero.')), '2.5').error, 'Debe ser entero.');
+});
+
+test('parseForm: un mensaje por campo, descarta campos no declarados y tolera entradas raras', () => {
+    const schema = z.object({ nombre: texto(), edad: numero(z.number({ error: 'Debe ser un número.' }).int('Debe ser entero.')) });
+    const bad = parseForm(schema, { nombre: '', edad: 'x', admin: true });
     assert.equal(bad.ok, false);
-    assert.deepEqual(Object.keys(bad.errors).sort(), ['edad', 'nombre']);
-    const good = validate({ nombre: ' Luna ', edad: '3', rol: 'admin' }, schema);
+    assert.deepEqual(bad.errors, { nombre: 'Este campo es obligatorio.', edad: 'Debe ser un número.' });
+    const good = parseForm(schema, { nombre: ' Luna ', edad: '3', rol: 'admin' });
     assert.deepEqual(good, { ok: true, values: { nombre: 'Luna', edad: 3 }, errors: {} });
-    assert.equal(validate(null, schema).ok, false);
+    assert.equal(parseForm(schema, null).ok, false);
+    assert.equal(parseForm(schema, 'texto').ok, false);
 });

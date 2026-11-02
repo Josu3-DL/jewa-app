@@ -111,7 +111,7 @@ test('usuario y rol reales en la barra superior; iniciales en el avatar', async 
 
 test('el formulario de cierre de sesión lleva token CSRF', async () => {
     const res = await html(appAs('admin'), '/');
-    assert.match(res.text, /action="\/logout"[^>]*><input type="hidden" name="_csrf" value="[0-9a-f]{64}">/);
+    assert.match(res.text, /action="\/logout"[^>]*><input type="hidden" name="_csrf" value="[A-Za-z0-9_-]{100,}">/);
 });
 
 test('el nombre del usuario y de la clínica se escapan (XSS)', async () => {

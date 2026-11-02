@@ -1,108 +1,72 @@
 'use strict';
-// Validación de entradas con mensajes en español.
-// Cada regla recibe el valor crudo y devuelve { value } o { error }.
-// Uso:
-//   const { ok, values, errors } = validate(req.body, {
-//       nombre: v.text({ label: 'Nombre', required: true, max: 100 }),
-//       telefono: v.phone({ label: 'Teléfono', required: true }),
+// Validación de formularios con Zod (mensajes en español) + libphonenumber-js para teléfonos.
+// Los esquemas se declaran donde se usan; aquí solo hay piezas reutilizables y parseForm().
+//
+//   const schema = z.object({
+//       nombre: texto({ max: 100 }),
+//       telefono: telefono(),
+//       correo: opcional(correo()),
 //   });
+//   const { ok, values, errors } = parseForm(schema, req.body);
+const { z } = require('zod');
+const { parsePhoneNumberFromString } = require('libphonenumber-js/min');
 
-const isPlain = (raw) => raw === undefined || raw === null || typeof raw === 'string' || typeof raw === 'number';
-const blank = (raw) => raw === undefined || raw === null || String(raw).trim() === '';
-const invalid = (label) => ({ error: `El campo ${label} no es válido.` });
-const required = (label) => ({ error: `El campo ${label} es obligatorio.` });
+z.config(z.locales.es()); // el resto de mensajes de Zod salen en español
 
-function text({ label = 'texto', required: req = false, min = 0, max = 255, trim = true } = {}) {
-    return (raw) => {
-        if (!isPlain(raw)) return invalid(label);
-        let value = raw === undefined || raw === null ? '' : String(raw);
-        if (trim) value = value.trim();
-        if (value === '') return req ? required(label) : { value: '' };
-        // Sin caracteres de control (salvo salto de línea y tabulación)
-        if (/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/.test(value)) return invalid(label);
-        if (value.length < min) return { error: `El campo ${label} debe tener al menos ${min} caracteres.` };
-        if (value.length > max) return { error: `El campo ${label} no puede superar ${max} caracteres.` };
-        return { value };
-    };
-}
+const OBLIGATORIO = 'Este campo es obligatorio.';
+const requerido = (mensaje = OBLIGATORIO) => (issue) => (issue.input === undefined ? mensaje : 'Valor no válido.');
 
-function number({ label = 'número', required: req = false, min = -Infinity, max = Infinity, integer = false, decimals = 2 } = {}) {
-    return (raw) => {
-        if (!isPlain(raw)) return invalid(label);
-        if (blank(raw)) return req ? required(label) : { value: null };
-        const str = String(raw).trim().replace(',', '.');
-        if (!/^-?\d+(\.\d+)?$/.test(str)) return { error: `El campo ${label} debe ser un número.` };
-        const value = Number(str);
-        if (integer && !Number.isInteger(value)) return { error: `El campo ${label} debe ser un número entero.` };
-        if (!integer && (str.split('.')[1] || '').length > decimals) return { error: `El campo ${label} admite máximo ${decimals} decimales.` };
-        if (value < min) return { error: `El campo ${label} no puede ser menor que ${min}.` };
-        if (value > max) return { error: `El campo ${label} no puede ser mayor que ${max}.` };
-        return { value };
-    };
-}
+// Los formularios HTML mandan '' en los campos vacíos: se tratan como ausentes.
+const vacioAUndefined = (valor) => (typeof valor === 'string' && valor.trim() === '' ? undefined : valor);
 
-function date({ label = 'fecha', required: req = false } = {}) {
-    return (raw) => {
-        if (!isPlain(raw)) return invalid(label);
-        if (blank(raw)) return req ? required(label) : { value: null };
-        const str = String(raw).trim();
-        const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(str);
-        if (!m) return { error: `El campo ${label} debe tener el formato AAAA-MM-DD.` };
-        const [y, mo, d] = [Number(m[1]), Number(m[2]), Number(m[3])];
-        const check = new Date(Date.UTC(y, mo - 1, d));
-        if (check.getUTCFullYear() !== y || check.getUTCMonth() !== mo - 1 || check.getUTCDate() !== d) {
-            return { error: `El campo ${label} no es una fecha real.` };
-        }
-        return { value: str };
-    };
-}
+/** Campo opcional: '' o ausente → undefined; si viene, debe cumplir el esquema. */
+const opcional = (esquema) => z.preprocess(vacioAUndefined, esquema.optional());
 
-/** Teléfono de Nicaragua: 8 dígitos que empiezan en 2, 5, 7 u 8. Se guarda como 505XXXXXXXX. */
-function phone({ label = 'teléfono', required: req = false } = {}) {
-    return (raw) => {
-        if (!isPlain(raw)) return invalid(label);
-        if (blank(raw)) return req ? required(label) : { value: '' };
-        let digits = String(raw).replace(/[\s\-().]/g, '');
-        if (!/^\+?\d+$/.test(digits)) return { error: `El campo ${label} solo admite números, espacios y guiones.` };
-        digits = digits.replace(/^\+/, '');
-        if (digits.startsWith('505') && digits.length === 11) digits = digits.slice(3);
-        if (!/^[2578]\d{7}$/.test(digits)) return { error: `El campo ${label} debe tener 8 dígitos (ej. 8888 7777).` };
-        return { value: `505${digits}` };
-    };
-}
+/** Texto obligatorio, recortado, sin caracteres de control (se permiten saltos de línea y tabulaciones). */
+const texto = ({ min = 1, max = 255 } = {}) => z
+    .string({ error: requerido() })
+    .trim()
+    .min(1, OBLIGATORIO)
+    .min(min, `Mínimo ${min} caracteres.`)
+    .max(max, `Máximo ${max} caracteres.`)
+    // eslint-disable-next-line no-control-regex
+    .refine((valor) => !/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/.test(valor), 'Contiene caracteres no válidos.');
 
-function email({ label = 'correo', required: req = false } = {}) {
-    return (raw) => {
-        if (!isPlain(raw)) return invalid(label);
-        if (blank(raw)) return req ? required(label) : { value: '' };
-        const value = String(raw).trim().toLowerCase();
-        if (value.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return { error: `El campo ${label} no es un correo válido.` };
-        return { value };
-    };
-}
-
-function choice(allowed, { label = 'opción', required: req = false } = {}) {
-    return (raw) => {
-        if (!isPlain(raw)) return invalid(label);
-        if (blank(raw)) return req ? required(label) : { value: null };
-        const value = String(raw).trim();
-        return allowed.includes(value) ? { value } : { error: `El campo ${label} tiene un valor no permitido.` };
-    };
-}
-
-/** Aplica el esquema a la entrada. Ignora campos no declarados. */
-function validate(input, schema) {
-    const source = input && typeof input === 'object' ? input : {};
-    const values = {};
-    const errors = {};
-    for (const [key, rule] of Object.entries(schema)) {
-        const result = rule(Object.prototype.hasOwnProperty.call(source, key) ? source[key] : undefined);
-        if (result.error) errors[key] = result.error;
-        else values[key] = result.value;
+/** Teléfono de Nicaragua. Acepta 8888 7777, +505 8888-7777, (505) 88887777… y devuelve 505XXXXXXXX. */
+const telefono = () => z.string({ error: requerido() }).trim().min(1, OBLIGATORIO).transform((valor, ctx) => {
+    const tel = parsePhoneNumberFromString(valor, 'NI');
+    if (!tel || !tel.isValid() || tel.country !== 'NI') {
+        ctx.issues.push({ code: 'custom', message: 'Teléfono no válido (ej. 8888 7777).', input: valor });
+        return z.NEVER;
     }
-    return { ok: Object.keys(errors).length === 0, values, errors };
+    return tel.number.replace('+', '');
+});
+
+const correo = () => z.email({ error: 'Correo no válido.' }).toLowerCase();
+
+/** Fecha AAAA-MM-DD real (rechaza 2026-02-30). */
+const fecha = () => z.iso.date({ error: requerido('Fecha no válida.') });
+
+/** Número desde texto de formulario; acepta coma decimal ("12,5"). Encadenar .min()/.max()/.int() según haga falta. */
+const numero = (base = z.number({ error: requerido('Debe ser un número.') })) => z.preprocess(
+    (valor) => (typeof valor === 'string' ? (valor.trim() === '' ? undefined : Number(valor.trim().replace(',', '.'))) : valor),
+    base,
+);
+
+/**
+ * Valida la entrada contra un esquema y devuelve { ok, values, errors }.
+ * `errors` tiene un mensaje por campo (el primero), listo para mostrarlo bajo el campo.
+ * Los campos no declarados en el esquema se descartan.
+ */
+function parseForm(esquema, entrada) {
+    const resultado = esquema.safeParse(entrada && typeof entrada === 'object' ? entrada : {});
+    if (resultado.success) return { ok: true, values: resultado.data, errors: {} };
+    const errors = {};
+    for (const problema of resultado.error.issues) {
+        const campo = problema.path.join('.') || '_';
+        if (!(campo in errors)) errors[campo] = problema.message;
+    }
+    return { ok: false, values: {}, errors };
 }
 
-const v = { text, number, date, phone, email, choice };
-
-module.exports = { v, validate };
+module.exports = { z, texto, opcional, telefono, correo, fecha, numero, parseForm };
