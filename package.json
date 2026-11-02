@@ -11,13 +11,15 @@
     "start": "node --disable-warning=ExperimentalWarning src/server.js",
     "test": "node --disable-warning=ExperimentalWarning --test \"test/**/*.test.js\"",
     "migrate": "node --disable-warning=ExperimentalWarning src/db/migrate.js",
-    "seed:admin": "node scripts/seed-admin.js",
+    "seed:admin": "node --disable-warning=ExperimentalWarning scripts/seed-admin.js",
     "backup": "node scripts/backup.js"
   },
   "license": "UNLICENSED",
   "dependencies": {
     "ejs": "^7.0.2",
-    "express": "^5.3.0"
+    "express": "^5.3.0",
+    "express-session": "^1.19.0",
+    "helmet": "^8.3.0"
   },
   "devDependencies": {
     "supertest": "^7.3.1"

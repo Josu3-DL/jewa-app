@@ -16,7 +16,7 @@ Fuente: carpeta `design/` (copiada de `prueba 1`). **Se reutilizan los mismos es
 - Menú plegable en ≤ 900 px (tablet y teléfono) con `public/js/app.js`: botón "Menú", fondo oscurecido, se cierra al tocar fuera, al elegir una opción o con Escape.
 - Controles táctiles de al menos 44 px en pantallas táctiles o ≤ 900 px; en campos de formulario 16 px de letra para evitar el zoom automático de iOS.
 - Imagen de inicio local (`public/img/hero.svg`), sin recursos externos.
-- Mientras no exista el login (ISS-03), `DEV_ROLE=admin|veterinario|recepcion` en `.env` simula un usuario **solo en desarrollo**; en producción la app lo rechaza. Sin usuario, todos los módulos responden 403.
+- El inicio de sesión (`/login`) y las páginas de error son páginas sin barra lateral, con las mismas clases del diseño (`data-form`, `button`, `alert`). Sin estilos ni scripts en línea: la CSP los bloquearía.
 
 ## Tokens (de `styles.css`)
 | Token | Valor | Uso |

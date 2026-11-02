@@ -1,30 +1,63 @@
 'use strict';
 const { HttpError } = require('./errors');
 const { canAccess } = require('../modules');
+const { findActiveUser } = require('../services/auth');
+const { MAX_SESSION_HOURS } = require('./session');
 
 /**
- * Resuelve el usuario actual y lo expone en req.user y res.locals.user.
- * Hasta ISS-03 (sesiones) el único usuario posible es el simulado de DEV_ROLE,
- * que config.js prohíbe en producción. Sin usuario, todo módulo responde 403.
- * `resolveUser` permite inyectar otro origen (pruebas, y luego la sesión).
+ * Resuelve el usuario de la sesión en cada petición (así un usuario desactivado o con
+ * otro rol pierde el acceso de inmediato) y lo expone en req.user y res.locals.user.
+ * `resolveUser` permite inyectar otro origen en pruebas.
  */
-function attachUser(config, resolveUser) {
-    const resolve = resolveUser || (() => (config.devRole
-        ? { id: 0, nombre: 'Usuario de prueba', usuario: 'dev', rol: config.devRole, simulated: true }
-        : null));
+function attachUser({ db, now = () => new Date(), resolveUser }) {
     return (req, res, next) => {
-        req.user = resolve(req) || null;
-        res.locals.user = req.user;
+        let user = null;
+        if (resolveUser) {
+            user = resolveUser(req) || null;
+        } else if (req.session && req.session.userId) {
+            const age = now().getTime() - (req.session.loginAt || 0);
+            user = age > MAX_SESSION_HOURS * 3600 * 1000 ? null : findActiveUser(db, req.session.userId);
+            if (!user) {
+                delete req.session.userId;
+                delete req.session.loginAt;
+            }
+        }
+        req.user = user;
+        res.locals.user = user;
         next();
     };
 }
 
-/** Exige que el rol del usuario tenga acceso al módulo (ver src/modules.js). */
+const wantsHtml = (req) => req.method === 'GET' && req.accepts(['html', 'json']) === 'html';
+
+/** Redirige a /login las páginas y responde 401 en el resto de casos. */
+function requireAuth(req, res, next) {
+    if (req.user) return next();
+    if (wantsHtml(req)) {
+        const target = req.originalUrl;
+        const safe = isSafeNext(target) && target !== '/';
+        return res.redirect(safe ? `/login?next=${encodeURIComponent(target)}` : '/login');
+    }
+    return next(new HttpError(401, 'Inicia sesión para continuar.'));
+}
+
+/** Exige sesión y que el rol tenga acceso al módulo (ver src/modules.js). */
 function requireModule(key) {
     return (req, res, next) => {
-        if (!req.user || !canAccess(req.user.rol, key)) return next(new HttpError(403));
+        if (!req.user) return requireAuth(req, res, next);
+        if (!canAccess(req.user.rol, key)) return next(new HttpError(403));
         return next();
     };
 }
 
-module.exports = { attachUser, requireModule };
+/** Solo rutas internas: evita redirecciones abiertas (//otro.sitio, /\otro.sitio, https://...). */
+function isSafeNext(value) {
+    return typeof value === 'string'
+        && value.length <= 200
+        && /^\/(?![/\\])/.test(value)
+        && !/[\u0000-\u001F]/.test(value)
+        && !value.startsWith('/login')
+        && !value.startsWith('/logout');
+}
+
+module.exports = { attachUser, requireAuth, requireModule, isSafeNext };

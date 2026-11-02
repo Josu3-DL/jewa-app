@@ -19,9 +19,7 @@
             <strong><%= user.nombre %></strong>
             <span><%= roleLabel %></span>
         </div>
-        <% if (!user.simulated) { %>
-        <form method="post" action="/logout"><button class="sidebar-logout" type="submit">Cerrar sesión</button></form>
-        <% } %>
+        <form method="post" action="/logout"><input type="hidden" name="_csrf" value="<%= locals.csrfToken ? csrfToken() : '' %>"><button class="sidebar-logout" type="submit">Cerrar sesión</button></form>
         <% } %>
         <p>Versión <%= appVersion %></p>
     </div>

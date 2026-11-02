@@ -3,13 +3,20 @@ const path = require('node:path');
 const express = require('express');
 const healthRoutes = require('./routes/health');
 const pageRoutes = require('./routes/pages');
-const { attachUser } = require('./middleware/user');
+const { authRoutes } = require('./routes/auth');
+const { security } = require('./middleware/security');
+const { createSession } = require('./middleware/session');
+const { attachUser, requireAuth } = require('./middleware/user');
 const { viewLocals } = require('./middleware/viewLocals');
+const { csrf } = require('./middleware/csrf');
 const { notFound, errorHandler } = require('./middleware/errors');
 
 /**
  * Construye la aplicación Express. Recibe la BD y la configuración para poder
  * probarla con una base en memoria. `now` y `resolveUser` se pueden inyectar en pruebas.
+ *
+ * Orden: cabeceras de seguridad → estáticos y /salud (públicos, sin sesión) → cuerpo →
+ * sesión → usuario → variables de vista → CSRF → login/logout → TODO lo demás exige sesión.
  */
 function createApp({ db, config, now = () => new Date(), resolveUser } = {}) {
     const app = express();
@@ -19,15 +26,22 @@ function createApp({ db, config, now = () => new Date(), resolveUser } = {}) {
     app.locals.config = config;
     app.locals.db = db;
 
+    app.use(security(config));
+
     app.use('/css', express.static(path.join(config.root, 'public', 'css')));
     app.use('/js', express.static(path.join(config.root, 'public', 'js')));
     app.use('/img', express.static(path.join(config.root, 'public', 'img')));
     app.use('/vendor', express.static(path.join(config.root, 'public', 'vendor')));
-
     app.use(healthRoutes);
 
-    app.use(attachUser(config, resolveUser));
+    app.use(express.urlencoded({ extended: false, limit: '100kb' }));
+    app.use(createSession({ db, config }).middleware);
+    app.use(attachUser({ db, now, resolveUser }));
     app.use(viewLocals({ config, db, now }));
+    app.use(csrf());
+
+    app.use(authRoutes({ db, now }));
+    app.use(requireAuth);
     app.use(pageRoutes);
 
     app.use(notFound);

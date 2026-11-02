@@ -39,6 +39,19 @@ Reglas: cada prueba usa una BD nueva con migraciones aplicadas; datos de prueba 
 | T-21 | Búsqueda con `'; DROP TABLE` y `<script>` | Sin error y escapado |
 | T-22 | Horario fuera del laboral / fecha pasada | Advierte o rechaza según Ajustes |
 
+## Cobertura automatizada (se actualiza con cada issue)
+| Caso | Estado | Dónde |
+|---|---|---|
+| T-01 Login correcto/incorrecto y bloqueo a los 5 fallos | ✅ ISS-03 | `test/auth-services.test.js`, `test/security.test.js` |
+| T-02 Ruta protegida sin sesión → login; cerrar sesión invalida en servidor | ✅ ISS-03 | `test/security.test.js`, `test/layout.test.js` |
+| T-03 Recepcionista sin acceso a módulos clínicos (403) | ✅ ISS-02/03 (módulos); se amplía con cada módulo | `test/layout.test.js`, `test/security.test.js` |
+| T-04 POST sin token CSRF → 403 | ✅ ISS-03 | `test/security.test.js` |
+| T-13 Sin borrado de consultas, ventas, movimientos ni bitácora | ✅ ISS-01 (triggers de BD) | `test/db.test.js` |
+| T-21 Inyección SQL y XSS en entradas | ✅ login (ISS-03); se amplía en búsquedas | `test/security.test.js` |
+| Revisión estática: sin SQL concatenado, sin `<%-` con datos | ✅ ISS-03 (corre en cada `npm test`) | `test/security.test.js` |
+
+Además se verificó a mano en Edge (teléfono 400 px y PC 1366 px): login, error de credenciales, redirección con `next`, cierre de sesión desde el menú plegable y ausencia de violaciones de la CSP.
+
 ## Lista de verificación manual (Día 3)
 **Navegadores:** Chrome, Firefox, Edge (actuales).
 **Pantallas:** 1366×768, tablet 768 px, móvil 400 px: el menú se abre y nada desborda horizontalmente.

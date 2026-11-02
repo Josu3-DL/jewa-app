@@ -19,7 +19,9 @@ Node.js 24, Express, EJS (render en servidor), `node:sqlite` (sin dependencias n
 - Operaciones que tocan inventario o varias tablas van en **transacción**.
 - Nada de borrado físico en datos clínicos, ventas ni movimientos de inventario: se anulan con motivo (RF-19, RN-03).
 - Toda acción crítica llama a `audit.log(...)` (bitácora central).
-- Cada ruta POST valida rol, token CSRF y entrada.
+- Cada ruta POST valida rol, token CSRF y entrada. El CSRF ya lo exige un middleware global: todo `<form method="post">` lleva `<input type="hidden" name="_csrf" value="<%= csrfToken() %>">`. La entrada se valida con `validate(req.body, { campo: v.text({...}) })` de `src/utils/validation.js` (mensajes en español); nunca se confía en `req.body` sin validar.
+- Toda ruta nueva queda protegida por defecto (`requireAuth` global); el permiso por rol se declara con `requireModule('clave')` y la clave se agrega en `src/modules.js`.
+- Sin scripts ni estilos en línea en las vistas (la CSP los bloquea): todo en `public/css` y `public/js`.
 
 ## Reglas de seguridad no negociables
 - Contraseñas con `scrypt` (`node:crypto`) y sal; nunca en logs.

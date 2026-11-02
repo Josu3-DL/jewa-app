@@ -8,7 +8,8 @@ const { createApp } = require('../src/app');
 const { HttpError, notFound, errorHandler } = require('../src/middleware/errors');
 const { testDb, testConfig } = require('./helpers');
 
-const makeApp = () => createApp({ db: testDb(), config: testConfig() });
+const USER = () => ({ id: 1, nombre: 'Prueba', usuario: 'prueba', rol: 'admin' });
+const makeApp = () => createApp({ db: testDb(), config: testConfig(), resolveUser: USER });
 
 async function silenceErrors(fn) {
     const original = console.error;
@@ -39,7 +40,7 @@ test('/salud responde 200 sin datos sensibles', async () => {
 test('/salud responde 503 si la BD no está disponible', async () => {
     const db = testDb();
     db.close();
-    const app = createApp({ db, config: testConfig() });
+    const app = createApp({ db, config: testConfig(), resolveUser: USER });
     const res = await silenceErrors(() => request(app).get('/salud'));
     assert.equal(res.status, 503);
 });
