@@ -1,0 +1,38 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">AJUSTES · SERVICIOS</p>
+                        <h1><%= s.nombre %></h1>
+                        <p class="intro"><%= s.tipoTexto %> · <%= s.duracion_min %> min · <%= s.precioTexto %> · <span class="status <%= s.estado.clase %>"><%= s.estado.texto %></span></p>
+                    </div>
+                    <a class="text-link text-link-dark" href="/ajustes/servicios">← Volver a servicios</a>
+                </section>
+                <%- include('../partials/ajustes-tabs', { tab: tab }) %>
+                <div class="management-grid">
+                    <form class="data-form" method="post" action="/ajustes/servicios/<%= s.id %>" novalidate>
+                        <h3>Datos del servicio</h3>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                        <%- include('../partials/field', { label: 'Nombre', name: 'nombre', value: values.nombre, error: errors.nombre, maxlength: 100, required: true, autocomplete: 'off' }) %>
+                        <%- include('../partials/select', { label: 'Tipo', name: 'tipo', options: tipos, value: values.tipo, error: errors.tipo }) %>
+                        <%- include('../partials/field', { label: 'Precio', name: 'precio', value: values.precio, error: errors.precio, maxlength: 14, required: true, inputmode: 'decimal', autocomplete: 'off', hint: 'Ej. 150 o 150.50' }) %>
+                        <%- include('../partials/field', { label: 'Duración (minutos)', name: 'duracion', value: values.duracion, error: errors.duracion, maxlength: 3, required: true, inputmode: 'numeric', autocomplete: 'off' }) %>
+                        <button class="button" type="submit">Guardar cambios</button>
+                    </form>
+
+                    <section class="data-form">
+                        <h3>Estado</h3>
+                        <form method="post" action="/ajustes/servicios/<%= s.id %>/estado">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                            <% if (s.activo) { %>
+                            <input type="hidden" name="accion" value="desactivar">
+                            <p class="form-note">Un servicio desactivado deja de ofrecerse en citas y ventas nuevas, pero las citas y ventas anteriores lo conservan.</p>
+                            <button class="button button-danger" type="submit">Desactivar servicio</button>
+                            <% } else { %>
+                            <input type="hidden" name="accion" value="activar">
+                            <p class="form-note">Este servicio está desactivado y no se ofrece en citas ni ventas nuevas.</p>
+                            <button class="button" type="submit">Reactivar servicio</button>
+                            <% } %>
+                        </form>
+                    </section>
+                </div>
+<%- include('../partials/layout-end') %>

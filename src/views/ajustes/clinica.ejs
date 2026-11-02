@@ -2,13 +2,47 @@
                 <section class="welcome-row">
                     <div>
                         <p class="eyebrow">AJUSTES</p>
-                        <h1>Ajustes</h1>
-                        <p class="intro">Datos de la clínica, usuarios y bitácora de actividad.</p>
+                        <h1>Clínica</h1>
+                        <p class="intro">Datos que aparecen en recibos y recetas, moneda, horario y duración de las citas.</p>
                     </div>
                 </section>
                 <%- include('../partials/ajustes-tabs', { tab: tab }) %>
-                <section class="panel">
-                    <div class="panel-heading"><div><p class="eyebrow">PRÓXIMAMENTE</p><h2>Datos de la clínica</h2></div></div>
-                    <p class="empty-state">Nombre, moneda, horario y duración de las citas se configuran aquí a partir de ISS-05.</p>
-                </section>
+                <form class="data-form form-ancho" method="post" action="/ajustes" novalidate>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+
+                    <h3>Datos de la clínica</h3>
+                    <div class="form-cols">
+                        <%- include('../partials/field', { label: 'Nombre de la clínica', name: 'nombre', value: values.nombre, error: errors.nombre, maxlength: 100, required: true, autocomplete: 'organization' }) %>
+                        <%- include('../partials/field', { label: 'Teléfono', name: 'telefono', type: 'tel', value: values.telefono, error: errors.telefono, maxlength: 30, autocomplete: 'tel', hint: 'Ej. 8888 7777. Se usa en recibos y mensajes.' }) %>
+                    </div>
+                    <%- include('../partials/field', { label: 'Dirección', name: 'direccion', value: values.direccion, error: errors.direccion, maxlength: 200, autocomplete: 'street-address' }) %>
+
+                    <h3 class="form-seccion">Moneda e impuesto</h3>
+                    <div class="form-cols">
+                        <%- include('../partials/select', { label: 'Moneda', name: 'moneda', options: monedas, value: values.moneda, error: errors.moneda }) %>
+                        <%- include('../partials/field', { label: 'IVA (%)', name: 'iva', type: 'text', value: values.iva, error: errors.iva, maxlength: 6, inputmode: 'decimal', hint: '0 si la clínica no cobra IVA; 15 para el 15 %.' }) %>
+                    </div>
+
+                    <h3 class="form-seccion">Citas y horario</h3>
+                    <%- include('../partials/field', { label: 'Duración estándar de una cita (minutos)', name: 'duracionCitaMin', type: 'text', value: values.duracionCitaMin, error: errors.duracionCitaMin, maxlength: 3, inputmode: 'numeric', hint: 'Se usa cuando el servicio no define su propia duración.' }) %>
+
+                    <fieldset class="horario">
+                        <legend>Horario de atención</legend>
+                        <% dias.forEach(function (d) { %>
+                        <div class="horario-dia">
+                            <label class="check-row horario-nombre"><input type="checkbox" name="<%= d[0] %>_abierto"<%= values[d[0] + '_abierto'] ? ' checked' : '' %>> <%= d[1] %></label>
+                            <label for="f-<%= d[0] %>_abre" class="horario-hora">Abre
+                                <input id="f-<%= d[0] %>_abre" name="<%= d[0] %>_abre" type="time" value="<%= values[d[0] + '_abre'] %>"<% if (errors[d[0] + '_abre']) { %> aria-invalid="true"<% } %>>
+                            </label>
+                            <label for="f-<%= d[0] %>_cierra" class="horario-hora">Cierra
+                                <input id="f-<%= d[0] %>_cierra" name="<%= d[0] %>_cierra" type="time" value="<%= values[d[0] + '_cierra'] %>"<% if (errors[d[0] + '_cierra']) { %> aria-invalid="true"<% } %>>
+                            </label>
+                            <% if (errors[d[0] + '_abre'] || errors[d[0] + '_cierra']) { %><span class="field-error horario-error"><%= errors[d[0] + '_abre'] || errors[d[0] + '_cierra'] %></span><% } %>
+                        </div>
+                        <% }) %>
+                        <p class="form-note">Desmarca un día para indicar que la clínica está cerrada. Las citas fuera de este horario muestran una advertencia.</p>
+                    </fieldset>
+
+                    <button class="button" type="submit">Guardar ajustes</button>
+                </form>
 <%- include('../partials/layout-end') %>

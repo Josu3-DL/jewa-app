@@ -10,6 +10,7 @@
 //   const { ok, values, errors } = parseForm(schema, req.body);
 const { z } = require('zod');
 const { parsePhoneNumberFromString } = require('libphonenumber-js/min');
+const { parseMoney } = require('./money');
 
 z.config(z.locales.es()); // el resto de mensajes de Zod salen en español
 
@@ -43,6 +44,22 @@ const telefono = () => z.string({ error: requerido() }).trim().min(1, OBLIGATORI
     return tel.number.replace('+', '');
 });
 
+/** Teléfono guardado (505XXXXXXXX) → como se escribe en un formulario ("8888 7777"). */
+const verTelefono = (valor) => {
+    const tel = valor ? parsePhoneNumberFromString(`+${valor}`) : null;
+    return tel ? tel.formatNational() : (valor || '');
+};
+
+/** Monto en córdobas/dólares escrito en un formulario ("150", "150.5", "150,50") → centavos enteros. */
+const dinero = () => z.string({ error: requerido() }).trim().min(1, OBLIGATORIO).transform((valor, ctx) => {
+    const centavos = parseMoney(valor);
+    if (centavos === null) {
+        ctx.issues.push({ code: 'custom', message: 'Monto no válido: usa números con hasta 2 decimales (ej. 150.50).', input: valor });
+        return z.NEVER;
+    }
+    return centavos;
+});
+
 const correo = () => z.email({ error: 'Correo no válido.' }).toLowerCase();
 
 /** Fecha AAAA-MM-DD real (rechaza 2026-02-30). */
@@ -74,4 +91,4 @@ function parseForm(esquema, entrada) {
     return { ok: false, values: {}, errors };
 }
 
-module.exports = { z, texto, opcional, telefono, correo, fecha, numero, casilla, parseForm };
+module.exports = { z, texto, opcional, telefono, verTelefono, dinero, correo, fecha, numero, casilla, parseForm };

@@ -23,8 +23,11 @@ test('migrate crea el esquema completo', () => {
 
 test('migrate es idempotente', () => {
     const db = openDb(':memory:');
-    assert.deepEqual(migrate(db), ['001_init.sql']);
-    assert.deepEqual(migrate(db), []);
+    const todas = fs.readdirSync(path.join(__dirname, '..', 'src', 'db', 'migrations')).filter((f) => f.endsWith('.sql')).sort();
+    assert.ok(todas.length >= 2 && todas[0] === '001_init.sql');
+    assert.deepEqual(migrate(db), todas, 'la primera vez aplica todas, en orden');
+    assert.deepEqual(migrate(db), [], 'la segunda no aplica nada');
+    assert.equal(db.prepare('SELECT COUNT(*) AS n FROM servicios').get().n, 5, 'los datos iniciales no se duplican');
 });
 
 test('una migración fallida se revierte por completo', () => {

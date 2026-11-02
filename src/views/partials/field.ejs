@@ -1,7 +1,7 @@
 <%# Campo de texto con etiqueta y mensaje de error. Parámetros: label, name, value, error, type, maxlength, required, autocomplete, hint %>
 <% const fid = 'f-' + name; %>
 <label for="<%= fid %>"><%= label %>
-    <input id="<%= fid %>" name="<%= name %>" type="<%= locals.type || 'text' %>" value="<%= locals.value || '' %>"<% if (locals.maxlength) { %> maxlength="<%= maxlength %>"<% } %><% if (locals.required) { %> required<% } %><% if (locals.autocomplete) { %> autocomplete="<%= autocomplete %>"<% } %><% if (locals.error) { %> aria-invalid="true" aria-describedby="<%= fid %>-err"<% } %>>
+    <input id="<%= fid %>" name="<%= name %>" type="<%= locals.type || 'text' %>" value="<%= locals.value || '' %>"<% if (locals.maxlength) { %> maxlength="<%= maxlength %>"<% } %><% if (locals.required) { %> required<% } %><% if (locals.autocomplete) { %> autocomplete="<%= autocomplete %>"<% } %><% if (locals.inputmode) { %> inputmode="<%= inputmode %>"<% } %><% if (locals.error) { %> aria-invalid="true" aria-describedby="<%= fid %>-err"<% } %>>
     <% if (locals.hint && !locals.error) { %><span class="field-hint"><%= hint %></span><% } %>
     <% if (locals.error) { %><span class="field-error" id="<%= fid %>-err"><%= error %></span><% } %>
 </label>
