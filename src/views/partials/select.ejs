@@ -1,0 +1,9 @@
+<%# Lista desplegable. Parámetros: label, name, options [{valor, texto}], value, error, blank (texto de la opción vacía) %>
+<% const sid = 'f-' + name; %>
+<label for="<%= sid %>"><%= label %>
+    <select id="<%= sid %>" name="<%= name %>"<% if (locals.error) { %> aria-invalid="true" aria-describedby="<%= sid %>-err"<% } %>>
+        <% if (locals.blank) { %><option value=""><%= blank %></option><% } %>
+        <% options.forEach(function (o) { %><option value="<%= o.valor %>"<%= String(locals.value) === String(o.valor) ? ' selected' : '' %>><%= o.texto %></option><% }) %>
+    </select>
+    <% if (locals.error) { %><span class="field-error" id="<%= sid %>-err"><%= error %></span><% } %>
+</label>

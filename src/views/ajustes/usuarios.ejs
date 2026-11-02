@@ -1,0 +1,46 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">AJUSTES</p>
+                        <h1>Usuarios</h1>
+                        <p class="intro">Crea cuentas, asigna roles y restablece contraseñas.</p>
+                    </div>
+                </section>
+                <%- include('../partials/ajustes-tabs', { tab: tab }) %>
+                <div class="management-grid">
+                    <form class="data-form" method="post" action="/ajustes/usuarios" novalidate>
+                        <h3>Nuevo usuario</h3>
+                        <p class="form-note">El usuario entra con su nombre de usuario y la contraseña que definas aquí.</p>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                        <%- include('../partials/field', { label: 'Nombre completo', name: 'nombre', value: values.nombre, error: errors.nombre, maxlength: 100, required: true, autocomplete: 'off' }) %>
+                        <%- include('../partials/field', { label: 'Usuario', name: 'usuario', value: values.usuario, error: errors.usuario, maxlength: 50, required: true, autocomplete: 'off', hint: 'Letras, números, punto y guion. Mínimo 3.' }) %>
+                        <%- include('../partials/select', { label: 'Rol', name: 'rol', options: roles, value: values.rol || 'recepcion', error: errors.rol }) %>
+                        <%- include('../partials/field', { label: 'Número de colegiado (solo veterinarios)', name: 'colegiado', value: values.colegiado, error: errors.colegiado, maxlength: 50, autocomplete: 'off' }) %>
+                        <label class="check-row"><input type="checkbox" name="atiende_citas"<%= values.atiende_citas ? ' checked' : '' %>> Atiende citas (aparece en la agenda)</label>
+                        <%- include('../partials/field', { label: 'Contraseña', name: 'password', type: 'password', error: errors.password, maxlength: 200, required: true, autocomplete: 'new-password', hint: 'Mínimo 8 caracteres.' }) %>
+                        <%- include('../partials/field', { label: 'Repite la contraseña', name: 'password2', type: 'password', error: errors.password2, maxlength: 200, required: true, autocomplete: 'new-password' }) %>
+                        <button class="button" type="submit">Crear usuario</button>
+                    </form>
+
+                    <div class="data-list-panel">
+                        <div class="list-heading"><h3>Usuarios registrados</h3><span><%= usuarios.length %></span></div>
+                        <div class="record-list">
+                            <% usuarios.forEach(function (u) { %>
+                            <article class="record">
+                                <div class="record-main">
+                                    <div class="pet-avatar pet-dog" aria-hidden="true"><%= u.initials %></div>
+                                    <div class="record-copy">
+                                        <strong><%= u.nombre %></strong>
+                                        <span><%= u.usuario %> · <%= u.rolLabel %><% if (u.colegiado) { %> · Col. <%= u.colegiado %><% } %><% if (u.atiende_citas) { %> · Atiende citas<% } %></span>
+                                    </div>
+                                </div>
+                                <div class="record-actions">
+                                    <span class="status <%= u.estado.clase %>"><%= u.estado.texto %></span>
+                                    <a class="record-confirm" href="/ajustes/usuarios/<%= u.id %>/editar" aria-label="Editar a <%= u.nombre %>">Editar</a>
+                                </div>
+                            </article>
+                            <% }) %>
+                        </div>
+                    </div>
+                </div>
+<%- include('../partials/layout-end') %>

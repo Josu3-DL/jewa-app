@@ -1,3 +1,14 @@
+// Alta de usuario: al elegir el rol "Veterinario" se marca "Atiende citas" (se puede cambiar a mano).
+(function () {
+    'use strict';
+    var form = document.querySelector('form[action="/ajustes/usuarios"]');
+    if (!form) return;
+    var rol = form.querySelector('select[name="rol"]');
+    var atiende = form.querySelector('input[name="atiende_citas"]');
+    if (!rol || !atiende) return;
+    rol.addEventListener('change', function () { atiende.checked = rol.value === 'veterinario'; });
+})();
+
 // Menú lateral plegable en tablet y teléfono. Sin dependencias.
 (function () {
     'use strict';

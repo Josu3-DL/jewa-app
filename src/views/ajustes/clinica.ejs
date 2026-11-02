@@ -1,0 +1,14 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">AJUSTES</p>
+                        <h1>Ajustes</h1>
+                        <p class="intro">Datos de la clínica, usuarios y bitácora de actividad.</p>
+                    </div>
+                </section>
+                <%- include('../partials/ajustes-tabs', { tab: tab }) %>
+                <section class="panel">
+                    <div class="panel-heading"><div><p class="eyebrow">PRÓXIMAMENTE</p><h2>Datos de la clínica</h2></div></div>
+                    <p class="empty-state">Nombre, moneda, horario y duración de las citas se configuran aquí a partir de ISS-05.</p>
+                </section>
+<%- include('../partials/layout-end') %>

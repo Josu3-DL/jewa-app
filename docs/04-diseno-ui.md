@@ -16,6 +16,8 @@ Fuente: carpeta `design/` (copiada de `prueba 1`). **Se reutilizan los mismos es
 - Menú plegable en ≤ 900 px (tablet y teléfono) con `public/js/app.js`: botón "Menú", fondo oscurecido, se cierra al tocar fuera, al elegir una opción o con Escape.
 - Controles táctiles de al menos 44 px en pantallas táctiles o ≤ 900 px; en campos de formulario 16 px de letra para evitar el zoom automático de iOS.
 - Imagen de inicio local (`public/img/hero.svg`), sin recursos externos.
+- **Piezas reutilizables para formularios y listas** (`src/views/partials/`): `field.ejs` (campo con etiqueta, ayuda y mensaje de error), `select.ejs` (lista desplegable), `flash.ejs` (aviso de una sola vez, ya incluido en el layout), `pagination.ejs` (Anterior/Siguiente que conservan los filtros) y `ajustes-tabs.ejs` (pestañas). Clases nuevas en `app.css`: `tabs`, `check-row`, `filter-bar`, `pagination`, `button-danger`, `field-hint`, `stack`. Las vistas de Ajustes (`src/views/ajustes/`) son el ejemplo a seguir: alta + lista (`management-grid`), edición con varios formularios, y listado con filtros y tabla (`table-scroll`).
+- Acciones destructivas (desactivar) son botones `button-danger` dentro de su propio formulario POST con CSRF, y explican la consecuencia en el texto de ayuda.
 - El inicio de sesión (`/login`) y las páginas de error son páginas sin barra lateral, con las mismas clases del diseño (`data-form`, `button`, `alert`). Sin estilos ni scripts en línea: la CSP los bloquearía.
 
 ## Tokens (de `styles.css`)

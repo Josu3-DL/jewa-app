@@ -1,0 +1,47 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">AJUSTES</p>
+                        <h1>Bitácora</h1>
+                        <p class="intro">Quién hizo qué y cuándo. Los registros no se pueden modificar ni borrar.</p>
+                    </div>
+                </section>
+                <%- include('../partials/ajustes-tabs', { tab: tab }) %>
+
+                <form class="data-form filter-bar" method="get" action="/ajustes/bitacora" novalidate>
+                    <%- include('../partials/select', { label: 'Usuario', name: 'usuario', blank: 'Todos', options: usuarios.map(function (x) { return { valor: x.id, texto: x.nombre + ' (' + x.usuario + ')' }; }), value: filtros.usuario || '' }) %>
+                    <%- include('../partials/select', { label: 'Entidad', name: 'entidad', blank: 'Todas', options: entidades, value: filtros.entidad || '' }) %>
+                    <%- include('../partials/field', { label: 'Desde', name: 'desde', type: 'date', value: filtros.desde, error: errores.desde }) %>
+                    <%- include('../partials/field', { label: 'Hasta', name: 'hasta', type: 'date', value: filtros.hasta, error: errores.hasta }) %>
+                    <div class="filter-actions">
+                        <button class="button" type="submit">Filtrar</button>
+                        <a class="text-link text-link-dark" href="/ajustes/bitacora">Limpiar</a>
+                    </div>
+                </form>
+
+                <section class="panel">
+                    <div class="panel-heading"><div><p class="eyebrow">REGISTROS</p><h2><%= total %> en total</h2></div></div>
+                    <% if (filas.length) { %>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Entidad</th><th>Detalle</th><th>IP</th></tr></thead>
+                            <tbody>
+                                <% filas.forEach(function (f) { %>
+                                <tr>
+                                    <td class="nowrap"><%= f.fecha %></td>
+                                    <td><%= f.usuario %></td>
+                                    <td><%= f.accion %></td>
+                                    <td><%= f.entidad %></td>
+                                    <td><%= f.detalle %></td>
+                                    <td class="nowrap"><%= f.ip %></td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <%- include('../partials/pagination', { pager: pager }) %>
+                    <% } else { %>
+                    <p class="empty-state">No hay registros con esos filtros.</p>
+                    <% } %>
+                </section>
+<%- include('../partials/layout-end') %>

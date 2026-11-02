@@ -4,6 +4,8 @@ const express = require('express');
 const healthRoutes = require('./routes/health');
 const pageRoutes = require('./routes/pages');
 const { authRoutes } = require('./routes/auth');
+const { ajustesRoutes } = require('./routes/ajustes');
+const { flash } = require('./middleware/flash');
 const { security } = require('./middleware/security');
 const { createSession } = require('./middleware/session');
 const { attachUser, requireAuth } = require('./middleware/user');
@@ -39,9 +41,11 @@ function createApp({ db, config, now = () => new Date(), resolveUser } = {}) {
     app.use(attachUser({ db, now, resolveUser }));
     app.use(viewLocals({ config, db, now }));
     app.use(csrf());
+    app.use(flash());
 
     app.use(authRoutes({ db, now }));
     app.use(requireAuth);
+    app.use(ajustesRoutes({ db, now }));
     app.use(pageRoutes);
 
     app.use(notFound);
