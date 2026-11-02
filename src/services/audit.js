@@ -46,8 +46,18 @@ const ACCIONES = {
     servicio_editado: 'Servicio editado',
     servicio_desactivado: 'Servicio desactivado',
     servicio_activado: 'Servicio reactivado',
+    propietario_creado: 'Cliente creado',
+    propietario_editado: 'Cliente editado',
+    propietario_desactivado: 'Cliente desactivado',
+    propietario_activado: 'Cliente reactivado',
+    consentimiento_cambiado: 'Consentimiento de notificaciones cambiado',
+    mascota_creada: 'Mascota creada',
+    mascota_editada: 'Mascota editada',
+    mascota_transferida: 'Mascota transferida a otro propietario',
+    mascota_foto_cambiada: 'Foto de mascota cambiada',
+    mascota_foto_quitada: 'Foto de mascota quitada',
 };
-const ENTIDADES = { usuario: 'Usuario', servicio: 'Servicio', config: 'Ajustes' };
+const ENTIDADES = { usuario: 'Usuario', servicio: 'Servicio', config: 'Ajustes', propietario: 'Cliente', mascota: 'Mascota' };
 
 const etiquetaAccion = (codigo) => ACCIONES[codigo] || codigo;
 const etiquetaEntidad = (codigo) => ENTIDADES[codigo] || codigo;

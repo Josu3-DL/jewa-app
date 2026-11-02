@@ -1,0 +1,47 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">PACIENTES</p>
+                        <h1>Mascotas</h1>
+                        <p class="intro">Fichas de pacientes. Busca por nombre, expediente o datos del propietario.</p>
+                    </div>
+                    <a class="button" href="/mascotas/nueva">Nueva mascota</a>
+                </section>
+
+                <form class="data-form filter-bar" method="get" action="/mascotas" role="search">
+                    <label for="f-q">Buscar
+                        <input id="f-q" name="q" type="search" value="<%= q %>" maxlength="100" placeholder="Mascota, EXP-000123, propietario, cédula o teléfono" autocomplete="off">
+                    </label>
+                    <%- include('../partials/select', { label: 'Estado', name: 'estado', options: estados, value: estado }) %>
+                    <div class="filter-actions">
+                        <button class="button" type="submit">Buscar</button>
+                        <a class="text-link text-link-dark" href="/mascotas">Limpiar</a>
+                    </div>
+                </form>
+
+                <section class="panel">
+                    <div class="panel-heading"><div><p class="eyebrow">RESULTADOS</p><h2><%= total %> mascota<%= total === 1 ? '' : 's' %></h2></div></div>
+                    <% if (filas.length) { %>
+                    <div class="record-list">
+                        <% filas.forEach(function (m) { %>
+                        <article class="record">
+                            <div class="record-main">
+                                <div class="pet-avatar pet-cat" aria-hidden="true"><%= m.inicial %></div>
+                                <div class="record-copy">
+                                    <strong><%= m.nombre %> · <%= m.numero_expediente %></strong>
+                                    <span><%= m.especie %><% if (m.raza) { %> · <%= m.raza %><% } %><% if (m.edad) { %> · <%= m.edad %><% } %> · Dueño: <%= m.propietario_nombre %> (<%= m.telefonoTexto %>)</span>
+                                </div>
+                            </div>
+                            <div class="record-actions">
+                                <span class="status <%= m.estadoClase %>"><%= m.estadoTexto %></span>
+                                <a class="record-confirm" href="/mascotas/<%= m.id %>" aria-label="Ver ficha de <%= m.nombre %>">Ver ficha</a>
+                            </div>
+                        </article>
+                        <% }) %>
+                    </div>
+                    <%- include('../partials/pagination', { pager: pager }) %>
+                    <% } else { %>
+                    <p class="empty-state"><%= q ? 'Ninguna mascota coincide con la búsqueda.' : 'Todavía no hay mascotas. Crea la primera con "Nueva mascota".' %></p>
+                    <% } %>
+                </section>
+<%- include('../partials/layout-end') %>

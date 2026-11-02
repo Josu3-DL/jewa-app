@@ -1,0 +1,53 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">MASCOTAS</p>
+                        <h1><%= titulo %></h1>
+                        <p class="intro"><%= intro %></p>
+                    </div>
+                    <a class="text-link text-link-dark" href="<%= mascota ? '/mascotas/' + mascota.id : '/mascotas' %>">← Volver</a>
+                </section>
+
+                <form class="data-form filter-bar" method="get" action="<%= ruta %>" role="search">
+                    <label for="f-q">Buscar propietario
+                        <input id="f-q" name="q" type="search" value="<%= q %>" maxlength="100" placeholder="Nombre, cédula o teléfono" autocomplete="off">
+                    </label>
+                    <div class="filter-actions">
+                        <button class="button" type="submit">Buscar</button>
+                        <a class="text-link text-link-dark" href="<%= ruta %>">Limpiar</a>
+                    </div>
+                </form>
+
+                <section class="panel">
+                    <div class="panel-heading"><div><p class="eyebrow">PROPIETARIOS</p><h2><%= total %> activo<%= total === 1 ? '' : 's' %></h2></div><a href="/clientes">Crear un cliente nuevo</a></div>
+                    <% if (filas.length) { %>
+                    <div class="record-list">
+                        <% filas.forEach(function (p) { %>
+                        <article class="record">
+                            <div class="record-main">
+                                <div class="pet-avatar pet-dog" aria-hidden="true"><%= p.nombre.charAt(0).toUpperCase() %></div>
+                                <div class="record-copy">
+                                    <strong><%= p.nombre %></strong>
+                                    <span><%= p.telefonoTexto %><% if (p.cedula) { %> · <%= p.cedula %><% } %></span>
+                                </div>
+                            </div>
+                            <div class="record-actions">
+                                <% if (accion) { %>
+                                <form method="post" action="<%= accion %>">
+                                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                                    <input type="hidden" name="propietario" value="<%= p.id %>">
+                                    <button class="button" type="submit" aria-label="Transferir a <%= p.nombre %>">Transferir aquí</button>
+                                </form>
+                                <% } else { %>
+                                <a class="button" href="/mascotas/nueva?propietario=<%= p.id %>" aria-label="Elegir a <%= p.nombre %>">Elegir</a>
+                                <% } %>
+                            </div>
+                        </article>
+                        <% }) %>
+                    </div>
+                    <%- include('../partials/pagination', { pager: pager }) %>
+                    <% } else { %>
+                    <p class="empty-state"><%= q ? 'Ningún propietario coincide con la búsqueda.' : 'No hay propietarios registrados.' %></p>
+                    <% } %>
+                </section>
+<%- include('../partials/layout-end') %>

@@ -29,9 +29,10 @@ Regla (D-28): antes de escribir algo genérico, se busca una librería mantenida
 | Paginación | ayudante propio (`src/utils/pagination.js`, ~10 líneas) | `express-paginate` y sus bifurcaciones no muestran mantenimiento claro ni soporte de Express 5. |
 | Filtros opcionales en consultas | SQL fijo con `(? IS NULL OR campo = ?)` | Sin armar SQL por partes: la revisión estática de `npm test` lo exige. Si más módulos necesitan filtros dinámicos complejos se reevalúa un generador de consultas (ver Drizzle arriba). |
 | Dinero | utilidad propia (`src/utils/money.js`, ~30 líneas): formato, lectura de texto y porcentaje con enteros | `Intl` da "C$1,234.50" (sin espacio) y "USD 1,234.50", y el cliente pide "C$ 1,234.50"; Dinero.js no mostró un estado estable claro. `Intl` solo se usa para agrupar miles. |
+| Subida de archivos | `multer` 2 (memoria + tope de tamaño) y `file-type` (tipo real por firma) | Mantenidos, sin módulos nativos. CSRF de multipart: ver D-35. |
 | Pruebas | `node:test` + `supertest` | Sin framework adicional. |
 
-Pendientes de evaluar **antes** de implementarlos (no están verificados todavía): subida de archivos (`multer`) y validación del tipo real del archivo (ISS-09), CSV (`csv-stringify`, ISS-16), registro de eventos con rotación (`pino`, ISS-20), planificación del respaldo (Programador de tareas de Windows frente a `node-cron`, ISS-18).
+Pendientes de evaluar **antes** de implementarlos (no están verificados todavía): CSV (`csv-stringify`, ISS-16), registro de eventos con rotación (`pino`, ISS-20), planificación del respaldo (Programador de tareas de Windows frente a `node-cron`, ISS-18).
 
 ## Estructura de carpetas
 ```

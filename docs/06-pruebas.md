@@ -50,7 +50,10 @@ Reglas: cada prueba usa una BD nueva con migraciones aplicadas; datos de prueba 
 | Ajustes de la clínica: validación por campo y por día (todos los errores a la vez), valores por defecto, el nombre cambia en menú, título, login y páginas de error (con escape), moneda aplicada a los precios | ✅ ISS-05 | `test/clinica-servicios-services.test.js`, `test/ajustes-clinica.test.js` |
 | Servicios: alta, edición, desactivar sin afectar citas existentes, nombre único, precios sin inventar (base en 0 con aviso), T-03 en todas sus pantallas y acciones | ✅ ISS-05 | `test/clinica-servicios-services.test.js`, `test/ajustes-clinica.test.js` |
 | Bitácora: sin contraseñas ni hashes a ninguna profundidad; filtros por usuario, entidad y día en hora de Managua; paginación; texto escapado | ✅ ISS-04 | `test/usuarios-services.test.js`, `test/ajustes.test.js` |
-| T-04 POST sin token CSRF → 403 | ✅ ISS-03 | `test/security.test.js` |
+| T-04 POST sin token CSRF → 403 (también en formularios multipart y sin saltarse la regla en otras rutas) | ✅ ISS-03 / ISS-06 | `test/security.test.js`, `test/clientes-mascotas.test.js` |
+| T-16 Desactivar cliente con mascotas activas → rechaza (servicio y HTTP) | ✅ ISS-06 | `test/clientes-mascotas-services.test.js`, `test/clientes-mascotas.test.js` |
+| T-19 Foto `.exe` disfrazado, PDF o > 2 MB → rechaza y no crea nada; foto fuera de `public/`, con nombre UUID y servida solo con sesión | ✅ ISS-06 (se amplía a adjuntos en ISS-09) | `test/clientes-mascotas.test.js` |
+| Clientes/mascotas: teléfono 505XXXXXXXX, cédula única y opcional, consentimiento en bitácora, expediente EXP-000001…, edad, transferencia con historial, búsqueda (nombre, cédula, teléfono, expediente, dueño), paginación de 25, T-21 en buscadores | ✅ ISS-06 | `test/clientes-mascotas-services.test.js`, `test/clientes-mascotas.test.js` |
 | T-13 Sin borrado de consultas, ventas, movimientos ni bitácora | ✅ ISS-01 (triggers de BD) | `test/db.test.js` |
 | T-21 Inyección SQL y XSS en entradas | ✅ login (ISS-03); se amplía en búsquedas | `test/security.test.js` |
 | Revisión estática: sin SQL concatenado, sin `<%-` con datos | ✅ ISS-03 (corre en cada `npm test`) | `test/security.test.js` |

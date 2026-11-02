@@ -5,6 +5,8 @@ const healthRoutes = require('./routes/health');
 const pageRoutes = require('./routes/pages');
 const { authRoutes } = require('./routes/auth');
 const { ajustesRoutes } = require('./routes/ajustes');
+const { clientesRoutes } = require('./routes/clientes');
+const { mascotasRoutes } = require('./routes/mascotas');
 const { flash } = require('./middleware/flash');
 const { security } = require('./middleware/security');
 const { createSession } = require('./middleware/session');
@@ -46,6 +48,8 @@ function createApp({ db, config, now = () => new Date(), resolveUser } = {}) {
     app.use(authRoutes({ db, now }));
     app.use(requireAuth);
     app.use(ajustesRoutes({ db, now }));
+    app.use(clientesRoutes({ db, now }));
+    app.use(mascotasRoutes({ db, config, now }));
     app.use(pageRoutes);
 
     app.use(notFound);

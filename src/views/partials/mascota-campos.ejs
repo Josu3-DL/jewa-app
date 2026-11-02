@@ -1,0 +1,11 @@
+<%# Campos del formulario de mascota (alta y edición). Parámetros: values, errors, especies, sexos, estados (solo edición) %>
+<%- include('field', { label: 'Nombre', name: 'nombre', value: values.nombre, error: errors.nombre, maxlength: 60, required: true, autocomplete: 'off' }) %>
+<%- include('select', { label: 'Especie', name: 'especie', options: especies, value: values.especie, error: errors.especie }) %>
+<%- include('field', { label: 'Raza (opcional)', name: 'raza', value: values.raza, error: errors.raza, maxlength: 60, autocomplete: 'off' }) %>
+<%- include('select', { label: 'Sexo', name: 'sexo', options: sexos, value: values.sexo, error: errors.sexo }) %>
+<%- include('field', { label: 'Fecha de nacimiento (opcional)', name: 'fecha_nacimiento', type: 'date', value: values.fecha_nacimiento, error: errors.fecha_nacimiento, hint: 'Si no se sabe, déjala vacía.' }) %>
+<%- include('field', { label: 'Color (opcional)', name: 'color', value: values.color, error: errors.color, maxlength: 40, autocomplete: 'off' }) %>
+<label class="check-row"><input type="checkbox" name="esterilizado"<%= values.esterilizado ? ' checked' : '' %>> Esterilizado</label>
+<% if (locals.estados) { %>
+<%- include('select', { label: 'Estado', name: 'estado', options: estados, value: values.estado, error: errors.estado }) %>
+<% } %>
