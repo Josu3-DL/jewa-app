@@ -1,0 +1,10 @@
+<header class="topbar">
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-navigation" data-sidebar-toggle>Menú</button>
+    <div class="date-label"><%= todayLabel %></div>
+    <div class="user-area">
+        <% if (user) { %>
+        <div class="avatar" aria-hidden="true"><%= initials %></div>
+        <div class="user-details"><strong><%= user.nombre %></strong><span><%= roleLabel %></span></div>
+        <% } %>
+    </div>
+</header>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title><%= title %> | <%= clinicName %></title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <div class="app-shell">
+        <%- include('sidebar') %>
+        <div class="sidebar-backdrop" data-sidebar-backdrop hidden></div>
+        <div class="main-area">
+            <%- include('topbar') %>
+            <main id="contenido" class="dashboard">

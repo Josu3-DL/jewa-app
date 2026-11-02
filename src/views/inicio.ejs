@@ -1,0 +1,25 @@
+<%- include('partials/layout-start', { title: title, active: active }) %>
+                <section class="home-hero">
+                    <div class="home-hero-content">
+                        <p class="eyebrow">BIENVENIDOS A</p>
+                        <h1><%= clinicName %></h1>
+                        <p class="intro">Cuidamos cada historia, cada visita y cada vínculo entre las mascotas y sus familias.</p>
+                        <div class="hero-actions">
+                            <% if (nav.main.some(function (m) { return m.key === 'citas'; })) { %><a class="button" href="/citas">+ Nueva cita</a><% } %>
+                            <% if (nav.main.some(function (m) { return m.key === 'mascotas'; })) { %><a class="text-link" href="/mascotas">Ver pacientes <span aria-hidden="true">→</span></a><% } %>
+                        </div>
+                    </div>
+                    <div class="hero-illustration"><img src="/img/hero.svg" alt="" width="245" height="245"><span class="illustration-label">CUIDAR<br><strong>MEJOR</strong></span></div>
+                </section>
+
+                <section class="home-menu" aria-label="Accesos principales">
+                    <div class="section-heading home-menu-heading"><div><p class="eyebrow">MENÚ PRINCIPAL</p><h2>¿Qué necesitas hacer?</h2></div><span class="menu-note">Accesos directos de la clínica</span></div>
+                    <div class="home-menu-grid">
+                        <% cards.forEach(function (card) { %>
+                        <a class="home-menu-card <%= card.style %>" href="<%= card.href %>"><span class="menu-card-number"><%= card.number %></span><span class="menu-card-icon" aria-hidden="true"><%= card.icon %></span><strong><%= card.title %></strong><span><%= card.text %></span><b aria-hidden="true">→</b></a>
+                        <% }) %>
+                    </div>
+                </section>
+
+                <p class="email-service-notice"><strong>Panel en construcción</strong>Las cifras, gráficas y alertas del inicio se activan con ISS-17, cuando existan los datos de cada módulo.</p>
+<%- include('partials/layout-end') %>

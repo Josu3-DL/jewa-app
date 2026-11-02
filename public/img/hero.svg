@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 620" role="img" aria-label="Huella y cruz veterinaria">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#dce8ef"/>
+      <stop offset="1" stop-color="#8eacbc"/>
+    </linearGradient>
+  </defs>
+  <rect width="620" height="620" fill="url(#bg)"/>
+  <circle cx="310" cy="310" r="250" fill="#ffffff" fill-opacity="0.35"/>
+  <g fill="#294b63">
+    <ellipse cx="310" cy="365" rx="105" ry="85"/>
+    <ellipse cx="190" cy="262" rx="42" ry="56" transform="rotate(-20 190 262)"/>
+    <ellipse cx="262" cy="190" rx="40" ry="56" transform="rotate(-6 262 190)"/>
+    <ellipse cx="358" cy="190" rx="40" ry="56" transform="rotate(6 358 190)"/>
+    <ellipse cx="430" cy="262" rx="42" ry="56" transform="rotate(20 430 262)"/>
+  </g>
+  <g fill="#ffffff">
+    <rect x="288" y="318" width="44" height="100" rx="8"/>
+    <rect x="260" y="346" width="100" height="44" rx="8"/>
+  </g>
+</svg>
