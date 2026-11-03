@@ -1,0 +1,35 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">AVISOS A CLIENTES</p>
+                        <h1>Recordatorios</h1>
+                        <p class="intro"><%= pendientes %> pendiente<%= pendientes === 1 ? '' : 's' %> por enviar. Abre WhatsApp con el mensaje ya escrito, envíalo y marca el aviso como enviado.</p>
+                    </div>
+                </section>
+
+                <% if (omitidos > 0) { %>
+                <p class="alert" role="status"><%= omitidos %> recordatorio<%= omitidos === 1 ? ' no se muestra' : 's no se muestran' %> porque el cliente no aceptó recibir avisos. Puedes cambiarlo en la ficha del cliente si lo autoriza.</p>
+                <% } %>
+
+                <section class="panel">
+                    <div class="panel-heading"><div><p class="eyebrow">CITAS · PRÓXIMAS <%= horas %> HORAS</p><h2><%= citas.length %> cita<%= citas.length === 1 ? '' : 's' %></h2></div></div>
+                    <% if (citas.length) { %>
+                    <div class="record-list">
+                        <% citas.forEach(function (r) { %>
+                        <%- include('../partials/recordatorio-fila', { r: r, detalle: 'Cita: ' + r.fecha + ' a las ' + r.hora }) %>
+                        <% }) %>
+                    </div>
+                    <% } else { %><p class="empty-state">No hay citas en las próximas <%= horas %> horas.</p><% } %>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-heading"><div><p class="eyebrow">VACUNAS · PRÓXIMAS <%= dias %> DÍAS O VENCIDAS</p><h2><%= vacunas.length %> vacuna<%= vacunas.length === 1 ? '' : 's' %></h2></div></div>
+                    <% if (vacunas.length) { %>
+                    <div class="record-list">
+                        <% vacunas.forEach(function (r) { %>
+                        <%- include('../partials/recordatorio-fila', { r: r, detalle: r.vacuna + ': próxima dosis ' + r.fecha, vencida: r.vencida }) %>
+                        <% }) %>
+                    </div>
+                    <% } else { %><p class="empty-state">No hay vacunas por vencer ni vencidas.</p><% } %>
+                </section>
+<%- include('../partials/layout-end') %>

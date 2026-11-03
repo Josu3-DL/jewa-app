@@ -239,3 +239,10 @@ a.record-confirm { display: inline-flex; align-items: center; text-decoration: n
 .hoja-totales { margin-top: 1rem; }
 .hoja-pie { margin-top: 2rem; text-align: center; }
 button[disabled] { opacity: 0.55; cursor: not-allowed; }
+
+/* ───── Recordatorios (ISS-15) ───── */
+.mensaje-previo { margin-top: 0.3rem; padding: 0.5rem 0.7rem; color: var(--ink) !important; background: #f1f5f8; border-left: 3px solid var(--accent); border-radius: 3px; font-size: 0.72rem !important; line-height: 1.5; white-space: normal !important; }
+.recordatorio { flex-wrap: wrap; }
+.recordatorio .record-copy strong { white-space: normal; }
+.recordatorio-nota { flex: 1 1 100%; margin: 0; }
+.es-enviado { opacity: 0.75; }

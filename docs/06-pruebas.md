@@ -68,6 +68,8 @@ Reglas: cada prueba usa una BD nueva con migraciones aplicadas; datos de prueba 
 | T-15 Anular venta: solo administrador, motivo obligatorio, devuelve el stock con reversas, definitiva y sin doble devolución | ✅ ISS-14 | `test/ventas-services.test.js`, `test/ventas.test.js` |
 | T-18 (ventas) 3 × C$ 1.99 = C$ 5.97, IVA redondeado al centavo y calculado tras el descuento; precios del navegador ignorados; no se vende sin precio | ✅ ISS-14 | `test/ventas-services.test.js`, `test/ventas.test.js` |
 | Ventas: T-13 sin borrado, recibo imprimible, filtros y paginación, XSS escapado | ✅ ISS-14 | `test/ventas-services.test.js`, `test/ventas.test.js` |
+| T-17 Cliente sin consentimiento: no aparece ningún recordatorio (cita ni vacuna), no se puede marcar y solo se cuenta el omitido | ✅ ISS-15 | `test/recordatorios-services.test.js`, `test/recordatorios.test.js` |
+| Recordatorios: ventana de 24 h, vacunas próximas/vencidas/refrescadas, marcar enviado sin duplicar, reprogramar genera aviso nuevo, enlace de WhatsApp seguro, entradas hostiles y XSS | ✅ ISS-15 | `test/recordatorios-services.test.js`, `test/recordatorios.test.js` |
 | T-04 POST sin token CSRF → 403 (también en formularios multipart y sin saltarse la regla en otras rutas) | ✅ ISS-03 / ISS-06 | `test/security.test.js`, `test/clientes-mascotas.test.js` |
 | T-16 Desactivar cliente con mascotas activas → rechaza (servicio y HTTP) | ✅ ISS-06 | `test/clientes-mascotas-services.test.js`, `test/clientes-mascotas.test.js` |
 | T-19 Foto `.exe` disfrazado, PDF o > 2 MB → rechaza y no crea nada; foto fuera de `public/`, con nombre UUID y servida solo con sesión | ✅ ISS-06 (se amplía a adjuntos en ISS-09) | `test/clientes-mascotas.test.js` |
