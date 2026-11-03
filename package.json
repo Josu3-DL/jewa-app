@@ -12,7 +12,8 @@
     "test": "node --disable-warning=ExperimentalWarning --test \"test/**/*.test.js\"",
     "migrate": "node --disable-warning=ExperimentalWarning src/db/migrate.js",
     "seed:admin": "node --disable-warning=ExperimentalWarning scripts/seed-admin.js",
-    "backup": "node scripts/backup.js"
+    "backup": "node --disable-warning=ExperimentalWarning scripts/backup.js",
+    "restore": "node --disable-warning=ExperimentalWarning scripts/restore.js"
   },
   "license": "UNLICENSED",
   "dependencies": {
