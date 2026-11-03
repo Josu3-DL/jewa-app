@@ -12,6 +12,58 @@
                     <div class="hero-illustration"><img src="/img/hero.svg" alt="" width="245" height="245"><span class="illustration-label">CUIDAR<br><strong>MEJOR</strong></span></div>
                 </section>
 
+                <section class="stats-grid" aria-label="Resumen del día">
+                    <article class="stat-card stat-card-highlight"><span class="stat-icon" aria-hidden="true">+</span><p>Citas de hoy</p><strong><%= p.citasHoy.total %></strong><span class="trend"><%= p.citasHoy.porAtender %> por atender</span></article>
+                    <article class="stat-card"><span class="stat-icon icon-teal" aria-hidden="true">P</span><p>Pacientes activos</p><strong><%= p.pacientes %></strong><span class="trend trend-neutral">Mascotas en seguimiento</span></article>
+                    <article class="stat-card"><span class="stat-icon icon-blue" aria-hidden="true">!</span><p>Recordatorios por enviar</p><strong><%= p.recordatorios %></strong><span class="trend trend-neutral"><% if (puede.recordatorios) { %><a class="text-link text-link-dark" href="/recordatorios">Ver lista</a><% } %></span></article>
+                    <% if (p.ventasHoy) { %>
+                    <article class="stat-card"><span class="stat-icon" aria-hidden="true">C$</span><p>Ventas de hoy</p><strong><%= dinero(p.ventasHoy.total) %></strong><span class="trend trend-neutral"><%= p.ventasHoy.cantidad %> venta<%= p.ventasHoy.cantidad === 1 ? '' : 's' %></span></article>
+                    <% } %>
+                </section>
+
+                <div class="dashboard-grid inicio-paneles">
+                    <section class="panel">
+                        <div class="panel-heading"><div><p class="eyebrow">AGENDA</p><h2>Próximas citas</h2></div><% if (puede.citas) { %><a href="/citas">Ver agenda</a><% } %></div>
+                        <% if (proximas.length) { %>
+                        <div class="record-list">
+                            <% proximas.forEach(function (c) { %>
+                            <article class="record">
+                                <div class="record-main">
+                                    <div class="cita-hora"><strong><%= c.horaTexto %></strong><span><%= c.fechaTexto %></span></div>
+                                    <div class="record-copy">
+                                        <strong><% if (puede.citas) { %><a class="text-link text-link-dark" href="/citas/<%= c.id %>"><%= c.mascota_nombre %></a><% } else { %><%= c.mascota_nombre %><% } %> · <%= c.propietario_nombre %></strong>
+                                        <span><%= c.servicio_nombre || 'Sin servicio' %> · <%= c.responsable_nombre %></span>
+                                    </div>
+                                </div>
+                                <div class="record-actions"><span class="status <%= c.estadoClase %>"><%= c.estadoTexto %></span></div>
+                            </article>
+                            <% }) %>
+                        </div>
+                        <% } else { %><p class="empty-state">No hay citas próximas.</p><% } %>
+                    </section>
+
+                    <div class="stack">
+                        <section class="panel">
+                            <div class="panel-heading"><div><p class="eyebrow">ALERTA</p><h2>Stock bajo (<%= p.stockBajo.total %>)</h2></div><% if (puede.farmacia) { %><a href="/farmacia?bajo=1">Ver</a><% } %></div>
+                            <% if (p.stockBajo.total) { %>
+                            <ul class="alerta-lista">
+                                <% p.stockBajo.lista.forEach(function (x) { %><li><strong><%= x.nombre %></strong> <span>quedan <%= x.stock %> (mín. <%= x.stock_minimo %>)</span></li><% }) %>
+                                <% if (p.stockBajo.total > p.stockBajo.lista.length) { %><li class="alerta-mas">y <%= p.stockBajo.total - p.stockBajo.lista.length %> más</li><% } %>
+                            </ul>
+                            <% } else { %><p class="empty-state">Todo el inventario está sobre su mínimo.</p><% } %>
+                        </section>
+                        <section class="panel">
+                            <div class="panel-heading"><div><p class="eyebrow">ALERTA</p><h2>Vacunas por vencer (<%= p.vacunas.total %>)</h2></div><% if (puede.recordatorios) { %><a href="/recordatorios">Ver</a><% } %></div>
+                            <% if (p.vacunas.total) { %>
+                            <ul class="alerta-lista">
+                                <% p.vacunas.lista.forEach(function (v) { %><li><strong><%= v.mascota_nombre %></strong> <span><%= v.vacuna %> · <%= v.vencida ? 'vencida el ' : 'vence el ' %><%= v.proximaTexto %></span></li><% }) %>
+                                <% if (p.vacunas.total > p.vacunas.lista.length) { %><li class="alerta-mas">y <%= p.vacunas.total - p.vacunas.lista.length %> más</li><% } %>
+                            </ul>
+                            <% } else { %><p class="empty-state">No hay vacunas próximas ni vencidas.</p><% } %>
+                        </section>
+                    </div>
+                </div>
+
                 <section class="home-menu" aria-label="Accesos principales">
                     <div class="section-heading home-menu-heading"><div><p class="eyebrow">MENÚ PRINCIPAL</p><h2>¿Qué necesitas hacer?</h2></div><span class="menu-note">Accesos directos de la clínica</span></div>
                     <div class="home-menu-grid">
@@ -21,5 +73,4 @@
                     </div>
                 </section>
 
-                <p class="email-service-notice"><strong>Panel en construcción</strong>Las cifras, gráficas y alertas del inicio se activan con ISS-17, cuando existan los datos de cada módulo.</p>
 <%- include('partials/layout-end') %>

@@ -2,7 +2,7 @@
 const path = require('node:path');
 const express = require('express');
 const healthRoutes = require('./routes/health');
-const pageRoutes = require('./routes/pages');
+const { pageRoutes } = require('./routes/pages');
 const { authRoutes } = require('./routes/auth');
 const { ajustesRoutes } = require('./routes/ajustes');
 const { clientesRoutes } = require('./routes/clientes');
@@ -66,7 +66,7 @@ function createApp({ db, config, now = () => new Date(), resolveUser } = {}) {
     app.use(ventasRoutes({ db, now }));
     app.use(recordatoriosRoutes({ db, now }));
     app.use(reportesRoutes({ db, now }));
-    app.use(pageRoutes);
+    app.use(pageRoutes({ db, now }));
 
     app.use(notFound);
     app.use(errorHandler(config));

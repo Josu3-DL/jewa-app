@@ -252,3 +252,15 @@ button[disabled] { opacity: 0.55; cursor: not-allowed; }
 .fila-total td { background: #f1f5f8; font-weight: 700; }
 .resumen-estados { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
 .resumen-estados .status { padding: 0.45rem 0.8rem; font-size: 0.72rem; }
+
+/* ───── Panel de inicio (ISS-17) ───── */
+.stats-grid { margin-top: 1.5rem; }
+.stats-grid:has(> :nth-child(4)) { grid-template-columns: repeat(4, 1fr); }
+.stats-grid:not(:has(> :nth-child(4))) { grid-template-columns: repeat(3, 1fr); }
+.inicio-paneles { margin-bottom: 2.3rem; align-items: start; }
+.alerta-lista { margin: 0; padding: 0; list-style: none; }
+.alerta-lista li { display: flex; flex-direction: column; gap: 0.1rem; padding: 0.7rem 0; border-bottom: 1px solid var(--line); font-size: 0.78rem; }
+.alerta-lista li:last-child { border-bottom: 0; }
+.alerta-lista span { color: var(--muted); font-size: 0.68rem; }
+.alerta-mas { color: var(--muted); font-size: 0.68rem !important; }
+@media (max-width: 900px) { .stats-grid:has(> :nth-child(4)), .stats-grid:not(:has(> :nth-child(4))) { grid-template-columns: repeat(2, 1fr); } }
