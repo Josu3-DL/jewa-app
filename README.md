@@ -2,7 +2,7 @@
 
 Sistema web para centralizar la gestión administrativa y clínica de una clínica veterinaria: clientes y mascotas, citas, expediente clínico, vacunas, farmacia/inventario, ventas y cobros, recordatorios y reportes.
 
-> Estado: en desarrollo (v1 en 3 días). Ver [`docs/05-plan-y-roadmap.md`](docs/05-plan-y-roadmap.md).
+> Estado: v1 completa (alcance académico, D-41). Ver [`docs/05-plan-y-roadmap.md`](docs/05-plan-y-roadmap.md).
 
 ## Documentación
 
@@ -23,23 +23,46 @@ Sistema web para centralizar la gestión administrativa y clínica de una clíni
 
 El sistema corre en **una PC de la clínica** (Windows) y se accede por la red Wi-Fi local desde esa PC, tablets y teléfonos (`http://<IP-de-la-PC>:3000`). La interfaz es responsiva. Moneda: córdoba (C$). No se expone a internet.
 
-## Requisitos
+## Instalación en 5 pasos
 
-- Node.js 24 o superior (usa el módulo integrado `node:sqlite`).
-- Navegador actual (Chrome, Firefox o Edge).
-- PC siempre encendida en horario de atención y una unidad externa para respaldos (ver `docs/07-despliegue-operacion.md`).
+> **No expongas el servidor a internet.** JEWA usa HTTP sin cifrar y está pensado solo para la red Wi-Fi privada de la clínica: no reenvíes el puerto en el router ni lo publiques en ningún servicio en la nube. Más detalles en [`docs/07-despliegue-operacion.md`](docs/07-despliegue-operacion.md).
 
-## Uso (cuando exista el código)
+**1. Requisitos.** Node.js 24 o superior (usa el módulo integrado `node:sqlite`, no compila nada) y un navegador actual (Chrome, Firefox o Edge). Comprueba con `node -v`. La PC debe estar encendida en horario de atención; para los respaldos conviene una unidad externa.
+
+**2. Instalar.** En la carpeta del proyecto:
 
 ```bash
-npm install
-npm run migrate     # crea/actualiza la base de datos
-npm run seed:admin  # crea el primer administrador
-npm start           # http://localhost:3000
-npm test
+npm ci
+npm run migrate     # crea la base de datos y aplica las migraciones
 ```
 
-**Primer arranque:** `npm run seed:admin` pide usuario, nombre y contraseña (no se muestra al escribirla; mínimo 8 caracteres) y crea el primer administrador. Después se entra en `/login`. Con `.env.example` como base crea tu `.env` (en producción `SESSION_SECRET` es obligatorio, 32+ caracteres).
+**3. Configurar `.env`.** Copia `.env.example` a `.env` y completa al menos `SESSION_SECRET` (32 caracteres o más, aleatorio):
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Valores habituales en la red local: `HOST=0.0.0.0`, `PORT=3000`, `COOKIE_SECURE=false` (HTTP), `NODE_ENV=production`. Si quieres los respaldos en una unidad externa, ajusta `BACKUP_DIR` (por ejemplo `E:/respaldos-jewa`). El archivo `.env` nunca se sube a git.
+
+**4. Crear el administrador.**
+
+```bash
+npm run seed:admin
+```
+
+Pide usuario, nombre y contraseña (mínimo 8 caracteres; no se muestra al escribirla). Ese usuario configura después los ajustes de la clínica, los servicios y las cuentas del personal desde **Ajustes**.
+
+**5. Arrancar y entrar desde otro dispositivo.**
+
+```bash
+npm start
+```
+
+En la PC abre `http://localhost:3000`. Para tablets y teléfonos conectados al mismo Wi-Fi, averigua la IP de la PC (`ipconfig` en Windows, `ip a` en Linux) y abre `http://<IP-de-la-PC>:3000`. Si no abre, permite el puerto 3000 en el firewall solo para la red **privada**. Conviene reservar esa IP en el router para que no cambie.
+
+### Después de instalar
+- `npm test` ejecuta las pruebas automatizadas.
+- `npm run backup` crea un respaldo (se puede usar con el sistema en marcha); `npm run restore` lista y restaura respaldos. Ver [`docs/07-despliegue-operacion.md`](docs/07-despliegue-operacion.md).
 
 ## Carpetas
 
