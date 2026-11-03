@@ -1,0 +1,25 @@
+<%- include('../partials/hoja-start', { title: title, clinica: clinica, volver: volver }) %>
+        <h2 class="hoja-titulo">Recibo de pago <%= v.numero %></h2>
+        <% if (v.estado === 'anulada') { %><p class="hoja-anulada">ANULADO</p><% } %>
+        <dl class="hoja-datos">
+            <dt>Fecha</dt><dd><%= v.fechaTexto %></dd>
+            <dt>Cliente</dt><dd><%= v.propietario_nombre || 'Mostrador' %></dd>
+            <dt>Método de pago</dt><dd><%= v.metodoTexto %></dd>
+            <dt>Atendió</dt><dd><%= v.usuario_nombre %></dd>
+        </dl>
+        <div class="table-scroll"><table class="hoja-tabla">
+            <thead><tr><th>Descripción</th><th>Cant.</th><th>Precio</th><th>Importe</th></tr></thead>
+            <tbody>
+                <% v.lineas.forEach(function (l) { %>
+                <tr><td><%= l.descripcion %></td><td><%= l.cantidad %></td><td class="nowrap"><%= dinero(l.precio_unitario) %></td><td class="nowrap"><%= dinero(l.importe) %></td></tr>
+                <% }) %>
+            </tbody>
+        </table></div>
+        <dl class="totales hoja-totales">
+            <dt>Subtotal</dt><dd><%= dinero(v.subtotal) %></dd>
+            <% if (v.descuento) { %><dt>Descuento</dt><dd>− <%= dinero(v.descuento) %></dd><% } %>
+            <% if (v.impuesto) { %><dt>IVA</dt><dd><%= dinero(v.impuesto) %></dd><% } %>
+            <dt class="total-final">Total pagado</dt><dd class="total-final"><%= dinero(v.total) %></dd>
+        </dl>
+        <p class="hoja-nota hoja-pie">Recibo interno de la clínica; no es una factura fiscal. ¡Gracias por su visita!</p>
+<%- include('../partials/hoja-end') %>

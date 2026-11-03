@@ -1,0 +1,47 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">VENTAS</p>
+                        <h1>Ventas y cobros</h1>
+                        <p class="intro">Consultas, vacunas, servicios y productos cobrados, con su recibo.</p>
+                    </div>
+                    <a class="button" href="/ventas/nueva">+ Nueva venta</a>
+                </section>
+
+                <form class="data-form filter-bar" method="get" action="/ventas" novalidate>
+                    <%- include('../partials/field', { label: 'Desde', name: 'desde', type: 'date', value: f.desde }) %>
+                    <%- include('../partials/field', { label: 'Hasta', name: 'hasta', type: 'date', value: f.hasta }) %>
+                    <%- include('../partials/select', { label: 'Estado', name: 'estado', blank: 'Todas', options: estados, value: f.estado }) %>
+                    <div class="filter-actions">
+                        <button class="button" type="submit">Filtrar</button>
+                        <a class="text-link text-link-dark" href="/ventas">Limpiar</a>
+                    </div>
+                </form>
+
+                <section class="panel">
+                    <div class="panel-heading"><div><p class="eyebrow">RESULTADOS</p><h2><%= total %> venta<%= total === 1 ? '' : 's' %> · Cobrado: <%= dinero(totalPagado) %></h2></div></div>
+                    <% if (filas.length) { %>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead><tr><th>Número</th><th>Fecha</th><th>Cliente</th><th>Pago</th><th>Total</th><th>Estado</th><th></th></tr></thead>
+                            <tbody>
+                                <% filas.forEach(function (v) { %>
+                                <tr>
+                                    <td class="nowrap"><strong><%= v.numero %></strong></td>
+                                    <td class="nowrap"><%= v.fechaTexto %></td>
+                                    <td><%= v.propietario_nombre || 'Mostrador' %></td>
+                                    <td><%= v.metodoTexto %></td>
+                                    <td class="nowrap"><%= dinero(v.total) %></td>
+                                    <td><% if (v.estado === 'anulada') { %><span class="status status-cancelled">Anulada</span><% } else { %><span class="status status-done">Pagada</span><% } %></td>
+                                    <td><a class="text-link text-link-dark" href="/ventas/<%= v.id %>" aria-label="Ver venta <%= v.numero %>">Ver</a></td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <%- include('../partials/pagination', { pager: pager }) %>
+                    <% } else { %>
+                    <p class="empty-state">No hay ventas<%= (f.desde || f.hasta || f.estado) ? ' con esos filtros' : ' todavía. Registra la primera con "Nueva venta"' %>.</p>
+                    <% } %>
+                </section>
+<%- include('../partials/layout-end') %>
