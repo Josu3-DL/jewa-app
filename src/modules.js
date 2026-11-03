@@ -12,7 +12,7 @@ const MODULES = [
     { key: 'historial', path: '/historial', label: 'Historial clínico', roles: ['admin', 'veterinario'], issue: 'ISS-08', blurb: 'Consultas, signos vitales, vacunas y tratamientos.' },
     { key: 'farmacia', path: '/farmacia', label: 'Farmacia', roles: ALL, issue: 'ISS-11', blurb: 'Productos, stock y alertas de bajo stock.' },
     { key: 'ventas', path: '/ventas', label: 'Ventas', roles: ALL, issue: 'ISS-14', blurb: 'Ventas y cobros con recibo.' },
-    { key: 'recordatorios', path: '/recordatorios', label: 'Recordatorios', roles: ALL, issue: 'ISS-15', blurb: 'Avisos de citas, vacunas y tratamientos.' },
+    { key: 'recordatorios', path: '/recordatorios', label: 'Recordatorios', roles: ALL, issue: 'ISS-15', blurb: 'Avisos de citas y vacunas por WhatsApp.' },
     { key: 'reportes', path: '/reportes', label: 'Reportes', roles: ['admin', 'veterinario'], issue: 'ISS-16', blurb: 'Reportes y exportación a CSV.' },
     { key: 'ajustes', path: '/ajustes', label: 'Ajustes', roles: ['admin'], issue: 'ISS-04 / ISS-05', blurb: 'Usuarios, ajustes de la clínica y bitácora.', footer: true },
 ];

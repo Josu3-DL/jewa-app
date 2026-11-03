@@ -12,6 +12,7 @@ const { historialRoutes } = require('./routes/historial');
 const { adjuntosRoutes } = require('./routes/adjuntos');
 const { farmaciaRoutes } = require('./routes/farmacia');
 const { ventasRoutes } = require('./routes/ventas');
+const { recordatoriosRoutes } = require('./routes/recordatorios');
 const { flash } = require('./middleware/flash');
 const { security } = require('./middleware/security');
 const { createSession } = require('./middleware/session');
@@ -62,6 +63,7 @@ function createApp({ db, config, now = () => new Date(), resolveUser } = {}) {
     app.use(adjuntosRoutes({ db, config, now }));
     app.use(farmaciaRoutes({ db, now }));
     app.use(ventasRoutes({ db, now }));
+    app.use(recordatoriosRoutes({ db, now }));
     app.use(pageRoutes);
 
     app.use(notFound);

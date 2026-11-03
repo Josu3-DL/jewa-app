@@ -1,0 +1,30 @@
+<%# Un recordatorio. Parámetros: r (con tipo, id, mensaje, whatsapp, enviado…), detalle (texto de la fecha) %>
+<article class="record recordatorio<%= r.enviado ? ' es-enviado' : '' %>">
+    <div class="record-main">
+        <div class="record-copy">
+            <strong><a class="text-link text-link-dark" href="/mascotas/<%= r.mascotaId %>"><%= r.mascota %></a> · <a class="text-link text-link-dark" href="/clientes/<%= r.propietarioId %>"><%= r.propietario %></a></strong>
+            <span><%= detalle %> · Tel. <%= r.telefono %></span>
+            <span class="mensaje-previo"><%= r.mensaje %></span>
+        </div>
+    </div>
+    <div class="record-actions">
+        <% if (r.enviado) { %>
+        <span class="status status-done">Enviado</span>
+        <% } else if (locals.vencida) { %>
+        <span class="status status-cancelled">Vencida</span>
+        <% } %>
+    </div>
+    <% if (r.enviado) { %>
+    <p class="field-hint recordatorio-nota">Enviado por <%= r.enviadoTexto %></p>
+    <% } else { %>
+    <div class="cita-acciones">
+        <a class="button button-small" href="<%= r.whatsapp %>" target="_blank" rel="noopener noreferrer" aria-label="Abrir WhatsApp para avisar a <%= r.propietario %>">WhatsApp</a>
+        <form method="post" action="/recordatorios/enviado">
+            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+            <input type="hidden" name="tipo" value="<%= r.tipo %>">
+            <input type="hidden" name="id" value="<%= r.id %>">
+            <button class="button button-small" type="submit" aria-label="Marcar como enviado el aviso a <%= r.propietario %>">Marcar enviado</button>
+        </form>
+    </div>
+    <% } %>
+</article>
