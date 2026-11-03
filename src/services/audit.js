@@ -74,8 +74,9 @@ const ACCIONES = {
     venta_creada: 'Venta registrada',
     venta_anulada: 'Venta anulada',
     recordatorio_enviado: 'Recordatorio marcado como enviado',
+    reporte_exportado: 'Reporte exportado a CSV',
 };
-const ENTIDADES = { usuario: 'Usuario', servicio: 'Servicio', config: 'Ajustes', propietario: 'Cliente', mascota: 'Mascota', cita: 'Cita', consulta: 'Consulta', adjunto: 'Adjunto', tratamiento: 'Tratamiento', vacuna: 'Vacuna', producto: 'Producto', venta: 'Venta', recordatorio: 'Recordatorio' };
+const ENTIDADES = { usuario: 'Usuario', servicio: 'Servicio', config: 'Ajustes', propietario: 'Cliente', mascota: 'Mascota', cita: 'Cita', consulta: 'Consulta', adjunto: 'Adjunto', tratamiento: 'Tratamiento', vacuna: 'Vacuna', producto: 'Producto', venta: 'Venta', recordatorio: 'Recordatorio', reporte: 'Reporte' };
 
 const etiquetaAccion = (codigo) => ACCIONES[codigo] || codigo;
 const etiquetaEntidad = (codigo) => ENTIDADES[codigo] || codigo;
