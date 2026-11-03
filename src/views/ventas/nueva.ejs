@@ -1,0 +1,126 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">VENTAS</p>
+                        <h1>Nueva venta</h1>
+                        <p class="intro">Agrega servicios y productos, elige el método de pago y cobra. El stock se descuenta al cobrar.</p>
+                    </div>
+                    <a class="text-link text-link-dark" href="/ventas">← Volver a ventas</a>
+                </section>
+
+                <% if (errores.length) { %>
+                <div class="alert alert-error" role="alert"><strong>No se puede cobrar todavía:</strong>
+                    <ul class="avisos"><% errores.forEach(function (e) { %><li><%= e %></li><% }) %></ul>
+                </div>
+                <% } %>
+
+                <div class="management-grid">
+                    <div class="stack">
+                        <form class="data-form" method="post" action="/ventas/carrito/agregar" novalidate>
+                            <h3>Agregar al carrito</h3>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                            <label for="f-item">Servicio o producto
+                                <select id="f-item" name="item" required>
+                                    <option value="">Elige un artículo</option>
+                                    <optgroup label="Servicios">
+                                        <% catalogo.servicios.forEach(function (s) { %><option value="servicio:<%= s.id %>"><%= s.nombre %> · <%= dinero(s.precio) %></option><% }) %>
+                                    </optgroup>
+                                    <optgroup label="Productos (con existencias)">
+                                        <% catalogo.productos.forEach(function (p) { %><option value="producto:<%= p.id %>"><%= p.nombre %> · <%= dinero(p.precio) %> · hay <%= p.stock %></option><% }) %>
+                                    </optgroup>
+                                </select>
+                            </label>
+                            <%- include('../partials/field', { label: 'Cantidad', name: 'cantidad', value: '1', maxlength: 3, inputmode: 'numeric', autocomplete: 'off', required: true }) %>
+                            <button class="button" type="submit">Agregar</button>
+                            <% if (!catalogo.servicios.length && !catalogo.productos.length) { %><p class="form-note">No hay nada con precio para vender. Define precios en Ajustes → Servicios y en Farmacia.</p><% } %>
+                        </form>
+
+                        <section class="data-form">
+                            <h3>Cliente</h3>
+                            <p class="form-note"><%= cliente ? 'Venta a nombre de ' + cliente.nombre + '.' : 'Venta de mostrador (sin cliente). Puedes asociarla a un cliente registrado.' %></p>
+                            <% if (cliente) { %>
+                            <form method="post" action="/ventas/carrito/cliente"><input type="hidden" name="_csrf" value="<%= csrfToken() %>"><button class="button" type="submit">Quitar cliente</button></form>
+                            <% } %>
+                            <form method="get" action="/ventas/nueva" role="search" class="venta-buscar">
+                                <label for="f-q">Buscar cliente
+                                    <input id="f-q" name="q" type="search" value="<%= q %>" maxlength="100" placeholder="Nombre, cédula o teléfono" autocomplete="off">
+                                </label>
+                                <button class="button" type="submit">Buscar</button>
+                            </form>
+                            <% if (q) { %>
+                            <% if (resultados.length) { %>
+                            <div class="record-list">
+                                <% resultados.forEach(function (p) { %>
+                                <article class="record">
+                                    <div class="record-copy"><strong><%= p.nombre %></strong><span><%= p.telefonoTexto %></span></div>
+                                    <div class="record-actions">
+                                        <form method="post" action="/ventas/carrito/cliente">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                                            <input type="hidden" name="propietario" value="<%= p.id %>">
+                                            <button class="button button-small" type="submit" aria-label="Elegir a <%= p.nombre %>">Elegir</button>
+                                        </form>
+                                    </div>
+                                </article>
+                                <% }) %>
+                            </div>
+                            <% } else { %><p class="empty-state">Ningún cliente coincide.</p><% } %>
+                            <% } %>
+                        </section>
+                    </div>
+
+                    <section class="data-form">
+                        <h3>Carrito (<%= filas.length %>)</h3>
+                        <% if (filas.length) { %>
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead><tr><th>Artículo</th><th>Cant.</th><th>Precio</th><th>Importe</th><th></th></tr></thead>
+                                <tbody>
+                                    <% filas.forEach(function (l) { %>
+                                    <tr>
+                                        <td><%= l.descripcion %></td>
+                                        <td><%= l.cantidad %></td>
+                                        <td class="nowrap"><%= dinero(l.precio) %></td>
+                                        <td class="nowrap"><%= dinero(l.importe) %></td>
+                                        <td>
+                                            <form method="post" action="/ventas/carrito/quitar">
+                                                <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                                                <input type="hidden" name="indice" value="<%= l.indice %>">
+                                                <button class="button button-danger button-small" type="submit" aria-label="Quitar <%= l.descripcion %>">Quitar</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <form method="post" action="/ventas/carrito/descuento" class="venta-buscar" novalidate>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                            <label for="f-descuento">Descuento (en dinero, opcional)
+                                <input id="f-descuento" name="descuento" type="text" value="<%= descuentoTexto %>" maxlength="14" inputmode="decimal" autocomplete="off" placeholder="0.00">
+                            </label>
+                            <button class="button" type="submit">Aplicar</button>
+                        </form>
+
+                        <dl class="totales">
+                            <dt>Subtotal</dt><dd><%= dinero(resumen.subtotal) %></dd>
+                            <% if (resumen.descuento) { %><dt>Descuento</dt><dd>− <%= dinero(resumen.descuento) %></dd><% } %>
+                            <% if (resumen.iva) { %><dt>IVA (<%= resumen.iva %> %)</dt><dd><%= dinero(resumen.impuesto) %></dd><% } %>
+                            <dt class="total-final">Total a cobrar</dt><dd class="total-final"><%= dinero(resumen.total) %></dd>
+                        </dl>
+
+                        <form method="post" action="/ventas/cobrar" novalidate>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                            <%- include('../partials/select', { label: 'Método de pago', name: 'metodo', options: metodos, value: 'efectivo' }) %>
+                            <button class="button" type="submit"<%= errores.length ? ' disabled' : '' %>>Cobrar <%= dinero(resumen.total) %></button>
+                        </form>
+                        <form method="post" action="/ventas/carrito/vaciar" class="ficha-quitar">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                            <button class="button button-danger" type="submit">Vaciar carrito</button>
+                        </form>
+                        <% } else { %>
+                        <p class="empty-state">El carrito está vacío. Agrega servicios o productos.</p>
+                        <% } %>
+                    </section>
+                </div>
+<%- include('../partials/layout-end') %>

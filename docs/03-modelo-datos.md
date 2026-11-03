@@ -81,3 +81,4 @@ erDiagram
 - Configuración por defecto (nombre JEWA, moneda C$, IVA 0 %, horario y duración según Q-05): en código, no en la base de datos.
 - **Migración `002_datos_iniciales.sql`** (se aplica una sola vez): índice único `servicios(nombre COLLATE NOCASE)`, los 5 servicios base (Consulta general 30 min, Vacunación 15, Seguimiento 20, Baño 45, Corte 60) **con precio 0** y las 3 plantillas de recordatorio (`cita`, `vacuna`, `tratamiento`) con las variables `{propietario} {mascota} {clinica} {fecha} {hora} {vacuna} {medicamento}`.
 - **Migración `003_vacunas_base.sql`** (ISS-10): 4 vacunas base como `productos` (categoría `Vacuna`, precio 0) con un lote único `UNICO` cada una (D-41/D-42).
+- **Migración `004_venta_anulada_definitiva.sql`** (ISS-14): trigger que impide reactivar una venta anulada (su stock ya se devolvió).

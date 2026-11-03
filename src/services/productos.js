@@ -87,12 +87,12 @@ function loteUnico(db, productoId) {
 const codigoEnUso = (db, valor, exceptoId = 0) => Boolean(db.prepare('SELECT 1 FROM productos WHERE codigo = ? AND id <> ?').get(valor, exceptoId));
 
 /** Aplica un cambio de stock al lote y deja el movimiento (llamar dentro de una transacción). */
-function moverStock(db, { productoId, tipo, cantidad, motivo, refTipo, actorId, ahora }) {
+function moverStock(db, { productoId, tipo, cantidad, motivo, refTipo, refId = null, actorId, ahora }) {
     const loteId = loteUnico(db, productoId);
-    const delta = tipo === 'entrada' ? cantidad : -cantidad;
+    const delta = tipo === 'entrada' || tipo === 'reversa' ? cantidad : -cantidad;
     db.prepare('UPDATE lotes SET cantidad_actual = cantidad_actual + ? WHERE id = ?').run(delta, loteId);
-    const r = db.prepare(`INSERT INTO movimientos (producto_id, lote_id, tipo, cantidad, motivo, ref_tipo, usuario_id, fecha)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).run(productoId, loteId, tipo, cantidad, motivo, refTipo, actorId, ahora.toISOString());
+    const r = db.prepare(`INSERT INTO movimientos (producto_id, lote_id, tipo, cantidad, motivo, ref_tipo, ref_id, usuario_id, fecha)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(productoId, loteId, tipo, cantidad, motivo, refTipo, refId, actorId, ahora.toISOString());
     return Number(r.lastInsertRowid);
 }
 
@@ -193,6 +193,6 @@ const paraFormulario = (p) => ({
 });
 
 module.exports = {
-    CATEGORIAS, LOTE_UNICO, getProducto, listProductos, productosBajoMinimo, loteUnico,
+    CATEGORIAS, LOTE_UNICO, moverStock, getProducto, listProductos, productosBajoMinimo, loteUnico,
     createProducto, updateProducto, setActivo, entradaStock, ajustarStock, listMovimientos, paraFormulario,
 };

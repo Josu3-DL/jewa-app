@@ -1,0 +1,51 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">VENTA · <%= v.fechaTexto %></p>
+                        <h1><%= v.numero %></h1>
+                        <p class="intro"><%= v.propietario_nombre ? 'Cliente: ' + v.propietario_nombre : 'Venta de mostrador' %> · <%= v.metodoTexto %> · Atendió: <%= v.usuario_nombre %> · <% if (v.estado === 'anulada') { %><span class="status status-cancelled">Anulada</span><% } else { %><span class="status status-done">Pagada</span><% } %></p>
+                    </div>
+                    <div class="acciones-cabecera">
+                        <a class="button" href="/ventas/<%= v.id %>/recibo">Ver recibo</a>
+                        <a class="text-link text-link-dark" href="/ventas">← Volver a ventas</a>
+                    </div>
+                </section>
+
+                <% if (v.estado === 'anulada') { %>
+                <p class="alert alert-error" role="alert"><strong>Venta anulada</strong> por <%= v.anulada_por_nombre %>. Motivo: <%= v.anulada_motivo %>. El stock de sus productos se devolvió; la venta se conserva como registro.</p>
+                <% } %>
+
+                <div class="management-grid">
+                    <section class="data-form<%= v.estado === 'anulada' ? ' es-anulada' : '' %>">
+                        <h3>Detalle</h3>
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead><tr><th>Artículo</th><th>Cant.</th><th>Precio</th><th>Importe</th></tr></thead>
+                                <tbody>
+                                    <% v.lineas.forEach(function (l) { %>
+                                    <tr><td><%= l.descripcion %><br><span class="field-hint"><%= l.item_tipo === 'servicio' ? 'Servicio' : 'Producto' %></span></td><td><%= l.cantidad %></td><td class="nowrap"><%= dinero(l.precio_unitario) %></td><td class="nowrap"><%= dinero(l.importe) %></td></tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <dl class="totales">
+                            <dt>Subtotal</dt><dd><%= dinero(v.subtotal) %></dd>
+                            <% if (v.descuento) { %><dt>Descuento</dt><dd>− <%= dinero(v.descuento) %></dd><% } %>
+                            <% if (v.impuesto) { %><dt>IVA</dt><dd><%= dinero(v.impuesto) %></dd><% } %>
+                            <dt class="total-final">Total</dt><dd class="total-final"><%= dinero(v.total) %></dd>
+                        </dl>
+                    </section>
+
+                    <% if (puedeAnular) { %>
+                    <section class="data-form">
+                        <h3>Anular venta</h3>
+                        <form method="post" action="/ventas/<%= v.id %>/anular" novalidate>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                            <p class="form-note">Las ventas no se borran. Anular la deja marcada con tu nombre y el motivo, y devuelve al inventario los productos vendidos. No se puede deshacer.</p>
+                            <%- include('../partials/textarea', { label: 'Motivo de la anulación', name: 'motivo', value: motivo, error: errors.motivo, maxlength: 300, rows: 2, required: true }) %>
+                            <button class="button button-danger" type="submit">Anular venta</button>
+                        </form>
+                    </section>
+                    <% } %>
+                </div>
+<%- include('../partials/layout-end') %>
