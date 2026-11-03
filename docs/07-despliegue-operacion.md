@@ -28,19 +28,18 @@ Decisión D-24: el sistema corre en **una PC de la clínica** (Windows) y se usa
 5. Registrar el servicio para que arranque con Windows: **NSSM** (`nssm install JEWA "C:\Program Files\nodejs\node.exe" src\server.js`, directorio de trabajo `C:\JEWA\app`, reinicio automático) o, si no se usa NSSM, tarea del **Programador de tareas** "Al iniciar el sistema" con reintentos.
 6. Probar desde la PC, una tablet y un teléfono.
 
-## Respaldo (RNF-06, D-26)
-- `npm run backup` usa `backup()` de `node:sqlite` (copia consistente aun con la app en uso) y copia `uploads/`.
-- Destino: **unidad externa** (`BACKUP_DIR`, por ejemplo `E:\respaldos-jewa`). Si la unidad no está conectada, el respaldo falla con aviso visible (banner en Inicio si el último respaldo tiene más de 36 h).
-- Programado a diario a las 23:00 con el Programador de tareas; nombre `clinic-AAAAMMDD.db`.
-- Retención: 14 diarios + 8 semanales.
-- Una vez al mes, llevar una copia fuera de la clínica (otra ubicación). Una sola unidad en el mismo local no protege contra robo, incendio o falla eléctrica.
-- Prueba de restauración mensual en una carpeta temporal.
+## Respaldo (RNF-06, D-26, D-48)
+- `npm run backup` crea una carpeta nueva `jewa-AAAAMMDD-HHMMSS` dentro de `BACKUP_DIR` con: `clinic.db` (copia consistente con `backup()` de `node:sqlite`, **se puede ejecutar con el sistema en uso**), `uploads/` (fotos y adjuntos) y `respaldo.json` (fecha, versión, tablas, tamaño, integridad).
+- La copia se **verifica** (revisión de integridad de SQLite) antes de darse por buena; si algo falla, la carpeta se borra y el comando termina con un mensaje claro (por ejemplo, "¿Está conectada la unidad de respaldo?") y código de salida 1.
+- Destino recomendado: una **unidad externa** (`BACKUP_DIR=E:/respaldos-jewa` en `.env`). Un solo disco en el mismo local no protege contra robo, incendio o falla de la PC: copia la carpeta de respaldos a otro lugar de vez en cuando.
+- Alcance académico (D-41): **se ejecuta a mano** (sin tarea programada ni retención; se borran a mano los respaldos viejos).
 
-## Restauración
-1. Detener el servicio (`nssm stop JEWA`).
-2. Renombrar la BD actual y copiar el respaldo elegido como `clinic.db`.
-3. Restaurar `uploads/` del mismo día.
-4. Iniciar el servicio y comprobar login, un expediente y un kárdex.
+## Restauración (probada en `test/respaldo.test.js`)
+1. **Detener el sistema** (cerrar la ventana donde corre `npm start` o detener el servicio). En Windows, con el sistema encendido el archivo está en uso y el comando se detiene con un aviso.
+2. `npm run restore` lista los respaldos disponibles.
+3. `npm run restore -- <carpeta>` **solo explica** qué haría (no cambia nada).
+4. `npm run restore -- <carpeta> --confirmar` restaura: primero comprueba que el respaldo esté sano (si está dañado, no toca nada) y guarda lo actual como `clinic.db.antes-de-restaurar-<fecha>` y `uploads.antes-de-restaurar-<fecha>`, de modo que una restauración equivocada se puede deshacer.
+5. Iniciar el sistema y comprobar: inicio de sesión, un expediente y las ventas del día.
 
 ## Si la PC falla o se cambia
 1. Instalar Node y el proyecto en la nueva PC (pasos de instalación).
