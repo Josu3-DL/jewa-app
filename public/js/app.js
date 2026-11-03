@@ -44,3 +44,12 @@
         if (window.innerWidth > BREAKPOINT && sidebar.classList.contains('is-open')) setOpen(false);
     });
 })();
+
+// Botones "Imprimir" de las hojas (receta, carné, recibo): sin scripts en línea.
+(function () {
+    'use strict';
+    document.addEventListener('click', function (event) {
+        var boton = event.target.closest && event.target.closest('[data-print]');
+        if (boton) window.print();
+    });
+})();

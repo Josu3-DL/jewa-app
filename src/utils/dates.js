@@ -104,6 +104,12 @@ function fechaCorta(fecha) {
     return t.replace(/\./g, '');
 }
 
+/** AAAA-MM-DD → dd/mm/aaaa. */
+function fechaDMY(f) {
+    const [y, m, d] = String(f || '').split('-');
+    return y && m && d ? `${d}/${m}/${y}` : '';
+}
+
 /** Iniciales para el avatar: "Laura Mendez" -> "LM". */
 function initials(name) {
     const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
@@ -112,4 +118,4 @@ function initials(name) {
     return letters.toUpperCase();
 }
 
-module.exports = { ZONE, formatLongDate, formatDateTime, yearInZone, managuaDayRange, todayInZone, edadTexto, managuaToUtc, utcToManagua, hora12, sumarDias, diaSemana, fechaCorta, initials };
+module.exports = { ZONE, formatLongDate, formatDateTime, yearInZone, managuaDayRange, todayInZone, edadTexto, managuaToUtc, utcToManagua, hora12, sumarDias, diaSemana, fechaCorta, fechaDMY, initials };

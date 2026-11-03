@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title><%= title %> | <%= clinica.nombre %></title>
+    <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="hoja-page">
+    <div class="hoja-barra no-print">
+        <a class="text-link text-link-dark" href="<%= volver %>">← Volver</a>
+        <button class="button" type="button" data-print>Imprimir</button>
+    </div>
+    <main class="hoja">
+        <header class="hoja-cabecera">
+            <h1><%= clinica.nombre %></h1>
+            <p><%= [clinica.direccion, clinica.telefono ? 'Tel. ' + clinica.telefono : ''].filter(Boolean).join(' · ') %></p>
+        </header>
