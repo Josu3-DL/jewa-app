@@ -5,6 +5,7 @@ const { requireModule } = require('../middleware/user');
 const consultas = require('../services/consultas');
 const citas = require('../services/citas');
 const mascotas = require('../services/mascotas');
+const adjuntosSvc = require('../services/adjuntos');
 const { formatDateTime } = require('../utils/dates');
 const { pager } = require('../utils/pagination');
 const { verTelefono } = require('../utils/validation');
@@ -41,6 +42,7 @@ function historialRoutes({ db, now }) {
             title: m ? `Historial de ${m.nombre}` : 'Historial clínico', active: 'historial',
             m: m ? { ...m, edad: mascotas.edadDe(m, now()), telefonoTexto: verTelefono(m.propietario_telefono) } : null,
             filas: datos.filas.map(fila), total: datos.total, f, estados: ESTADOS, pesos,
+            adjuntos: m ? adjuntosSvc.listarAdjuntos(db, { mascotaId: m.id }) : [],
             puedeCrear: req.user.rol === 'veterinario', scripts: pesos.length >= 2 ? ['/vendor/chart.umd.min.js', '/js/weight-chart.js'] : [],
             pager: pager({ pagina: datos.pagina, paginas: datos.paginas, total: datos.total, ruta: '/historial', filtros: { mascota: mid, ...f } }),
         });
@@ -95,6 +97,7 @@ function historialRoutes({ db, now }) {
             c: { ...fila(c), anuladaEn: c.anulada_en ? formatDateTime(c.anulada_en) : '' },
             puedeAnular: c.estado === 'vigente' && (req.user.rol === 'admin' || c.veterinario_id === req.user.id),
             errors, motivo,
+            adjuntos: adjuntosSvc.listarAdjuntos(db, { consultaId: id }), puedeSubir: req.user.rol === 'veterinario',
         });
     };
 

@@ -49,4 +49,5 @@
                         <% } %>
                     </div>
                 </div>
+                <%- include('../partials/adjuntos-panel', { adjuntos: adjuntos, mascotaId: c.mascota_id, consultaId: c.id, puedeSubir: puedeSubir && !c.anulada }) %>
 <%- include('../partials/layout-end') %>

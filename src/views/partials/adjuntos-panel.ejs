@@ -1,0 +1,34 @@
+<%# Adjuntos de una mascota o consulta. Parámetros: adjuntos, mascotaId, consultaId (opcional), puedeSubir %>
+<section class="panel adjuntos">
+    <div class="panel-heading"><div><p class="eyebrow">ARCHIVOS</p><h2>Adjuntos (<%= adjuntos.length %>)</h2></div></div>
+    <% if (adjuntos.length) { %>
+    <div class="record-list">
+        <% adjuntos.forEach(function (a) { %>
+        <article class="record">
+            <div class="record-main">
+                <div class="pet-avatar pet-dog-light" aria-hidden="true"><%= a.tipo_mime === 'application/pdf' ? 'PDF' : 'IMG' %></div>
+                <div class="record-copy">
+                    <strong><a class="text-link text-link-dark" href="/adjuntos/<%= a.id %>"<%= a.esImagen ? ' target="_blank" rel="noopener"' : '' %>><%= a.nombre_original %></a></strong>
+                    <span><%= a.tamanoTexto %> · <%= a.subido_por_nombre %> · <%= a.subido_en.slice(0, 10) %><% if (a.consulta_id && !locals.consultaId) { %> · <a class="text-link text-link-dark" href="/historial/<%= a.consulta_id %>">De una consulta</a><% } %></span>
+                </div>
+            </div>
+            <div class="record-actions"><a class="record-confirm" href="/adjuntos/<%= a.id %>?descargar=1" aria-label="Descargar <%= a.nombre_original %>">Descargar</a></div>
+        </article>
+        <% }) %>
+    </div>
+    <% } else { %>
+    <p class="empty-state">No hay archivos adjuntos.</p>
+    <% } %>
+    <% if (puedeSubir) { %>
+    <form class="data-form adjuntar" method="post" action="/adjuntos" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+        <input type="hidden" name="mascota" value="<%= mascotaId %>">
+        <% if (locals.consultaId) { %><input type="hidden" name="consulta" value="<%= consultaId %>"><% } %>
+        <label for="f-archivo-<%= locals.consultaId || 0 %>">Adjuntar archivo
+            <input id="f-archivo-<%= locals.consultaId || 0 %>" name="archivo" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required>
+            <span class="field-hint">JPG, PNG, WebP o PDF de hasta 5 MB. En el teléfono puedes elegir de la galería o tomar la foto con la cámara.</span>
+        </label>
+        <button class="button" type="submit">Subir archivo</button>
+    </form>
+    <% } %>
+</section>
