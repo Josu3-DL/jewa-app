@@ -222,3 +222,7 @@ a.record-confirm { display: inline-flex; align-items: center; text-decoration: n
     body.hoja-page { background: #fff; }
     .hoja { max-width: none; margin: 0; padding: 0; border: 0; }
 }
+
+/* ───── Farmacia (ISS-11) ───── */
+.stock-grande { margin: 0 0 0.6rem; font-size: 1rem; }
+.stock-grande strong { font-size: 2.2rem; line-height: 1; }

@@ -1,0 +1,12 @@
+<%# Campos del formulario de producto (alta y edición). Parámetros: values, errors, categorias, alta (true en el alta) %>
+<%- include('field', { label: 'Código', name: 'codigo', value: values.codigo, error: errors.codigo, maxlength: 20, required: true, autocomplete: 'off', hint: 'Único. Ej. AMX-250' }) %>
+<%- include('field', { label: 'Nombre', name: 'nombre', value: values.nombre, error: errors.nombre, maxlength: 100, required: true, autocomplete: 'off' }) %>
+<%- include('select', { label: 'Categoría', name: 'categoria', options: categorias, value: values.categoria, error: errors.categoria }) %>
+<label class="check-row"><input type="checkbox" name="es_medicamento"<%= values.es_medicamento ? ' checked' : '' %>> Es un medicamento (aparece al indicar tratamientos)</label>
+<%- include('field', { label: 'Presentación (opcional)', name: 'presentacion', value: values.presentacion, error: errors.presentacion, maxlength: 60, autocomplete: 'off', hint: 'Ej. Caja x 20, frasco 100 ml' }) %>
+<%- include('field', { label: 'Unidad', name: 'unidad', value: values.unidad, error: errors.unidad, maxlength: 20, required: true, autocomplete: 'off', hint: 'Ej. unidad, caja, dosis' }) %>
+<%- include('field', { label: 'Precio de venta', name: 'precio', value: values.precio, error: errors.precio, maxlength: 14, required: true, inputmode: 'decimal', autocomplete: 'off', hint: 'Ej. 150 o 150.50' }) %>
+<%- include('field', { label: 'Stock mínimo', name: 'stock_minimo', value: values.stock_minimo, error: errors.stock_minimo, maxlength: 6, required: true, inputmode: 'numeric', autocomplete: 'off', hint: 'Avisa cuando el stock llegue a este número. 0 = sin aviso.' }) %>
+<% if (locals.alta) { %>
+<%- include('field', { label: 'Stock inicial (opcional)', name: 'stock_inicial', value: values.stock_inicial, error: errors.stock_inicial, maxlength: 6, inputmode: 'numeric', autocomplete: 'off' }) %>
+<% } %>

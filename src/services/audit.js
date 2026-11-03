@@ -65,8 +65,14 @@ const ACCIONES = {
     tratamiento_agregado: 'Tratamiento indicado',
     vacuna_aplicada: 'Vacuna aplicada',
     vacuna_anulada: 'Vacuna anulada',
+    producto_creado: 'Producto creado',
+    producto_editado: 'Producto editado',
+    producto_desactivado: 'Producto desactivado',
+    producto_activado: 'Producto reactivado',
+    stock_entrada: 'Entrada de stock',
+    stock_ajuste: 'Ajuste de stock',
 };
-const ENTIDADES = { usuario: 'Usuario', servicio: 'Servicio', config: 'Ajustes', propietario: 'Cliente', mascota: 'Mascota', cita: 'Cita', consulta: 'Consulta', adjunto: 'Adjunto', tratamiento: 'Tratamiento', vacuna: 'Vacuna' };
+const ENTIDADES = { usuario: 'Usuario', servicio: 'Servicio', config: 'Ajustes', propietario: 'Cliente', mascota: 'Mascota', cita: 'Cita', consulta: 'Consulta', adjunto: 'Adjunto', tratamiento: 'Tratamiento', vacuna: 'Vacuna', producto: 'Producto' };
 
 const etiquetaAccion = (codigo) => ACCIONES[codigo] || codigo;
 const etiquetaEntidad = (codigo) => ENTIDADES[codigo] || codigo;

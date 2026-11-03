@@ -1,0 +1,63 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">FARMACIA</p>
+                        <h1>Productos y stock</h1>
+                        <p class="intro">Medicamentos, vacunas e insumos con su existencia. <%= esAdmin ? 'Como administrador puedes crear productos y registrar entradas y ajustes.' : 'Solo el administrador modifica productos y stock.' %></p>
+                    </div>
+                </section>
+                <% if (alertas.length) { %>
+                <p class="alert alert-error" role="alert"><strong><%= alertas.length %> producto<%= alertas.length === 1 ? '' : 's' %> en o bajo el stock mínimo:</strong> <%= alertas.slice(0, 5).map(function (a) { return a.nombre + ' (' + a.stock + ')'; }).join(', ') %><%= alertas.length > 5 ? ' y ' + (alertas.length - 5) + ' más' : '' %>. <a class="text-link text-link-dark" href="/farmacia?bajo=1">Ver lista</a></p>
+                <% } %>
+
+                <form class="data-form filter-bar" method="get" action="/farmacia" role="search">
+                    <label for="f-q">Buscar
+                        <input id="f-q" name="q" type="search" value="<%= q %>" maxlength="100" placeholder="Nombre, código o categoría" autocomplete="off">
+                    </label>
+                    <label class="check-row"><input type="checkbox" name="bajo" value="1"<%= bajo ? ' checked' : '' %>> Solo bajo stock</label>
+                    <label class="check-row"><input type="checkbox" name="inactivos" value="1"<%= inactivos ? ' checked' : '' %>> Incluir inactivos</label>
+                    <div class="filter-actions">
+                        <button class="button" type="submit">Buscar</button>
+                        <a class="text-link text-link-dark" href="/farmacia">Limpiar</a>
+                    </div>
+                </form>
+
+                <div class="management-grid">
+                    <% if (esAdmin) { %>
+                    <form class="data-form" method="post" action="/farmacia" novalidate>
+                        <h3>Nuevo producto</h3>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                        <%- include('../partials/producto-campos', { values: values, errors: errors, categorias: categorias, alta: true }) %>
+                        <button class="button" type="submit">Crear producto</button>
+                    </form>
+                    <% } %>
+
+                    <div class="data-list-panel">
+                        <div class="list-heading"><h3>Catálogo</h3><span><%= total %></span></div>
+                        <% if (filas.length) { %>
+                        <div class="record-list">
+                            <% filas.forEach(function (p) { %>
+                            <article class="record">
+                                <div class="record-main">
+                                    <div class="pet-avatar pet-dog-light" aria-hidden="true"><%= p.nombre.charAt(0).toUpperCase() %></div>
+                                    <div class="record-copy">
+                                        <strong><%= p.nombre %></strong>
+                                        <span><%= p.codigo %> · <%= p.categoria %> · <%= dinero(p.precio) %> · Stock: <b><%= p.stock %></b> <%= p.unidad %><%= p.stock_minimo > 0 ? ' (mín. ' + p.stock_minimo + ')' : '' %></span>
+                                    </div>
+                                </div>
+                                <div class="record-actions">
+                                    <% if (!p.activo) { %><span class="status status-waiting">Inactivo</span>
+                                    <% } else if (p.bajo) { %><span class="status status-cancelled">Bajo stock</span>
+                                    <% } else if (p.sinExistencias) { %><span class="status status-noshow">Sin existencias</span><% } %>
+                                    <a class="record-confirm" href="/farmacia/<%= p.id %>" aria-label="Ver <%= p.nombre %>">Ver</a>
+                                </div>
+                            </article>
+                            <% }) %>
+                        </div>
+                        <%- include('../partials/pagination', { pager: pager }) %>
+                        <% } else { %>
+                        <p class="empty-state"><%= (q || bajo) ? 'Ningún producto coincide con la búsqueda.' : 'Todavía no hay productos.' %></p>
+                        <% } %>
+                    </div>
+                </div>
+<%- include('../partials/layout-end') %>

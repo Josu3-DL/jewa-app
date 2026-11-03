@@ -10,7 +10,7 @@ const MODULES = [
     { key: 'mascotas', path: '/mascotas', label: 'Mascotas', roles: ALL, issue: 'ISS-06', blurb: 'Fichas de pacientes y transferencias.' },
     { key: 'clientes', path: '/clientes', label: 'Clientes', roles: ALL, issue: 'ISS-06', blurb: 'Propietarios, contactos y consentimiento.' },
     { key: 'historial', path: '/historial', label: 'Historial clínico', roles: ['admin', 'veterinario'], issue: 'ISS-08', blurb: 'Consultas, signos vitales, vacunas y tratamientos.' },
-    { key: 'farmacia', path: '/farmacia', label: 'Farmacia', roles: ALL, issue: 'ISS-11', blurb: 'Productos, lotes, kárdex y alertas.' },
+    { key: 'farmacia', path: '/farmacia', label: 'Farmacia', roles: ALL, issue: 'ISS-11', blurb: 'Productos, stock y alertas de bajo stock.' },
     { key: 'ventas', path: '/ventas', label: 'Ventas', roles: ALL, issue: 'ISS-14', blurb: 'Ventas y cobros con recibo.' },
     { key: 'recordatorios', path: '/recordatorios', label: 'Recordatorios', roles: ALL, issue: 'ISS-15', blurb: 'Avisos de citas, vacunas y tratamientos.' },
     { key: 'reportes', path: '/reportes', label: 'Reportes', roles: ['admin', 'veterinario'], issue: 'ISS-16', blurb: 'Reportes y exportación a CSV.' },
