@@ -34,7 +34,7 @@ const LABELS = {
 
 // [n, hito, etiquetas, título, refs, criterios[]]
 const I = [];
-const add = (n, ms, labels, title, refs, criteria) => I.push({ n, ms, labels, title, refs, criteria });
+const add = (n, ms, labels, title, refs, criteria, nota = '') => I.push({ n, ms, labels, title, refs, criteria, nota });
 
 // ───────── Día 1
 add(1, 'd1', ['tipo:tecnico', 'prio:alta', 'v1'], 'Base técnica: proyecto, scripts, migraciones y esquema', 'docs/02-arquitectura.md · docs/03-modelo-datos.md', [
@@ -109,13 +109,12 @@ add(8, 'd2', ['tipo:funcional', 'prio:alta', 'v1'], 'Consulta e historial clíni
   'Solo el veterinario crea consultas (T-03)',
   'Motivo, anamnesis, examen físico, diagnóstico, observaciones, peso, temperatura, FC y FR, con validación de rangos',
   'Desde una cita (precarga datos y la pasa a atendida) o sin cita (urgencia)',
-  'Insumos usados se agregan en el mismo formulario (el descuento se hace en ISS-12)',
   'Historial cronológico de la mascota con filtros',
   'No existe ruta ni botón de borrado; "Anular" exige motivo y queda registrado quién, cuándo y por qué (T-12, T-13)',
   'La consulta anulada se muestra marcada y conserva su contenido',
   'Gráfica de evolución del peso con Chart.js local; mensaje claro con menos de 2 mediciones; ignora consultas anuladas',
   'Formulario usable en tablet y teléfono',
-]);
+], 'Los insumos usados en la consulta ya no se registran ni descuentan (D-41/D-38): el stock se descuenta solo en la venta (ISS-14).');
 add(9, 'd2', ['tipo:funcional', 'tipo:seguridad', 'prio:media', 'v1'], 'Adjuntos del expediente', 'RF-18', [
   'jpg, png, webp y pdf; máximo 5 MB; nombre generado',
   'Guardados fuera de `public/` y servidos por ruta autenticada con control de rol',
@@ -125,107 +124,88 @@ add(9, 'd2', ['tipo:funcional', 'tipo:seguridad', 'prio:media', 'v1'], 'Adjuntos
 ]);
 add(10, 'd2', ['tipo:funcional', 'prio:alta', 'v1'], 'Tratamientos, vacunas y documentos imprimibles', 'RF-20 · RF-22 · RF-23 · RF-24 · RN-02 · RN-05 · CU-06 · CU-07', [
   'Tratamientos en una consulta: medicamento del catálogo o texto, dosis, frecuencia, duración e indicaciones',
-  'Receta imprimible con datos de la clínica, mascota, propietario y veterinario (y colegiado si existe)',
-  'Vacunas: producto, lote, fecha, próxima dosis y veterinario; lote y próxima dosis obligatorios (T-14)',
-  'La vacuna descuenta del lote elegido (usa ISS-12)',
+  'Vacunas: producto, lote (único, asignado solo), fecha, próxima dosis y veterinario; próxima dosis obligatoria (T-14)',
+  'Registrar una vacuna NO descuenta stock (el producto se cobra en la venta)',
   'Carné de vacunación imprimible por mascota',
+  'Receta imprimible (opcional) con datos de la clínica, mascota, propietario y veterinario (y colegiado si existe)',
   'Impresión limpia con `@media print`, sin barra lateral ni botones',
-]);
-add(11, 'd2', ['tipo:funcional', 'prio:alta', 'v1'], 'Productos, lotes, kárdex y alertas de inventario', 'RF-21 · RF-26 · RF-27 · RF-28 · RN-04 · D-15 · D-16', [
-  'CRUD de productos (solo admin): código, categoría, es_medicamento, principio activo, presentación, especie, unidad, precio, stock mínimo; imagen como archivo; desactivar en lugar de borrar',
-  'Entrada de stock crea o suma a un lote (código y vencimiento)',
-  'Kárdex por producto con entradas, salidas, ajustes y reversas; ajuste manual con motivo, solo admin',
-  'Stock del producto = suma de lotes; `cantidad_actual` nunca negativa (T-09, T-10, T-11, T-20)',
-  'Alertas de stock bajo mínimo, lotes por vencer (30 días) y vencidos, visibles en Farmacia (y en Inicio vía ISS-17)',
-  'Lotes vencidos no cuentan como stock disponible',
-]);
+], 'Alcance académico (D-41): un solo imprimible obligatorio (el carné); la receta comparte la hoja y se incluyó.');
+add(11, 'd2', ['tipo:funcional', 'prio:alta', 'v1'], 'Productos y stock simple con alertas', 'RF-21 · RF-26 · RF-27 · D-16 · D-41', [
+  'CRUD de productos (solo admin): código, categoría, es_medicamento, presentación, unidad, precio, stock mínimo; desactivar en lugar de borrar',
+  'Cada producto tiene un lote único interno (`UNICO`) creado automáticamente; sin vencimientos ni FEFO',
+  'Entrada manual de stock con nota y ajuste con motivo (solo admin); lista simple de movimientos por producto',
+  'Stock nunca negativo (T-09, se completa al vender en ISS-14)',
+  'Alerta de stock bajo el mínimo, visible en Farmacia (y en Inicio vía ISS-17)',
+  'Las 4 vacunas base de la migración 003 aparecen en el catálogo',
+], 'Alcance académico (D-41): sin lotes con vencimiento, FEFO ni kárdex detallado.');
 add(12, 'd2', ['tipo:funcional', 'prio:alta', 'v1'], 'Descuento automático de inventario y reversas', 'RF-25 · RN-04 · RN-08', [
-  'Insumos de consulta y vacunas descuentan por FEFO dentro de una transacción',
-  'Producto vencido o sin existencias se rechaza con mensaje claro',
-  'Anular consulta o venta crea movimientos de reversa',
-  'Pruebas T-08, T-09, T-12 y T-15',
-]);
+  'NO SE IMPLEMENTA POR SEPARADO: el descuento de stock y la reversa al anular se hacen en ISS-14 (ventas)',
+], 'Alcance académico (D-41): cerrado como "no planificado"; absorbido por ISS-14.');
 add(13, 'd2', ['tipo:funcional', 'prio:media', 'v1'], 'Proveedores y registro de compras', 'RF-29 · RF-30 (simplificado)', [
-  'CRUD de proveedores (solo admin)',
-  'Registrar compra con proveedor, productos, lote, vencimiento y costo; genera movimientos de entrada',
-  'Historial de compras por proveedor',
-]);
-add(14, 'd2', ['tipo:funcional', 'prio:alta', 'v1'], 'Ventas y cobros con recibo imprimible', 'RF-43 · RN-08 · RN-09', [
-  'Carrito con productos y servicios; descuento; método efectivo, tarjeta o transferencia',
-  'Descuenta stock por lote en transacción; no vende vencido ni sin existencias',
-  'Número de venta `V-000123` y recibo imprimible en córdobas',
-  'Anular venta (solo admin) con motivo y reversa de stock (T-15)',
+  'NO SE IMPLEMENTA: la entrada de stock es manual, con nota, dentro de ISS-11',
+], 'Alcance académico (D-41): cerrado como "no planificado".');
+add(14, 'd2', ['tipo:funcional', 'prio:alta', 'v1'], 'Ventas y cobros con recibo imprimible', 'RF-43 · RN-08 · RN-09 · D-41', [
+  'Carrito con productos y servicios; descuento; método efectivo, tarjeta o transferencia; pago completo (sin pagos parciales)',
+  'Descuenta stock en transacción y rechaza vender sin existencias (T-09)',
+  'Número de venta `V-000123` y recibo imprimible en córdobas (reutiliza las hojas de ISS-10)',
+  'Anular venta (solo admin) con motivo y devolución del stock (T-15)',
   'Importes en centavos enteros (T-18); IVA según Ajustes',
   'Venta asociada a un propietario o de mostrador',
   'Usable en tablet y teléfono',
-]);
+], 'Alcance académico (D-41): absorbe el descuento de inventario (ISS-12); sin vencidos ni FEFO.');
 
 // ───────── Día 3
 add(15, 'd3', ['tipo:funcional', 'prio:alta', 'v1'], 'Recordatorios y consentimiento', 'RF-31 · RF-32 · RF-33 · RF-34 · RF-35 · RN-06 · D-09 · Ley 787', [
-  'Lista diaria: citas de las próximas 24 h, vacunas próximas o vencidas y tratamientos por terminar',
-  'Plantillas editables con variables; mensaje prellenado',
-  'Botón "WhatsApp" abre `wa.me/505XXXXXXXX?text=...`; "Marcar enviado" guarda estado y usuario; historial de envíos',
+  'Lista diaria: citas de las próximas 24 h y vacunas próximas o vencidas (por próxima dosis)',
+  'Mensaje prellenado; botón "WhatsApp" abre `wa.me/505XXXXXXXX?text=...`; "Marcar enviado" guarda estado y usuario',
   'Excluye a clientes sin consentimiento (T-17)',
-  'Exportar la ficha de un titular a petición (HTML imprimible) y aviso de privacidad breve en Ajustes',
-]);
-add(16, 'd3', ['tipo:funcional', 'prio:alta', 'v1'], 'Reportes y exportación', 'RF-36 · RF-37 · RF-38 · RF-39 · RF-40 (simplificado)', [
-  'Citas por período, responsable y estado',
-  'Consultas y diagnósticos frecuentes (solo clínicos)',
-  'Vacunas aplicadas y pendientes',
-  'Inventario, movimientos, vencimientos y compras',
+], 'Alcance académico (D-41): sin plantillas editables, sin historial de envíos, sin exportación de la ficha del titular ni aviso de privacidad en Ajustes.');
+add(16, 'd3', ['tipo:funcional', 'prio:alta', 'v1'], 'Reportes y exportación', 'RF-36 · RF-40 (simplificado) · D-41', [
+  'Reporte de ventas por día',
+  'Reporte de citas por período, responsable y estado',
+  'Reporte de stock bajo el mínimo',
   'Filtros por fecha y permisos por rol',
-  'Exportar a CSV (UTF-8 con BOM) con protección contra inyección de fórmulas; vista imprimible',
-]);
-add(17, 'd3', ['tipo:funcional', 'tipo:ui', 'prio:media', 'v1'], 'Panel de inicio con datos reales', 'RF-45 · U-02', [
-  'Tarjetas: citas de hoy, pacientes activos, recordatorios del día e ingresos del mes (esta última solo para admin)',
-  'Próximas citas y pacientes recientes reales',
-  'Gráfico de visitas de los últimos 7 días calculado con datos reales',
-  'Alertas de stock bajo y vencimientos',
-  'Aviso si el último respaldo tiene más de 36 h',
+  'Exportar a CSV (UTF-8 con BOM) con protección contra inyección de fórmulas',
+], 'Alcance académico (D-41): solo 3 reportes.');
+add(17, 'd3', ['tipo:funcional', 'tipo:ui', 'prio:media', 'v1'], 'Panel de inicio con datos reales', 'RF-45 · U-02 · D-41', [
+  'Tarjetas: citas de hoy, pacientes activos y ventas del día (esta última solo para admin)',
+  'Próximas citas reales',
+  'Alertas de stock bajo y de vacunas por vencer',
   'Se ve bien en PC, tablet y teléfono',
-]);
-add(18, 'd3', ['tipo:tecnico', 'prio:alta', 'v1'], 'Respaldo, restauración y tolerancia a fallos', 'RNF-06 · RNF-10 · RF-46 · docs/07-despliegue-operacion.md', [
-  '`npm run backup` con `backup()` de `node:sqlite` y copia de `uploads/`, a una unidad externa configurable (USB o disco)',
-  'Retención 14 diarios + 8 semanales; programación diaria con el Programador de tareas de Windows',
-  'Procedimiento de restauración **probado** sobre una BD limpia',
-  'Formularios largos guardan borrador en `localStorage` y lo recuperan; se limpia al guardar',
-  'Mensaje claro si falla el envío por falta de conexión con el servidor (la PC apagada o sin Wi-Fi)',
-]);
+], 'Alcance académico (D-41): sin gráfico de visitas, sin pacientes recientes y sin aviso de respaldo.');
+add(18, 'd3', ['tipo:tecnico', 'prio:alta', 'v1'], 'Respaldo y restauración', 'RNF-06 · RF-46 · docs/07-despliegue-operacion.md · D-41', [
+  '`npm run backup` con `backup()` de `node:sqlite` y copia de `uploads/`, a una carpeta o unidad configurable',
+  'Procedimiento de restauración **probado** sobre una base limpia',
+], 'Alcance académico (D-41): sin programación automática, sin retención y sin borradores en `localStorage`.');
 add(19, 'd3', ['tipo:pruebas', 'tipo:seguridad', 'prio:alta', 'v1'], 'Pruebas y revisión de seguridad final', 'docs/06-pruebas.md · RNF-04 · RNF-05', [
-  'Casos T-01 a T-22 con `node:test` y `supertest` sobre BD en memoria; reloj inyectable; datos ficticios; `npm test` pasa limpio',
-  'Flujo completo: propietario y mascota → cita → consulta → vacuna → descuento → cobro → recibo',
-  'Lista manual: Chrome, Firefox y Edge; PC, tablet y teléfono reales conectados por Wi-Fi a la PC; impresión; corte de red',
+  'Casos de `06-pruebas.md` aplicables (ver nota D-41) con `node:test` y `supertest`; `npm test` pasa limpio',
+  'Flujo completo: propietario y mascota → cita → consulta → vacuna → venta → recibo',
+  'Lista manual en Edge/Chrome; PC, tablet y teléfono; impresión',
   'Lista de seguridad de `06-pruebas.md` completa; `git ls-files` sin `.env`, `.db`, `uploads/`, `backups/`',
   'Enlaces directos a pantallas ajenas devuelven 403; `npm audit` revisado',
-  'Defectos encontrados registrados como issues',
-]);
-add(20, 'd3', ['tipo:tecnico', 'tipo:docs', 'prio:alta', 'v1'], 'Instalación en la PC de la clínica, manual y runbook', 'docs/07-despliegue-operacion.md · RNF-01 · Q-03', [
-  'Servidor escucha en la red local (`HOST=0.0.0.0`); IP fija o reservada en el router; regla del firewall de Windows para el puerto',
-  'Se inicia solo con Windows (NSSM o Programador de tareas) y se reinicia si falla; la PC no entra en suspensión',
-  'Tablet y teléfono acceden por `http://<IP-de-la-PC>:3000` (dirección guardada como marcador)',
-  'Guía de primer arranque y del procedimiento de actualización con respaldo previo',
-  'Manual de usuario breve por rol con datos ficticios',
-  'Runbook de problemas frecuentes y recomendaciones de la red (Wi-Fi con WPA2/WPA3, sin exponer a internet)',
-  'Verificación final con la lista de salida de `05-plan-y-roadmap.md`',
-]);
+], 'Alcance académico (D-41): T-08, T-10, T-11 y T-20 ya no aplican.');
+add(20, 'd3', ['tipo:tecnico', 'tipo:docs', 'prio:media', 'v1'], 'Instalación: README de 5 pasos', 'docs/07-despliegue-operacion.md · D-41', [
+  'README con 5 pasos: requisitos, instalar, configurar `.env`, crear el administrador, arrancar y entrar desde otro dispositivo',
+  'Aviso de no exponer el servidor a internet',
+], 'Alcance académico (D-41): sin servicio de Windows, runbook ni manual por rol.');
 
 // ───────── v2
 add(21, 'v2', ['tipo:funcional', 'prio:media', 'v2'], 'Mensajería automática: API de WhatsApp Business y correo SMTP', 'RF-31 · D-09 · D-10', [
   'Evaluar proveedor de WhatsApp Business: costo, verificación y plantillas aprobadas',
   'SMTP configurable con tarea programada y manejo de rebotes',
   'Envío automático con estado de entrega',
-]);
+], 'Alcance académico (D-41): fuera de alcance (v2); cerrado como "no planificado".');
 add(22, 'v2', ['tipo:funcional', 'prio:baja', 'v2'], 'Compras y finanzas avanzadas', 'RF-30 · H-21 · Sección 1.4', [
   'Órdenes de compra con recepción en dos pasos y recepción parcial',
   'Cierre de caja diario por método de pago, pagos parciales y crédito a clientes',
   'Factura fiscal electrónica: investigar requisitos legales vigentes e integrar con el proveedor autorizado',
-]);
+], 'Alcance académico (D-41): fuera de alcance (v2); cerrado como "no planificado".');
 add(23, 'v2', ['tipo:funcional', 'prio:baja', 'v2'], 'Plataforma: HTTPS en red local, multisucursal, portal de clientes y PDF/Excel', 'RNF-09 · RF-40 · Sección 1.4 · D-13', [
   'HTTPS en la LAN con certificado propio instalado en los dispositivos',
   'Soporte multisucursal con permisos por sucursal',
   'Portal de autoservicio para propietarios (citas y vacunas de sus mascotas)',
   'Generación de PDF en servidor y exportación `.xlsx`',
-]);
+], 'Alcance académico (D-41): fuera de alcance (v2); cerrado como "no planificado".');
 
 const id = (n) => `ISS-${String(n).padStart(2, '0')}`;
 const fullTitle = (i) => `[${id(i.n)}] ${i.title}`;
@@ -233,6 +213,7 @@ const body = (i) => [
   `**Hito:** ${MILESTONES[i.ms]}`,
   `**Referencias:** ${i.refs}`,
   '',
+  ...(i.nota ? ['> ' + i.nota, ''] : []),
   '## Criterios de aceptación',
   ...i.criteria.map((c) => `- [ ] ${c}`),
   '',
@@ -253,12 +234,23 @@ if (cmd === 'md') {
     for (const i of list) out.push(`| ${id(i.n)} | ${i.title} | ${i.labels.join(', ')} | ${i.refs} |`);
     out.push('');
     for (const i of list) {
-      out.push(`### ${id(i.n)} – ${i.title}`, '', `Etiquetas: ${i.labels.join(', ')}  `, `Referencias: ${i.refs}`, '', ...i.criteria.map((c) => `- [ ] ${c}`), '');
+      out.push(`### ${id(i.n)} – ${i.title}`, '', `Etiquetas: ${i.labels.join(', ')}  `, `Referencias: ${i.refs}`, '', ...(i.nota ? ['> ' + i.nota, ''] : []), ...i.criteria.map((c) => `- [ ] ${c}`), '');
     }
   }
   mkdirSync(join(root, 'docs'), { recursive: true });
   writeFileSync(join(root, 'docs', 'ISSUES.md'), out.join('\n'), 'utf8');
   console.log(`docs/ISSUES.md generado (${I.length} issues).`);
+} else if (cmd === 'update') {
+  // Reescribe título y cuerpo de los issues ya creados (los de la lista con n >= desde) con los criterios actuales.
+  const desde = Number(process.argv[3] && !process.argv[3].startsWith('--') ? process.argv[3] : 1);
+  const existing = JSON.parse(gh(['issue', 'list', '-R', REPO, '--state', 'all', '--limit', '500', '--json', 'number,title']));
+  for (const i of I.filter((x) => x.n >= desde)) {
+    const hit = existing.find((e) => e.title.startsWith(`[${id(i.n)}]`));
+    if (!hit) { console.log(`no existe: ${id(i.n)}`); continue; }
+    if (dry) { console.log(`(simulación) #${hit.number} ${fullTitle(i)}`); continue; }
+    gh(['issue', 'edit', String(hit.number), '-R', REPO, '-t', fullTitle(i), '-F', '-'], body(i));
+    console.log(`actualizado #${hit.number} ${fullTitle(i)}`);
+  }
 } else if (cmd === 'create') {
   if (dry) {
     for (const i of I) console.log(`${fullTitle(i)}  [${MILESTONES[i.ms]}]  {${i.labels.join(', ')}}`);
@@ -279,5 +271,5 @@ if (cmd === 'md') {
     console.log(`Creados: ${created}`);
   }
 } else {
-  console.log('Uso: node scripts/issues.mjs md | create [--dry]');
+  console.log('Uso: node scripts/issues.mjs md | create [--dry] | update [desde] [--dry]');
 }
