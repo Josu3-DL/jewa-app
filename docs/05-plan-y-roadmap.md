@@ -1,6 +1,24 @@
 # Plan y roadmap
 
-Un desarrollador. 3 días. Los issues están en `docs/ISSUES.md` (23 en total) y se agrupan en hitos.
+Un desarrollador. Proyecto académico (D-41). Los issues están en `docs/ISSUES.md` (23 en total) y se agrupan en hitos.
+
+## Alcance académico (D-41)
+Se recorta lo pendiente; lo construido (ISS-01 a ISS-09) se conserva.
+
+| Issue | Decisión |
+|---|---|
+| ISS-10 Tratamientos y vacunas | Hacer. Un solo imprimible: carné de vacunación. |
+| ISS-11 Productos y stock | Hacer, simple: stock, mínimo, entradas y ajustes con motivo, alerta de bajo stock. Lote único interno por producto; sin vencimientos ni FEFO. |
+| ISS-12 Descuento de inventario | **No se implementa**: se fusiona en ISS-14. |
+| ISS-13 Proveedores y compras | **No se implementa** (entrada manual en ISS-11). |
+| ISS-14 Ventas y cobros | Hacer. Descuenta stock en transacción; anular devuelve stock; sin pagos parciales. |
+| ISS-15 Recordatorios | Lista de pendientes + botón de WhatsApp + consentimiento. |
+| ISS-16 Reportes | 3 reportes con CSV: ventas por día, citas, stock bajo. |
+| ISS-17 Panel de inicio | Contadores del día y alertas. |
+| ISS-18 Respaldo | Script de respaldo + pasos de restauración. Sin programación automática. |
+| ISS-19 Pruebas y seguridad | Mantener como cierre. |
+| ISS-20 Instalación | README de 5 pasos. Sin servicio de Windows ni runbook. |
+| ISS-21 a ISS-23 | **No se implementan** (v2). |
 
 ## Hitos
 | Hito | Objetivo | Issues |
@@ -45,15 +63,14 @@ Un desarrollador. 3 días. Los issues están en `docs/ISSUES.md` (23 en total) y
 
 ## Lista de verificación de salida (v1)
 - [ ] Un administrador, un veterinario y una recepcionista pueden completar sus casos de uso sin ayuda.
-- [ ] Flujo completo: registrar propietario y mascota → cita → consulta → vacuna → descuento de stock → cobro → recibo.
-- [ ] Anular una consulta y una venta devuelve el stock.
-- [ ] No se puede vender un producto vencido ni sin existencias.
+- [ ] Flujo completo: registrar propietario y mascota → cita → consulta → vacuna → venta (descuenta stock) → recibo.
+- [ ] Anular una venta devuelve el stock; anular una consulta la deja marcada (D-41).
+- [ ] No se puede vender un producto sin existencias.
 - [ ] No se pueden crear dos citas traslapadas para el mismo responsable.
 - [ ] Una tablet y un teléfono reales, conectados por Wi-Fi, usan el sistema sin desbordes ni controles pequeños.
-- [ ] El servidor arranca solo al encender la PC y sigue activo sin suspensión.
-- [ ] Respaldo automático a unidad externa ejecutado y **restauración probada** en una base limpia.
+- [ ] Respaldo ejecutado con el script y **restauración probada** en una base limpia.
 - [ ] Revisión de seguridad hecha (`docs/06-pruebas.md`, sección Seguridad).
-- [ ] Manual de usuario y runbook entregados.
+- [ ] README de instalación entregado.
 
 ## Riesgos del plan
 Ver `08-huecos-y-riesgos.md`. Si el Día 2 se atrasa, el orden de recorte es: adjuntos (ISS-09) → carné imprimible y gráfica de peso (dentro de ISS-10 e ISS-08) → reportes menos críticos (RF-37, RF-38, dentro de ISS-16).
