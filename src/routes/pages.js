@@ -12,7 +12,7 @@ router.get('/', requireModule('inicio'), (req, res) => {
 // Módulos aún no implementados: página provisional con el mismo diseño y control de acceso.
 // Cada issue reemplaza su ruta por la real.
 // (Ajustes, Clientes y Mascotas ya tienen sus rutas reales.)
-const IMPLEMENTADOS = ['inicio', 'ajustes', 'clientes', 'mascotas', 'citas'];
+const IMPLEMENTADOS = ['inicio', 'ajustes', 'clientes', 'mascotas', 'citas', 'historial'];
 for (const mod of MODULES.filter((m) => !IMPLEMENTADOS.includes(m.key))) {
     router.get(mod.path, requireModule(mod.key), (req, res) => {
         res.render('placeholder', { title: mod.label, active: mod.key, mod });

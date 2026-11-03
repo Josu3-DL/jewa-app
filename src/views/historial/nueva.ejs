@@ -1,0 +1,31 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow"><%= cita ? 'CONSULTA DESDE CITA · ' + cita.fecha + ' ' + cita.horaTexto : 'CONSULTA SIN CITA (URGENCIA)' %></p>
+                        <h1>Nueva consulta</h1>
+                        <p class="intro"><strong><%= m.nombre %></strong> · <%= m.numero_expediente %> · <%= m.especie %><% if (m.edad) { %> · <%= m.edad %><% } %> · Dueño: <%= m.propietario_nombre %> (<%= m.telefonoTexto %>)</p>
+                    </div>
+                    <a class="text-link text-link-dark" href="<%= cita ? '/citas/' + cita.id : '/historial?mascota=' + m.id %>">← Cancelar</a>
+                </section>
+                <form class="data-form form-ancho" method="post" action="/historial" novalidate>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                    <input type="hidden" name="mascota" value="<%= m.id %>">
+                    <% if (cita) { %><input type="hidden" name="cita" value="<%= cita.id %>"><% } %>
+                    <h3>Consulta</h3>
+                    <%- include('../partials/field', { label: 'Motivo de la consulta', name: 'motivo', value: values.motivo, error: errors.motivo, maxlength: 300, required: true, autocomplete: 'off' }) %>
+                    <%- include('../partials/textarea', { label: 'Anamnesis (opcional)', name: 'anamnesis', value: values.anamnesis, error: errors.anamnesis, maxlength: 2000, hint: 'Lo que cuenta el dueño: síntomas, desde cuándo, alimentación.' }) %>
+                    <%- include('../partials/textarea', { label: 'Examen físico (opcional)', name: 'examen_fisico', value: values.examen_fisico, error: errors.examen_fisico, maxlength: 2000 }) %>
+                    <%- include('../partials/field', { label: 'Diagnóstico', name: 'diagnostico', value: values.diagnostico, error: errors.diagnostico, maxlength: 1000, required: true, autocomplete: 'off' }) %>
+                    <%- include('../partials/textarea', { label: 'Observaciones (opcional)', name: 'observaciones', value: values.observaciones, error: errors.observaciones, maxlength: 2000 }) %>
+
+                    <h3>Signos vitales (opcionales)</h3>
+                    <div class="vitales">
+                        <%- include('../partials/field', { label: 'Peso (kg)', name: 'peso_kg', value: values.peso_kg, error: errors.peso_kg, maxlength: 7, inputmode: 'decimal', autocomplete: 'off' }) %>
+                        <%- include('../partials/field', { label: 'Temperatura (°C)', name: 'temperatura_c', value: values.temperatura_c, error: errors.temperatura_c, maxlength: 5, inputmode: 'decimal', autocomplete: 'off' }) %>
+                        <%- include('../partials/field', { label: 'Frec. cardiaca (lpm)', name: 'frecuencia_cardiaca', value: values.frecuencia_cardiaca, error: errors.frecuencia_cardiaca, maxlength: 3, inputmode: 'numeric', autocomplete: 'off' }) %>
+                        <%- include('../partials/field', { label: 'Frec. respiratoria (rpm)', name: 'frecuencia_respiratoria', value: values.frecuencia_respiratoria, error: errors.frecuencia_respiratoria, maxlength: 3, inputmode: 'numeric', autocomplete: 'off' }) %>
+                    </div>
+                    <p class="form-note">Una consulta guardada no se puede borrar ni editar; si hay un error se anula con un motivo y se registra una nueva.</p>
+                    <button class="button" type="submit">Guardar consulta</button>
+                </form>
+<%- include('../partials/layout-end') %>

@@ -1,0 +1,14 @@
+<%# Una consulta en el historial. Parámetros: c, mostrarMascota %>
+<article class="record consulta<%= c.anulada ? ' es-anulada' : '' %>">
+    <div class="record-main">
+        <div class="record-copy">
+            <strong><a class="text-link text-link-dark" href="/historial/<%= c.id %>"><%= c.fechaTexto %></a><% if (locals.mostrarMascota) { %> · <%= c.mascota_nombre %> (<%= c.numero_expediente %>)<% } %></strong>
+            <span>Motivo: <%= c.motivo %></span>
+            <span>Diagnóstico: <%= c.diagnostico %></span>
+            <span><%= c.veterinario_nombre %><%= c.resumen ? ' · ' + c.resumen : '' %></span>
+        </div>
+    </div>
+    <div class="record-actions">
+        <% if (c.anulada) { %><span class="status status-cancelled">Anulada</span><% } else { %><span class="status status-done">Vigente</span><% } %>
+    </div>
+</article>

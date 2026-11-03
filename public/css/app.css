@@ -182,3 +182,13 @@ a.record-confirm { display: inline-flex; align-items: center; text-decoration: n
 @media (max-width: 1599px) {
     .semana { grid-template-columns: 1fr; }
 }
+
+/* ───── Historial clínico (ISS-08) ───── */
+.form-ancho { max-width: 760px; }
+.data-form textarea { resize: vertical; font-family: inherit; line-height: 1.5; }
+.vitales { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0 1rem; }
+.grafica { position: relative; height: 260px; }
+.ficha-consulta { margin-bottom: 1.2rem; }
+.texto-largo { white-space: pre-wrap; }
+.es-anulada { opacity: 0.8; }
+.consulta.es-anulada strong a { text-decoration: line-through; }

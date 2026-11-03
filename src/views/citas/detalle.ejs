@@ -29,6 +29,13 @@
                             <h3>Paciente</h3>
                             <p class="form-note"><a class="text-link text-link-dark" href="/mascotas/<%= c.mascota_id %>"><%= c.mascota_nombre %> · <%= c.numero_expediente %></a><br>Dueño: <a class="text-link text-link-dark" href="/clientes/<%= c.propietario_id %>"><%= c.propietario_nombre %></a> · <%= c.telefonoTexto %></p>
                         </section>
+                        <% if (puedeConsulta) { %>
+                        <section class="data-form">
+                            <h3>Atención</h3>
+                            <p class="form-note">Registra la consulta clínica; al guardarla, la cita pasa a atendida.</p>
+                            <a class="button" href="/historial/nueva?cita=<%= c.id %>">Iniciar consulta</a>
+                        </section>
+                        <% } %>
                         <% if (c.acciones.length) { %>
                         <section class="data-form">
                             <h3>Cambiar estado</h3>
