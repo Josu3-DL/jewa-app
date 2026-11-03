@@ -73,6 +73,8 @@ Reglas: cada prueba usa una BD nueva con migraciones aplicadas; datos de prueba 
 | Reportes: permisos (recepción 403, veterinario sin ventas), agrupación por día de Managua, anuladas sin sumar, filtros y rangos inválidos, CSV con BOM/CRLF/escape, **protección contra inyección de fórmulas**, bitácora de exportaciones y XSS escapado | ✅ ISS-16 | `test/reportes-services.test.js`, `test/reportes.test.js` |
 | Panel de inicio: contadores por día de Managua, ventas solo para el administrador, alertas de stock y vacunas (próximas, vencidas y refrescadas), listas de 5 con "y N más", próximas citas reales y XSS escapado | ✅ ISS-17 | `test/panel.test.js` |
 | Respaldo: carpeta con base verificada, uploads y manifiesto; copia consistente con el sistema en uso (WAL); errores claros sin dejar respaldos a medias; **restauración sobre una base limpia** (datos y archivos) y sobre datos existentes (lo actual se guarda aparte); respaldo dañado o inválido no toca lo actual; scripts de punta a punta | ✅ ISS-18 | `test/respaldo.test.js` |
+| Flujo completo por HTTP con tres roles: propietario y mascota → cita → consulta (la cita pasa a atendida) → vacuna → venta (descuenta stock) → recibo con total exacto; la bitácora recoge cada paso | ✅ ISS-19 | `test/flujo-completo.test.js` |
+| Enlaces directos a pantallas ajenas: matriz rol × 35 pantallas (sin sesión → login; rol equivocado → 403; rol correcto → nunca 403) y 403 genérico sin trazas | ✅ ISS-19 | `test/acceso-roles.test.js` |
 | T-04 POST sin token CSRF → 403 (también en formularios multipart y sin saltarse la regla en otras rutas) | ✅ ISS-03 / ISS-06 | `test/security.test.js`, `test/clientes-mascotas.test.js` |
 | T-16 Desactivar cliente con mascotas activas → rechaza (servicio y HTTP) | ✅ ISS-06 | `test/clientes-mascotas-services.test.js`, `test/clientes-mascotas.test.js` |
 | T-19 Foto `.exe` disfrazado, PDF o > 2 MB → rechaza y no crea nada; foto fuera de `public/`, con nombre UUID y servida solo con sesión | ✅ ISS-06 (se amplía a adjuntos en ISS-09) | `test/clientes-mascotas.test.js` |
@@ -96,18 +98,19 @@ Además se verificó a mano en Edge (teléfono 400 px y PC 1366 px): login, erro
 **Respaldo:** ejecutar respaldo, borrar la BD de prueba, restaurar y comprobar que los datos están.
 
 ## Seguridad (revisión final)
-- [ ] Contraseñas con scrypt y sal; no aparecen en logs ni bitácora.
-- [ ] Todas las rutas con `requireAuth` y rol; probar enlaces directos a pantallas ajenas.
-- [ ] CSRF en todos los POST.
-- [ ] Sin concatenación de SQL (revisar con búsqueda de `${` dentro de consultas).
-- [ ] Sin `<%-` con datos de usuario.
-- [ ] Cookies `HttpOnly` y `SameSite`; `Secure` según `COOKIE_SECURE`; sesión expira por inactividad.
+Revisada en ISS-19. Evidencia: `test/security.test.js` (cookies, CSRF, CSP, SQL/`<%-`, T-01/T-02/T-21), `test/acceso-roles.test.js` (rol por pantalla), `test/adjuntos.test.js` y `test/clientes-mascotas.test.js` (archivos fuera de `public/`), `git ls-files` sin `.env`, `.db`, `uploads/` ni `backups/`, y `npm audit` sin vulnerabilidades. **Pendiente (operación, no código):** el ítem del puerto/firewall se comprueba en la PC real de la clínica; la lista manual de navegadores, dispositivos e impresión también.
+- [x] Contraseñas con scrypt y sal; no aparecen en logs ni bitácora.
+- [x] Todas las rutas con `requireAuth` y rol; probar enlaces directos a pantallas ajenas.
+- [x] CSRF en todos los POST.
+- [x] Sin concatenación de SQL (revisar con búsqueda de `${` dentro de consultas).
+- [x] Sin `<%-` con datos de usuario.
+- [x] Cookies `HttpOnly` y `SameSite`; `Secure` según `COOKIE_SECURE`; sesión expira por inactividad.
 - [ ] El puerto no está reenviado en el router; el firewall solo lo permite en red privada.
-- [ ] Archivos subidos fuera de `public/` y servidos por ruta autenticada.
-- [ ] Cabeceras de seguridad (`helmet`, CSP).
-- [ ] `.env`, `.db`, `uploads/`, `backups/` no están en git (`git ls-files`).
-- [ ] Mensajes de error genéricos hacia el usuario.
-- [ ] Ley 787: solo se piden los datos necesarios; el consentimiento queda registrado.
+- [x] Archivos subidos fuera de `public/` y servidos por ruta autenticada.
+- [x] Cabeceras de seguridad (`helmet`, CSP).
+- [x] `.env`, `.db`, `uploads/`, `backups/` no están en git (`git ls-files`).
+- [x] Mensajes de error genéricos hacia el usuario.
+- [x] Ley 787: solo se piden los datos necesarios; el consentimiento queda registrado.
 
 ## Criterio de aceptación global
 Todos los casos T-01 a T-22 pasan, la lista manual está completa y no hay defectos abiertos de severidad alta.
