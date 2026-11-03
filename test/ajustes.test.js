@@ -311,18 +311,18 @@ test('bitácora: filtros por usuario, entidad y fechas (y selección recordada e
     ins.run(ids.vet, 'consulta_creada', 'consulta', 52, '2026-11-02T15:00:00.000Z');
 
     const porEntidad = await getHtml(admin, '/ajustes/bitacora?entidad=cita');
-    assert.match(porEntidad.text, /cita_creada/);
-    assert.doesNotMatch(porEntidad.text, /consulta_creada/);
+    assert.match(porEntidad.text, /Cita creada/);
+    assert.doesNotMatch(porEntidad.text, /Consulta registrada/);
     assert.match(porEntidad.text, /<option value="cita" selected>Cita<\/option>/);
 
     const porUsuario = await getHtml(admin, `/ajustes/bitacora?usuario=${ids.vet}`);
-    assert.match(porUsuario.text, /consulta_creada/);
-    assert.doesNotMatch(porUsuario.text, /cita_creada/);
+    assert.match(porUsuario.text, /Consulta registrada/);
+    assert.doesNotMatch(porUsuario.text, /Cita creada/);
     assert.match(porUsuario.text, new RegExp(`<option value="${ids.vet}" selected>`));
 
     const porFecha = await getHtml(admin, '/ajustes/bitacora?desde=2026-11-02&hasta=2026-11-02');
-    assert.match(porFecha.text, /consulta_creada/);
-    assert.doesNotMatch(porFecha.text, /cita_creada/);
+    assert.match(porFecha.text, /Consulta registrada/);
+    assert.doesNotMatch(porFecha.text, /Cita creada/);
     assert.match(porFecha.text, /name="desde" type="date" value="2026-11-02"/);
 
     const vacio = await getHtml(admin, '/ajustes/bitacora?desde=2099-01-01');

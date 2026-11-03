@@ -56,8 +56,14 @@ const ACCIONES = {
     mascota_transferida: 'Mascota transferida a otro propietario',
     mascota_foto_cambiada: 'Foto de mascota cambiada',
     mascota_foto_quitada: 'Foto de mascota quitada',
+    cita_creada: 'Cita creada',
+    cita_editada: 'Cita editada',
+    cita_estado: 'Estado de cita cambiado',
+    consulta_creada: 'Consulta registrada',
+    consulta_anulada: 'Consulta anulada',
+    adjunto_subido: 'Archivo adjuntado',
 };
-const ENTIDADES = { usuario: 'Usuario', servicio: 'Servicio', config: 'Ajustes', propietario: 'Cliente', mascota: 'Mascota', cita: 'Cita', consulta: 'Consulta' };
+const ENTIDADES = { usuario: 'Usuario', servicio: 'Servicio', config: 'Ajustes', propietario: 'Cliente', mascota: 'Mascota', cita: 'Cita', consulta: 'Consulta', adjunto: 'Adjunto' };
 
 const etiquetaAccion = (codigo) => ACCIONES[codigo] || codigo;
 const etiquetaEntidad = (codigo) => ENTIDADES[codigo] || codigo;

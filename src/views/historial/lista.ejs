@@ -34,6 +34,8 @@
                 </section>
                 <% } %>
 
+                <% if (m) { %><%- include('../partials/adjuntos-panel', { adjuntos: adjuntos, mascotaId: m.id, puedeSubir: puedeCrear }) %><% } %>
+
                 <section class="panel">
                     <div class="panel-heading"><div><p class="eyebrow">CONSULTAS</p><h2><%= total %> registro<%= total === 1 ? '' : 's' %></h2></div></div>
                     <% if (filas.length) { %>

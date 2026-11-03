@@ -9,6 +9,7 @@ const { HttpError } = require('./errors');
 const RUTAS_MULTIPART = [
     /^\/mascotas$/,
     /^\/mascotas\/\d+\/foto$/,
+    /^\/adjuntos$/,
 ];
 
 const esRutaMultipart = (req) => Boolean(req.is('multipart/form-data')) && RUTAS_MULTIPART.some((r) => r.test(req.path));
@@ -21,6 +22,7 @@ const esRutaMultipart = (req) => Boolean(req.is('multipart/form-data')) && RUTAS
 function subida({ campo, maxBytes, isRequestValid }) {
     const lector = multer({
         storage: multer.memoryStorage(),
+        defParamCharset: 'utf8', // nombres con tildes (Radiografía.png) sin deformarse
         limits: { fileSize: maxBytes, files: 1, fields: 30, fieldSize: 100 * 1024 },
     }).single(campo);
 
