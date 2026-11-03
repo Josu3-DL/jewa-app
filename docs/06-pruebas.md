@@ -39,6 +39,8 @@ Reglas: cada prueba usa una BD nueva con migraciones aplicadas; datos de prueba 
 | T-21 | Búsqueda con `'; DROP TABLE` y `<script>` | Sin error y escapado |
 | T-22 | Horario fuera del laboral / fecha pasada | Advierte o rechaza según Ajustes |
 
+> **Alcance académico (D-41):** T-08 (consulta con descuento), T-10 (vencidos), T-11 (FEFO) y T-20 (concurrencia de ventas) dejan de aplicar o se reducen; T-09 y T-15 se prueban en ISS-14 (venta sin stock y anulación que devuelve stock); T-12 cubre solo la anulación de la consulta.
+
 ## Cobertura automatizada (se actualiza con cada issue)
 | Caso | Estado | Dónde |
 |---|---|---|
