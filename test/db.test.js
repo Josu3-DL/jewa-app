@@ -102,13 +102,13 @@ test('anular una consulta exige motivo y es definitivo', () => {
 
 test('transaction revierte todo si algo falla', () => {
     const db = testDb();
-    db.prepare("INSERT INTO productos (codigo, nombre, categoria) VALUES ('P1','X','Otro')").run();
-    db.prepare("INSERT INTO lotes (producto_id, codigo_lote, cantidad_actual) VALUES (1,'L1',3)").run();
+    const p = Number(db.prepare("INSERT INTO productos (codigo, nombre, categoria) VALUES ('P1','X','Otro')").run().lastInsertRowid);
+    const lote = Number(db.prepare("INSERT INTO lotes (producto_id, codigo_lote, cantidad_actual) VALUES (?,'L1',3)").run(p).lastInsertRowid);
     assert.throws(() => transaction(db, () => {
-        db.prepare('UPDATE lotes SET cantidad_actual = cantidad_actual - 2 WHERE id = 1').run();
-        db.prepare('UPDATE lotes SET cantidad_actual = cantidad_actual - 2 WHERE id = 1').run(); // queda -1: viola CHECK
+        db.prepare('UPDATE lotes SET cantidad_actual = cantidad_actual - 2 WHERE id = ?').run(lote);
+        db.prepare('UPDATE lotes SET cantidad_actual = cantidad_actual - 2 WHERE id = ?').run(lote); // queda -1: viola CHECK
     }), /CHECK/);
-    assert.equal(db.prepare('SELECT cantidad_actual AS n FROM lotes WHERE id = 1').get().n, 3);
+    assert.equal(db.prepare('SELECT cantidad_actual AS n FROM lotes WHERE id = ?').get(lote).n, 3);
 });
 
 test('openDb crea la carpeta, activa WAL y cierra bien', () => {

@@ -1,0 +1,75 @@
+<%# Tratamientos y vacunas de una consulta. Parámetros: c, tratamientos, medicamentos, vacunas, catalogoVacunas, puedeClinico, errT, valT, errV, valV %>
+<section class="panel">
+    <div class="panel-heading"><div><p class="eyebrow">INDICACIONES</p><h2>Tratamientos (<%= tratamientos.length %>)</h2></div>
+        <% if (tratamientos.length) { %><a href="/historial/<%= c.id %>/receta">Imprimir receta</a><% } %></div>
+    <% if (tratamientos.length) { %>
+    <div class="record-list">
+        <% tratamientos.forEach(function (t) { %>
+        <article class="record">
+            <div class="record-copy">
+                <strong><%= t.medicamento %></strong>
+                <span><%= t.dosis %> · <%= t.frecuencia %><%= t.duracion_dias ? ' · ' + t.duracion_dias + (t.duracion_dias === 1 ? ' día' : ' días') : '' %></span>
+                <% if (t.indicaciones) { %><span><%= t.indicaciones %></span><% } %>
+            </div>
+        </article>
+        <% }) %>
+    </div>
+    <% } else { %><p class="empty-state">No se han indicado tratamientos.</p><% } %>
+    <% if (puedeClinico) { %>
+    <form class="data-form adjuntar" method="post" action="/historial/<%= c.id %>/tratamientos" novalidate>
+        <h3>Agregar tratamiento</h3>
+        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+        <% if (medicamentos.length) { %>
+        <%- include('select', { label: 'Medicamento del catálogo (opcional)', name: 'medicamento', options: medicamentos.map(function (m) { return { valor: m.id, texto: m.nombre + (m.presentacion ? ' · ' + m.presentacion : '') }; }), blank: 'Otro (escribir abajo)', value: valT.medicamento || '', error: errT.medicamento }) %>
+        <% } %>
+        <%- include('field', { label: 'Medicamento (nombre)', name: 'medicamento_texto', value: valT.medicamento_texto, error: errT.medicamento_texto, maxlength: 120, autocomplete: 'off' }) %>
+        <%- include('field', { label: 'Dosis', name: 'dosis', value: valT.dosis, error: errT.dosis, maxlength: 120, required: true, autocomplete: 'off', hint: 'Ej. 1 tableta, 2 ml' }) %>
+        <%- include('field', { label: 'Frecuencia', name: 'frecuencia', value: valT.frecuencia, error: errT.frecuencia, maxlength: 120, required: true, autocomplete: 'off', hint: 'Ej. Cada 12 horas' }) %>
+        <%- include('field', { label: 'Duración en días (opcional)', name: 'duracion_dias', value: valT.duracion_dias, error: errT.duracion_dias, maxlength: 3, inputmode: 'numeric', autocomplete: 'off' }) %>
+        <%- include('field', { label: 'Indicaciones (opcional)', name: 'indicaciones', value: valT.indicaciones, error: errT.indicaciones, maxlength: 500, autocomplete: 'off' }) %>
+        <button class="button" type="submit">Agregar tratamiento</button>
+    </form>
+    <% } %>
+</section>
+
+<section class="panel">
+    <div class="panel-heading"><div><p class="eyebrow">INMUNIZACIÓN</p><h2>Vacunas (<%= vacunas.length %>)</h2></div><a href="/historial/carne/<%= c.mascota_id %>">Carné de vacunación</a></div>
+    <% if (vacunas.length) { %>
+    <div class="record-list">
+        <% vacunas.forEach(function (v) { %>
+        <article class="record<%= v.estado === 'anulada' ? ' es-anulada' : '' %>">
+            <div class="record-copy">
+                <strong><%= v.vacuna %> · Lote <%= v.lote %></strong>
+                <span>Aplicada el <%= v.fechaTexto %> · Próxima dosis: <%= v.proximaTexto %> · <%= v.veterinario_nombre %></span>
+                <% if (v.estado === 'anulada') { %><span>Anulada: <%= v.anulada_motivo %></span><% } %>
+            </div>
+            <div class="record-actions">
+                <% if (v.estado === 'anulada') { %><span class="status status-cancelled">Anulada</span><% } else { %><span class="status status-done">Vigente</span><% } %>
+            </div>
+            <% if (v.puedeAnular) { %>
+            <form class="vacuna-anular" method="post" action="/historial/vacunas/<%= v.id %>/anular">
+                <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                <input type="hidden" name="consulta" value="<%= c.id %>">
+                <label for="f-anular-<%= v.id %>">Motivo para anular
+                    <input id="f-anular-<%= v.id %>" name="motivo" type="text" maxlength="300" required autocomplete="off">
+                </label>
+                <button class="button button-danger button-small" type="submit">Anular vacuna</button>
+            </form>
+            <% } %>
+        </article>
+        <% }) %>
+    </div>
+    <% } else { %><p class="empty-state">No se han registrado vacunas en esta consulta.</p><% } %>
+    <% if (puedeClinico) { %>
+    <form class="data-form adjuntar" method="post" action="/historial/<%= c.id %>/vacunas" novalidate>
+        <h3>Registrar vacuna</h3>
+        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+        <%- include('select', { label: 'Vacuna', name: 'producto', options: catalogoVacunas.map(function (p) { return { valor: p.id, texto: p.nombre }; }), blank: 'Elige la vacuna', value: valV.producto || '', error: errV.producto }) %>
+        <% if (errV.lote) { %><p class="field-error"><%= errV.lote %></p><% } %>
+        <%- include('field', { label: 'Fecha de aplicación', name: 'fecha', type: 'date', value: valV.fecha, error: errV.fecha, required: true }) %>
+        <%- include('field', { label: 'Próxima dosis', name: 'proxima_dosis', type: 'date', value: valV.proxima_dosis, error: errV.proxima_dosis, required: true, hint: 'Obligatoria: de aquí salen los recordatorios.' }) %>
+        <p class="form-note">El lote se asigna automáticamente. Registrar la vacuna no descuenta inventario; el producto se cobra en la venta.</p>
+        <button class="button" type="submit">Registrar vacuna</button>
+    </form>
+    <% } %>
+</section>

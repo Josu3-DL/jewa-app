@@ -49,5 +49,6 @@
                         <% } %>
                     </div>
                 </div>
+                <%- include('../partials/tratamientos-vacunas', { c: c, tratamientos: tratamientos, medicamentos: medicamentos, vacunas: vacunas, catalogoVacunas: catalogoVacunas, puedeClinico: puedeClinico, errT: errT, valT: valT, errV: errV, valV: valV }) %>
                 <%- include('../partials/adjuntos-panel', { adjuntos: adjuntos, mascotaId: c.mascota_id, consultaId: c.id, puedeSubir: puedeSubir && !c.anulada }) %>
 <%- include('../partials/layout-end') %>

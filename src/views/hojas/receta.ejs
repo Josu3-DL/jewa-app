@@ -1,0 +1,26 @@
+<%- include('../partials/hoja-start', { title: title, clinica: clinica, volver: volver }) %>
+        <h2 class="hoja-titulo">Receta médica veterinaria</h2>
+        <dl class="hoja-datos">
+            <dt>Fecha</dt><dd><%= c.fechaCorta %></dd>
+            <dt>Paciente</dt><dd><%= c.mascota_nombre %> · <%= c.especie %> · Exp. <%= c.numero_expediente %></dd>
+            <dt>Propietario</dt><dd><%= c.propietario_nombre %></dd>
+            <dt>Diagnóstico</dt><dd><%= c.diagnostico %></dd>
+        </dl>
+        <div class="table-scroll"><table class="hoja-tabla">
+            <thead><tr><th>Medicamento</th><th>Dosis</th><th>Frecuencia</th><th>Duración</th></tr></thead>
+            <tbody>
+                <% tratamientos.forEach(function (t) { %>
+                <tr>
+                    <td><strong><%= t.medicamento %></strong><% if (t.indicaciones) { %><br><span class="hoja-nota"><%= t.indicaciones %></span><% } %></td>
+                    <td><%= t.dosis %></td>
+                    <td><%= t.frecuencia %></td>
+                    <td><%= t.duracion_dias ? t.duracion_dias + (t.duracion_dias === 1 ? ' día' : ' días') : '—' %></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table></div>
+        <div class="hoja-firma">
+            <div class="hoja-linea"></div>
+            <p><strong><%= vet.nombre %></strong><br>Médico veterinario<%= vet.colegiado ? ' · Colegiado ' + vet.colegiado : '' %></p>
+        </div>
+<%- include('../partials/hoja-end') %>

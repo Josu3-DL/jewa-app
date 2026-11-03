@@ -5,8 +5,8 @@ const { HttpError } = require('../../middleware/errors');
 const idSchema = z.coerce.number().int().positive();
 
 /** Identificador de la URL (`/:id`); si no es un entero positivo, 404. */
-function idParam(req) {
-    const r = idSchema.safeParse(req.params.id);
+function idParam(req, nombre = 'id') {
+    const r = idSchema.safeParse(req.params[nombre]);
     if (!r.success) throw new HttpError(404);
     return r.data;
 }

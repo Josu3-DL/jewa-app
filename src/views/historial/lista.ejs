@@ -34,6 +34,18 @@
                 </section>
                 <% } %>
 
+                <% if (m) { %>
+                <section class="panel">
+                    <div class="panel-heading"><div><p class="eyebrow">INMUNIZACIÓN</p><h2>Vacunas (<%= vacunas.length %>)</h2></div><a href="/historial/carne/<%= m.id %>">Carné de vacunación</a></div>
+                    <% if (vacunas.length) { %>
+                    <div class="record-list">
+                        <% vacunas.forEach(function (v) { %>
+                        <article class="record"><div class="record-copy"><strong><%= v.vacuna %></strong><span>Aplicada el <%= v.fechaTexto %> · Próxima dosis: <%= v.proximaTexto %> · Lote <%= v.lote %></span></div></article>
+                        <% }) %>
+                    </div>
+                    <% } else { %><p class="empty-state">Sin vacunas registradas.</p><% } %>
+                </section>
+                <% } %>
                 <% if (m) { %><%- include('../partials/adjuntos-panel', { adjuntos: adjuntos, mascotaId: m.id, puedeSubir: puedeCrear }) %><% } %>
 
                 <section class="panel">

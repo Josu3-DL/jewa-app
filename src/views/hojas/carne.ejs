@@ -1,0 +1,21 @@
+<%- include('../partials/hoja-start', { title: title, clinica: clinica, volver: volver }) %>
+        <h2 class="hoja-titulo">Carné de vacunación</h2>
+        <dl class="hoja-datos">
+            <dt>Paciente</dt><dd><%= m.nombre %> · <%= m.especie %><%= m.raza ? ' · ' + m.raza : '' %> · Exp. <%= m.numero_expediente %></dd>
+            <dt>Edad</dt><dd><%= m.edad || 'Sin fecha de nacimiento' %></dd>
+            <dt>Propietario</dt><dd><%= m.propietario_nombre %> · <%= m.telefonoTexto %></dd>
+            <dt>Impreso</dt><dd><%= hoy %></dd>
+        </dl>
+        <% if (vacunas.length) { %>
+        <div class="table-scroll"><table class="hoja-tabla">
+            <thead><tr><th>Fecha</th><th>Vacuna</th><th>Lote</th><th>Próxima dosis</th><th>Veterinario</th></tr></thead>
+            <tbody>
+                <% vacunas.forEach(function (v) { %>
+                <tr><td><%= v.fechaTexto %></td><td><strong><%= v.vacuna %></strong></td><td><%= v.lote %></td><td><%= v.proximaTexto %></td><td><%= v.veterinario_nombre %></td></tr>
+                <% }) %>
+            </tbody>
+        </table></div>
+        <% } else { %>
+        <p class="empty-state">Esta mascota todavía no tiene vacunas registradas.</p>
+        <% } %>
+<%- include('../partials/hoja-end') %>

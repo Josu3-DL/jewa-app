@@ -62,8 +62,11 @@ const ACCIONES = {
     consulta_creada: 'Consulta registrada',
     consulta_anulada: 'Consulta anulada',
     adjunto_subido: 'Archivo adjuntado',
+    tratamiento_agregado: 'Tratamiento indicado',
+    vacuna_aplicada: 'Vacuna aplicada',
+    vacuna_anulada: 'Vacuna anulada',
 };
-const ENTIDADES = { usuario: 'Usuario', servicio: 'Servicio', config: 'Ajustes', propietario: 'Cliente', mascota: 'Mascota', cita: 'Cita', consulta: 'Consulta', adjunto: 'Adjunto' };
+const ENTIDADES = { usuario: 'Usuario', servicio: 'Servicio', config: 'Ajustes', propietario: 'Cliente', mascota: 'Mascota', cita: 'Cita', consulta: 'Consulta', adjunto: 'Adjunto', tratamiento: 'Tratamiento', vacuna: 'Vacuna' };
 
 const etiquetaAccion = (codigo) => ACCIONES[codigo] || codigo;
 const etiquetaEntidad = (codigo) => ENTIDADES[codigo] || codigo;

@@ -26,7 +26,7 @@
                                 </dl>
                             </div>
                             <p class="ficha-accesos">
-                                <% if (puedeHistorial) { %><a class="button" href="/historial?mascota=<%= m.id %>">Historial y vacunas</a><% } %>
+                                <% if (puedeHistorial) { %><a class="button" href="/historial?mascota=<%= m.id %>">Historial y vacunas</a><a class="button" href="/historial/carne/<%= m.id %>">Carné de vacunación</a><% } %>
                                 <% if (puedeCitas) { %><a class="button" href="/citas?mascota=<%= m.id %>">Citas</a><% } %>
                                 <a class="button" href="/mascotas/<%= m.id %>/transferir">Transferir</a>
                             </p>
