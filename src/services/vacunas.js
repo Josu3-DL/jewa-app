@@ -1,6 +1,6 @@
 'use strict';
 const { z, texto, fecha, parseForm } = require('../utils/validation');
-const { todayInZone } = require('../utils/dates');
+const { todayInZone, sumarDias } = require('../utils/dates');
 const { transaction } = require('../db/connection');
 const audit = require('./audit');
 
@@ -34,6 +34,24 @@ function listarVacunas(db, { mascotaId = null, consultaId = null, anuladas = tru
         FROM vacunas_aplicadas v JOIN productos p ON p.id = v.producto_id JOIN lotes l ON l.id = v.lote_id JOIN usuarios u ON u.id = v.veterinario_id
         WHERE (? IS NULL OR v.mascota_id = ?) AND (? IS NULL OR v.consulta_id = ?) AND (? = 1 OR v.estado = 'vigente')
         ORDER BY v.fecha, v.id`).all(mascotaId, mascotaId, consultaId, consultaId, anuladas ? 1 : 0);
+}
+
+/**
+ * Vacunas con la próxima dosis dentro de `dias` días o vencidas hasta hace `maxVencida` días (para el panel de inicio).
+ * Solo cuenta la última aplicación de cada producto por mascota (si ya se revacunó, la anterior no cuenta). No depende
+ * del consentimiento: es una alerta interna para el personal, no un aviso al cliente (eso es /recordatorios).
+ */
+function vacunasPorVencer(db, ahora = new Date(), { dias = 15, maxVencida = 365 } = {}) {
+    const hoy = todayInZone(ahora);
+    return db.prepare(`
+        SELECT v.id, v.proxima_dosis, pr.nombre AS vacuna, m.id AS mascota_id, m.nombre AS mascota_nombre, p.nombre AS propietario_nombre
+        FROM vacunas_aplicadas v JOIN productos pr ON pr.id = v.producto_id
+        JOIN mascotas m ON m.id = v.mascota_id JOIN propietarios p ON p.id = m.propietario_id
+        WHERE v.estado = 'vigente' AND v.proxima_dosis <= ? AND v.proxima_dosis >= ? AND m.estado = 'activa' AND p.activo = 1
+          AND NOT EXISTS (SELECT 1 FROM vacunas_aplicadas v2 WHERE v2.mascota_id = v.mascota_id AND v2.producto_id = v.producto_id
+                          AND v2.estado = 'vigente' AND v2.fecha > v.fecha)
+        ORDER BY v.proxima_dosis, v.id`).all(sumarDias(hoy, dias), sumarDias(hoy, -maxVencida))
+        .map((v) => ({ ...v, vencida: v.proxima_dosis < hoy }));
 }
 
 /** Registra una vacuna dentro de una consulta vigente (la mascota sale de la consulta). */
@@ -79,4 +97,4 @@ function anularVacuna(db, vacunaId, input, { actor, ip = null }) {
     });
 }
 
-module.exports = { catalogoVacunas, listarVacunas, registrarVacuna, anularVacuna };
+module.exports = { vacunasPorVencer, catalogoVacunas, listarVacunas, registrarVacuna, anularVacuna };

@@ -419,7 +419,7 @@ test('revisión: las rutas que escriben datos no están fuera de la protección 
     const app = fs.readFileSync(path.join(ROOT, 'src', 'app.js'), 'utf8');
     const iCsrf = app.indexOf('app.use(csrf())');
     const iAuth = app.indexOf('app.use(authRoutes(');
-    const iPages = app.indexOf('app.use(pageRoutes)');
+    const iPages = app.indexOf('app.use(pageRoutes(');
     assert.ok(iCsrf > 0 && iCsrf < iAuth && iAuth < iPages, 'csrf() debe montarse antes de cualquier ruta');
     assert.ok(app.indexOf('app.use(requireAuth)') > iAuth && app.indexOf('app.use(requireAuth)') < iPages, 'requireAuth va después del login y antes de las páginas');
 });
