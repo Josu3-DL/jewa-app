@@ -1,0 +1,83 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">PRODUCTO · <%= p.codigo %></p>
+                        <h1><%= p.nombre %></h1>
+                        <p class="intro"><%= p.categoria %><%= p.presentacion ? ' · ' + p.presentacion : '' %> · <%= dinero(p.precio) %> · <% if (!p.activo) { %><span class="status status-waiting">Inactivo</span><% } else if (p.bajo) { %><span class="status status-cancelled">Bajo stock</span><% } else if (p.sinExistencias) { %><span class="status status-noshow">Sin existencias</span><% } else { %><span class="status status-done">Disponible</span><% } %></p>
+                    </div>
+                    <a class="text-link text-link-dark" href="/farmacia">← Volver a Farmacia</a>
+                </section>
+
+                <div class="management-grid">
+                    <% if (esAdmin) { %>
+                    <form class="data-form" method="post" action="/farmacia/<%= p.id %>" novalidate>
+                        <h3>Datos del producto</h3>
+                        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                        <%- include('../partials/producto-campos', { values: values, errors: errors, categorias: categorias }) %>
+                        <button class="button" type="submit">Guardar cambios</button>
+                    </form>
+                    <% } %>
+
+                    <div class="stack">
+                        <section class="data-form">
+                            <h3>Existencias</h3>
+                            <p class="stock-grande"><strong><%= p.stock %></strong> <%= p.unidad %></p>
+                            <p class="form-note">Stock mínimo: <%= p.stock_minimo > 0 ? p.stock_minimo : 'sin aviso' %>. El stock solo cambia con entradas, ajustes y ventas, y cada cambio queda en el historial de abajo.</p>
+                        </section>
+                        <% if (esAdmin) { %>
+                        <% if (p.activo) { %>
+                        <form class="data-form" method="post" action="/farmacia/<%= p.id %>/entrada" novalidate>
+                            <h3>Entrada de stock</h3>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                            <%- include('../partials/field', { label: 'Cantidad que ingresa', name: 'cantidad', value: valE.cantidad, error: errE.cantidad, maxlength: 6, required: true, inputmode: 'numeric', autocomplete: 'off' }) %>
+                            <%- include('../partials/field', { label: 'Nota (opcional)', name: 'nota', value: valE.nota, error: errE.nota, maxlength: 200, autocomplete: 'off', hint: 'Ej. Pedido del proveedor, fecha de la factura' }) %>
+                            <button class="button" type="submit">Registrar entrada</button>
+                        </form>
+                        <% } %>
+                        <form class="data-form" method="post" action="/farmacia/<%= p.id %>/ajuste" novalidate>
+                            <h3>Ajuste de stock</h3>
+                            <p class="form-note">Para corregir el stock tras un conteo físico, una merma o un error.</p>
+                            <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                            <%- include('../partials/select', { label: 'Ajuste', name: 'sentido', options: [{ valor: 'sumar', texto: 'Sumar al stock' }, { valor: 'restar', texto: 'Restar del stock' }], value: valA.sentido, error: errA.sentido }) %>
+                            <%- include('../partials/field', { label: 'Cantidad', name: 'cantidad', value: valA.cantidad, error: errA.cantidad, maxlength: 6, required: true, inputmode: 'numeric', autocomplete: 'off' }) %>
+                            <%- include('../partials/field', { label: 'Motivo', name: 'motivo', value: valA.motivo, error: errA.motivo, maxlength: 200, required: true, autocomplete: 'off', hint: 'Obligatorio, mínimo 5 caracteres.' }) %>
+                            <button class="button" type="submit">Registrar ajuste</button>
+                        </form>
+                        <section class="data-form">
+                            <h3>Estado</h3>
+                            <form method="post" action="/farmacia/<%= p.id %>/estado">
+                                <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                                <% if (p.activo) { %>
+                                <input type="hidden" name="accion" value="desactivar">
+                                <p class="form-note">Los productos no se borran. Uno desactivado deja de ofrecerse en ventas y vacunas nuevas; su historial se conserva.</p>
+                                <button class="button button-danger" type="submit">Desactivar producto</button>
+                                <% } else { %>
+                                <input type="hidden" name="accion" value="activar">
+                                <p class="form-note">Este producto está desactivado.</p>
+                                <button class="button" type="submit">Reactivar producto</button>
+                                <% } %>
+                            </form>
+                        </section>
+                        <% } %>
+                    </div>
+                </div>
+
+                <section class="panel">
+                    <div class="panel-heading"><div><p class="eyebrow">HISTORIAL DE STOCK</p><h2><%= totalMov %> movimiento<%= totalMov === 1 ? '' : 's' %></h2></div></div>
+                    <% if (movimientos.length) { %>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead><tr><th>Fecha</th><th>Tipo</th><th>Cantidad</th><th>Motivo</th><th>Usuario</th></tr></thead>
+                            <tbody>
+                                <% movimientos.forEach(function (m) { %>
+                                <tr><td class="nowrap"><%= m.fechaTexto %></td><td><%= m.tipoTexto %></td><td class="nowrap"><strong><%= m.signo %><%= m.cantidad %></strong></td><td><%= m.motivo %></td><td><%= m.usuario_nombre %></td></tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <%- include('../partials/pagination', { pager: pager }) %>
+                    <% } else { %>
+                    <p class="empty-state">Todavía no hay movimientos de stock.</p>
+                    <% } %>
+                </section>
+<%- include('../partials/layout-end') %>

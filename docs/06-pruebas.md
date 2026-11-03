@@ -63,6 +63,7 @@ Reglas: cada prueba usa una BD nueva con migraciones aplicadas; datos de prueba 
 | Bitácora: toda acción y entidad registrada en el código tiene etiqueta en español (revisión estática) | ✅ ISS-09 | `test/auditoria-etiquetas.test.js` |
 | T-14 Vacuna sin próxima dosis (o sin vacuna) → rechaza; con lote único; sin mover stock | ✅ ISS-10 | `test/vacunas-tratamientos-services.test.js`, `test/clinico-hojas.test.js` |
 | Tratamientos y vacunas: solo el veterinario (administrador y recepción 403), no en consultas anuladas, sin borrado, anular vacuna con motivo; receta y carné imprimibles sin barra lateral | ✅ ISS-10 | `test/vacunas-tratamientos-services.test.js`, `test/clinico-hojas.test.js` |
+| Farmacia: alta con código único y stock inicial, edición con bitácora, entrada y ajuste con movimiento, stock nunca negativo (T-09 base), bajo stock, desactivar sin borrar, búsqueda y paginación, T-03 (solo administrador escribe) | ✅ ISS-11 | `test/productos-services.test.js`, `test/farmacia.test.js` |
 | T-04 POST sin token CSRF → 403 (también en formularios multipart y sin saltarse la regla en otras rutas) | ✅ ISS-03 / ISS-06 | `test/security.test.js`, `test/clientes-mascotas.test.js` |
 | T-16 Desactivar cliente con mascotas activas → rechaza (servicio y HTTP) | ✅ ISS-06 | `test/clientes-mascotas-services.test.js`, `test/clientes-mascotas.test.js` |
 | T-19 Foto `.exe` disfrazado, PDF o > 2 MB → rechaza y no crea nada; foto fuera de `public/`, con nombre UUID y servida solo con sesión | ✅ ISS-06 (se amplía a adjuntos en ISS-09) | `test/clientes-mascotas.test.js` |
