@@ -1,0 +1,44 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">REPORTES</p>
+                        <h1>Citas</h1>
+                        <p class="intro">Del <%= f.desde.split('-').reverse().join('/') %> al <%= f.hasta.split('-').reverse().join('/') %>: <%= total %> cita<%= total === 1 ? '' : 's' %>.</p>
+                    </div>
+                    <a class="text-link text-link-dark" href="/reportes">← Reportes</a>
+                </section>
+                <% if (error) { %><p class="alert alert-error" role="alert"><%= error %></p><% } %>
+                <form class="data-form filter-bar" method="get" action="/reportes/citas" novalidate>
+                    <%- include('../partials/field', { label: 'Desde', name: 'desde', type: 'date', value: f.desde }) %>
+                    <%- include('../partials/field', { label: 'Hasta', name: 'hasta', type: 'date', value: f.hasta }) %>
+                    <%- include('../partials/select', { label: 'Responsable', name: 'responsable', blank: 'Todos', options: responsables, value: f.responsable || '' }) %>
+                    <%- include('../partials/select', { label: 'Estado', name: 'estado', blank: 'Todos', options: estados, value: f.estado || '' }) %>
+                    <div class="filter-actions">
+                        <button class="button" type="submit">Ver reporte</button>
+                        <a class="button" href="<%= csv %>">Exportar CSV</a>
+                    </div>
+                </form>
+                <div class="resumen-estados" role="list" aria-label="Citas por estado">
+                    <% resumen.forEach(function (e) { %><span role="listitem" class="status <%= e.clase %>"><%= e.texto %>: <%= e.cantidad %></span><% }) %>
+                </div>
+                <section class="panel">
+                    <% if (filas.length) { %>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead><tr><th>Fecha</th><th>Hora</th><th>Mascota</th><th>Propietario</th><th>Servicio</th><th>Responsable</th><th>Estado</th></tr></thead>
+                            <tbody>
+                                <% filas.forEach(function (c) { %>
+                                <tr>
+                                    <td class="nowrap"><%= c.fechaTexto %></td><td class="nowrap"><%= c.horaTexto %></td>
+                                    <td><a class="text-link text-link-dark" href="/citas/<%= c.id %>"><%= c.mascota_nombre %></a></td>
+                                    <td><%= c.propietario_nombre %></td><td><%= c.servicio_nombre || '—' %></td><td><%= c.responsable_nombre %></td>
+                                    <td><span class="status <%= c.estadoClase %>"><%= c.estadoTexto %></span></td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <%- include('../partials/pagination', { pager: pager }) %>
+                    <% } else { %><p class="empty-state">No hay citas con esos filtros.</p><% } %>
+                </section>
+<%- include('../partials/layout-end') %>

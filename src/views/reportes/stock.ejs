@@ -1,0 +1,26 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">REPORTES</p>
+                        <h1>Stock bajo el mínimo</h1>
+                        <p class="intro">Productos activos con existencias iguales o menores a su mínimo. Es la situación de hoy.</p>
+                    </div>
+                    <a class="text-link text-link-dark" href="/reportes">← Reportes</a>
+                </section>
+                <p><a class="button" href="<%= csv %>">Exportar CSV</a></p>
+                <section class="panel">
+                    <div class="panel-heading"><div><p class="eyebrow">POR REPONER</p><h2><%= filas.length %> producto<%= filas.length === 1 ? '' : 's' %></h2></div></div>
+                    <% if (filas.length) { %>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead><tr><th>Código</th><th>Producto</th><th>Stock</th><th>Mínimo</th><th>Faltan</th></tr></thead>
+                            <tbody>
+                                <% filas.forEach(function (p) { %>
+                                <tr><td class="nowrap"><%= p.codigo %></td><td><a class="text-link text-link-dark" href="/farmacia/<%= p.id %>"><%= p.nombre %></a></td><td><strong><%= p.stock %></strong></td><td><%= p.stock_minimo %></td><td><%= p.faltante %></td></tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } else { %><p class="empty-state">Ningún producto está bajo su mínimo.</p><% } %>
+                </section>
+<%- include('../partials/layout-end') %>

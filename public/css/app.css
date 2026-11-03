@@ -246,3 +246,9 @@ button[disabled] { opacity: 0.55; cursor: not-allowed; }
 .recordatorio .record-copy strong { white-space: normal; }
 .recordatorio-nota { flex: 1 1 100%; margin: 0; }
 .es-enviado { opacity: 0.75; }
+
+/* ───── Reportes (ISS-16) ───── */
+.reportes-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.fila-total td { background: #f1f5f8; font-weight: 700; }
+.resumen-estados { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
+.resumen-estados .status { padding: 0.45rem 0.8rem; font-size: 0.72rem; }

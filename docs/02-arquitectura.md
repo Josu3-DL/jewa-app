@@ -31,6 +31,7 @@ Regla (D-28): antes de escribir algo genérico, se busca una librería mantenida
 | Dinero | utilidad propia (`src/utils/money.js`, ~30 líneas): formato, lectura de texto y porcentaje con enteros | `Intl` da "C$1,234.50" (sin espacio) y "USD 1,234.50", y el cliente pide "C$ 1,234.50"; Dinero.js no mostró un estado estable claro. `Intl` solo se usa para agrupar miles. |
 | Subida de archivos | `multer` 2 (memoria + tope de tamaño) y `file-type` (tipo real por firma) | Mantenidos, sin módulos nativos. CSRF de multipart: ver D-35. |
 | Gráficas | `chart.js` 4 (paquete npm servido localmente) | Estándar; sin CDN en producción (D-39). |
+| CSV | `csv-stringify` 6 | Mantenida, sin módulos nativos; escapa comillas y comas y agrega BOM. La protección contra fórmulas se agrega con su opción `cast` (D-46). |
 | Pruebas | `node:test` + `supertest` | Sin framework adicional. |
 
 Pendientes de evaluar **antes** de implementarlos (no están verificados todavía): CSV (`csv-stringify`, ISS-16), registro de eventos con rotación (`pino`, ISS-20), planificación del respaldo (Programador de tareas de Windows frente a `node-cron`, ISS-18).

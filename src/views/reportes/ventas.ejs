@@ -1,0 +1,35 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">REPORTES</p>
+                        <h1>Ventas por día</h1>
+                        <p class="intro">Del <%= f.desde.split('-').reverse().join('/') %> al <%= f.hasta.split('-').reverse().join('/') %>. Las ventas anuladas no suman.</p>
+                    </div>
+                    <a class="text-link text-link-dark" href="/reportes">← Reportes</a>
+                </section>
+                <% if (error) { %><p class="alert alert-error" role="alert"><%= error %></p><% } %>
+                <form class="data-form filter-bar" method="get" action="/reportes/ventas" novalidate>
+                    <%- include('../partials/field', { label: 'Desde', name: 'desde', type: 'date', value: f.desde }) %>
+                    <%- include('../partials/field', { label: 'Hasta', name: 'hasta', type: 'date', value: f.hasta }) %>
+                    <div class="filter-actions">
+                        <button class="button" type="submit">Ver reporte</button>
+                        <a class="button" href="<%= csv %>">Exportar CSV</a>
+                    </div>
+                </form>
+                <section class="panel">
+                    <div class="panel-heading"><div><p class="eyebrow">TOTAL DEL PERÍODO</p><h2><%= dinero(totales.total) %> · <%= totales.ventas %> venta<%= totales.ventas === 1 ? '' : 's' %></h2></div></div>
+                    <% if (filas.length) { %>
+                    <div class="table-scroll">
+                        <table class="data-table">
+                            <thead><tr><th>Día</th><th>Ventas</th><th>Anuladas</th><th>Subtotal</th><th>Descuento</th><th>IVA</th><th>Total</th><th>Efectivo</th><th>Tarjeta</th><th>Transf.</th></tr></thead>
+                            <tbody>
+                                <% filas.forEach(function (x) { %>
+                                <tr><td class="nowrap"><%= x.diaTexto %></td><td><%= x.ventas %></td><td><%= x.anuladas %></td><td class="nowrap"><%= dinero(x.subtotal) %></td><td class="nowrap"><%= dinero(x.descuento) %></td><td class="nowrap"><%= dinero(x.impuesto) %></td><td class="nowrap"><strong><%= dinero(x.total) %></strong></td><td class="nowrap"><%= dinero(x.efectivo) %></td><td class="nowrap"><%= dinero(x.tarjeta) %></td><td class="nowrap"><%= dinero(x.transferencia) %></td></tr>
+                                <% }) %>
+                                <tr class="fila-total"><td>Total</td><td><%= totales.ventas %></td><td><%= totales.anuladas %></td><td class="nowrap"><%= dinero(totales.subtotal) %></td><td class="nowrap"><%= dinero(totales.descuento) %></td><td class="nowrap"><%= dinero(totales.impuesto) %></td><td class="nowrap"><strong><%= dinero(totales.total) %></strong></td><td class="nowrap"><%= dinero(totales.efectivo) %></td><td class="nowrap"><%= dinero(totales.tarjeta) %></td><td class="nowrap"><%= dinero(totales.transferencia) %></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } else { %><p class="empty-state">No hay ventas en este período.</p><% } %>
+                </section>
+<%- include('../partials/layout-end') %>

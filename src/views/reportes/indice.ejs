@@ -1,0 +1,17 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">REPORTES</p>
+                        <h1>Reportes</h1>
+                        <p class="intro">Consulta la información del negocio y expórtala a CSV para abrirla en Excel.</p>
+                    </div>
+                </section>
+                <div class="home-menu-grid reportes-grid">
+                    <% if (esAdmin) { %>
+                    <a class="home-menu-card card-blue" href="/reportes/ventas"><span class="menu-card-number">01</span><span class="menu-card-icon" aria-hidden="true">C$</span><strong>Ventas por día</strong><span>Total vendido, descuentos, IVA y método de pago.</span></a>
+                    <% } %>
+                    <a class="home-menu-card card-white" href="/reportes/citas"><span class="menu-card-number"><%= esAdmin ? '02' : '01' %></span><span class="menu-card-icon" aria-hidden="true">◷</span><strong>Citas</strong><span>Por período, responsable y estado.</span></a>
+                    <a class="home-menu-card card-white" href="/reportes/stock"><span class="menu-card-number"><%= esAdmin ? '03' : '02' %></span><span class="menu-card-icon" aria-hidden="true">+</span><strong>Stock bajo el mínimo</strong><span>Productos que hay que reponer.</span></a>
+                </div>
+                <% if (!esAdmin) { %><p class="form-note">Los reportes de ventas e ingresos son solo para el administrador.</p><% } %>
+<%- include('../partials/layout-end') %>
