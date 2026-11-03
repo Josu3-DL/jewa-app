@@ -1,0 +1,52 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow">CONSULTA · <%= c.fechaTexto %></p>
+                        <h1><%= c.mascota_nombre %></h1>
+                        <p class="intro"><%= c.numero_expediente %> · <%= c.veterinario_nombre %> · <% if (c.anulada) { %><span class="status status-cancelled">Anulada</span><% } else { %><span class="status status-done">Vigente</span><% } %><% if (c.cita_id) { %> · <a class="text-link text-link-dark" href="/citas/<%= c.cita_id %>">Desde cita</a><% } else { %> · Sin cita<% } %></p>
+                    </div>
+                    <a class="text-link text-link-dark" href="/historial?mascota=<%= c.mascota_id %>">← Historial de <%= c.mascota_nombre %></a>
+                </section>
+
+                <% if (c.anulada) { %>
+                <p class="alert alert-error" role="alert"><strong>Consulta anulada</strong> por <%= c.anulada_por_nombre %> el <%= c.anuladaEn %>. Motivo: <%= c.anulada_motivo %>. Su contenido se conserva abajo.</p>
+                <% } %>
+
+                <div class="management-grid">
+                    <section class="data-form<%= c.anulada ? ' es-anulada' : '' %>">
+                        <h3>Consulta</h3>
+                        <dl class="ficha-datos ficha-consulta">
+                            <dt>Motivo</dt><dd><%= c.motivo %></dd>
+                            <dt>Anamnesis</dt><dd class="texto-largo"><%= c.anamnesis || '—' %></dd>
+                            <dt>Examen físico</dt><dd class="texto-largo"><%= c.examen_fisico || '—' %></dd>
+                            <dt>Diagnóstico</dt><dd><strong><%= c.diagnostico %></strong></dd>
+                            <dt>Observaciones</dt><dd class="texto-largo"><%= c.observaciones || '—' %></dd>
+                        </dl>
+                        <h3>Signos vitales</h3>
+                        <dl class="ficha-datos">
+                            <dt>Peso</dt><dd><%= c.peso_kg != null ? c.peso_kg + ' kg' : '—' %></dd>
+                            <dt>Temperatura</dt><dd><%= c.temperatura_c != null ? c.temperatura_c + ' °C' : '—' %></dd>
+                            <dt>Frec. cardiaca</dt><dd><%= c.frecuencia_cardiaca != null ? c.frecuencia_cardiaca + ' lpm' : '—' %></dd>
+                            <dt>Frec. respiratoria</dt><dd><%= c.frecuencia_respiratoria != null ? c.frecuencia_respiratoria + ' rpm' : '—' %></dd>
+                        </dl>
+                    </section>
+
+                    <div class="stack">
+                        <section class="data-form">
+                            <h3>Paciente</h3>
+                            <p class="form-note"><a class="text-link text-link-dark" href="/mascotas/<%= c.mascota_id %>"><%= c.mascota_nombre %> · <%= c.numero_expediente %></a><br>Dueño: <a class="text-link text-link-dark" href="/clientes/<%= c.propietario_id %>"><%= c.propietario_nombre %></a></p>
+                        </section>
+                        <% if (puedeAnular) { %>
+                        <section class="data-form">
+                            <h3>Anular consulta</h3>
+                            <form method="post" action="/historial/<%= c.id %>/anular" novalidate>
+                                <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                                <p class="form-note">Las consultas no se borran. Anular la deja marcada en el historial con tu nombre, la fecha y el motivo; no se puede deshacer.</p>
+                                <%- include('../partials/textarea', { label: 'Motivo de la anulación', name: 'motivo', value: motivo, error: errors.motivo, maxlength: 300, rows: 2, required: true }) %>
+                                <button class="button button-danger" type="submit">Anular consulta</button>
+                            </form>
+                        </section>
+                        <% } %>
+                    </div>
+                </div>
+<%- include('../partials/layout-end') %>

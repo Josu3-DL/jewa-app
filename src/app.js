@@ -8,6 +8,7 @@ const { ajustesRoutes } = require('./routes/ajustes');
 const { clientesRoutes } = require('./routes/clientes');
 const { mascotasRoutes } = require('./routes/mascotas');
 const { citasRoutes } = require('./routes/citas');
+const { historialRoutes } = require('./routes/historial');
 const { flash } = require('./middleware/flash');
 const { security } = require('./middleware/security');
 const { createSession } = require('./middleware/session');
@@ -36,6 +37,8 @@ function createApp({ db, config, now = () => new Date(), resolveUser } = {}) {
     app.use('/css', express.static(path.join(config.root, 'public', 'css')));
     app.use('/js', express.static(path.join(config.root, 'public', 'js')));
     app.use('/img', express.static(path.join(config.root, 'public', 'img')));
+    // Chart.js viene del paquete npm (sin CDN): se sirve el archivo ya empaquetado
+    app.get('/vendor/chart.umd.min.js', (req, res) => res.sendFile(path.join(config.root, 'node_modules', 'chart.js', 'dist', 'chart.umd.min.js')));
     app.use('/vendor', express.static(path.join(config.root, 'public', 'vendor')));
     app.use(healthRoutes);
 
@@ -52,6 +55,7 @@ function createApp({ db, config, now = () => new Date(), resolveUser } = {}) {
     app.use(clientesRoutes({ db, now }));
     app.use(mascotasRoutes({ db, config, now }));
     app.use(citasRoutes({ db, now }));
+    app.use(historialRoutes({ db, now }));
     app.use(pageRoutes);
 
     app.use(notFound);

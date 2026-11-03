@@ -1,0 +1,7 @@
+<%# Área de texto con etiqueta y error. Parámetros: label, name, value, error, maxlength, rows, hint %>
+<% const tid = 'f-' + name; %>
+<label for="<%= tid %>"><%= label %>
+    <textarea id="<%= tid %>" name="<%= name %>" rows="<%= locals.rows || 3 %>"<% if (locals.maxlength) { %> maxlength="<%= maxlength %>"<% } %><% if (locals.required) { %> required<% } %><% if (locals.error) { %> aria-invalid="true" aria-describedby="<%= tid %>-err"<% } %>><%= locals.value || '' %></textarea>
+    <% if (locals.hint && !locals.error) { %><span class="field-hint"><%= hint %></span><% } %>
+    <% if (locals.error) { %><span class="field-error" id="<%= tid %>-err"><%= error %></span><% } %>
+</label>

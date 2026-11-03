@@ -1,0 +1,50 @@
+<%- include('../partials/layout-start', { title: title, active: active }) %>
+                <section class="welcome-row">
+                    <div>
+                        <p class="eyebrow"><%= m ? 'HISTORIAL · ' + m.numero_expediente : 'CLÍNICO' %></p>
+                        <h1><%= m ? m.nombre : 'Historial clínico' %></h1>
+                        <p class="intro"><% if (m) { %><%= m.especie %><% if (m.edad) { %> · <%= m.edad %><% } %> · Dueño: <a class="text-link text-link-dark" href="/clientes/<%= m.propietario_id %>"><%= m.propietario_nombre %></a> · <a class="text-link text-link-dark" href="/mascotas/<%= m.id %>">Ver ficha</a><% } else { %>Consultas de todas las mascotas, la más reciente primero.<% } %></p>
+                    </div>
+                    <% if (puedeCrear) { %><a class="button" href="/historial/nueva<%= m ? '?mascota=' + m.id : '' %>">+ Nueva consulta</a><% } %>
+                </section>
+
+                <form class="data-form filter-bar" method="get" action="/historial" role="search">
+                    <% if (m) { %><input type="hidden" name="mascota" value="<%= m.id %>"><% } %>
+                    <label for="f-q">Buscar
+                        <input id="f-q" name="q" type="search" value="<%= f.q %>" maxlength="100" placeholder="<%= m ? 'Motivo o diagnóstico' : 'Mascota, expediente, motivo o diagnóstico' %>" autocomplete="off">
+                    </label>
+                    <%- include('../partials/field', { label: 'Desde', name: 'desde', type: 'date', value: f.desde }) %>
+                    <%- include('../partials/field', { label: 'Hasta', name: 'hasta', type: 'date', value: f.hasta }) %>
+                    <%- include('../partials/select', { label: 'Estado', name: 'estado', blank: 'Todas', options: estados, value: f.estado }) %>
+                    <div class="filter-actions">
+                        <button class="button" type="submit">Filtrar</button>
+                        <a class="text-link text-link-dark" href="<%= m ? '/historial?mascota=' + m.id : '/historial' %>">Limpiar</a>
+                    </div>
+                </form>
+
+                <% if (m) { %>
+                <section class="panel">
+                    <div class="panel-heading"><div><p class="eyebrow">EVOLUCIÓN</p><h2>Peso</h2></div></div>
+                    <% if (pesos.length >= 2) { %>
+                    <div class="grafica"><canvas id="grafica-peso" role="img" aria-label="Gráfica de evolución del peso de <%= m.nombre %>" data-pesos="<%= JSON.stringify(pesos) %>"></canvas></div>
+                    <p class="form-note">Último peso: <strong><%= pesos[pesos.length - 1].peso %> kg</strong> (<%= pesos[pesos.length - 1].fecha %>). No incluye consultas anuladas.</p>
+                    <% } else { %>
+                    <p class="empty-state">Se necesitan al menos 2 mediciones de peso para mostrar la evolución<%= pesos.length === 1 ? ' (hay 1: ' + pesos[0].peso + ' kg)' : '' %>. Registra el peso en cada consulta.</p>
+                    <% } %>
+                </section>
+                <% } %>
+
+                <section class="panel">
+                    <div class="panel-heading"><div><p class="eyebrow">CONSULTAS</p><h2><%= total %> registro<%= total === 1 ? '' : 's' %></h2></div></div>
+                    <% if (filas.length) { %>
+                    <div class="record-list">
+                        <% filas.forEach(function (c) { %>
+                        <%- include('../partials/consulta-fila', { c: c, mostrarMascota: !m }) %>
+                        <% }) %>
+                    </div>
+                    <%- include('../partials/pagination', { pager: pager }) %>
+                    <% } else { %>
+                    <p class="empty-state">No hay consultas<%= (f.q || f.desde || f.hasta || f.estado) ? ' con esos filtros' : '' %>.</p>
+                    <% } %>
+                </section>
+<%- include('../partials/layout-end', { scripts: scripts }) %>

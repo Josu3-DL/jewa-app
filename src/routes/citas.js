@@ -105,6 +105,8 @@ function citasRoutes({ db, now }) {
         const fecha = fechaValida(texto(req.query.fecha)) ? req.query.fecha : '';
         return res.render('citas/elegir-mascota', {
             title: 'Nueva cita', active: 'citas', q, fecha, total: datos.total,
+            destino: '/citas/nueva', titulo: 'Nueva cita', boton: 'Agendar', volverA: '/citas',
+            intro: 'Primero elige la mascota. Si todavía no está registrada, créala en Mascotas.',
             filas: datos.filas.map((x) => ({ ...x, telefonoTexto: verTelefono(x.propietario_telefono) })),
             pager: pager({ pagina: datos.pagina, paginas: datos.paginas, total: datos.total, ruta: '/citas/nueva', filtros: { q, fecha } }),
         });
@@ -131,6 +133,7 @@ function citasRoutes({ db, now }) {
             responsables: resps.map((r) => ({ valor: r.id, texto: r.nombre })),
             servicios: citas.serviciosActivos(db).map((s) => ({ valor: s.id, texto: `${s.nombre} (${s.duracion_min} min)` })),
             duracion: getSettings(db).duracionCitaMin, errors, avisos, values: values || citas.paraFormulario(c),
+            puedeConsulta: req.user.rol === 'veterinario' && citas.ACTIVOS.includes(c.estado),
             volver: `/citas/${citaId}`,
         });
     };
