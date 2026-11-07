@@ -17,6 +17,7 @@ Sistema web para centralizar la gestión administrativa y clínica de una clíni
 | [`docs/06-pruebas.md`](docs/06-pruebas.md) | Estrategia de pruebas y casos clave |
 | [`docs/07-despliegue-operacion.md`](docs/07-despliegue-operacion.md) | Despliegue, respaldo y recuperación |
 | [`docs/08-huecos-y-riesgos.md`](docs/08-huecos-y-riesgos.md) | Registro de huecos y riesgos |
+| [`docs/09-guia-del-proyecto.md`](docs/09-guia-del-proyecto.md) | Guía del proyecto: estructura, funciones, flujo y qué archivos leer |
 | [`docs/ISSUES.md`](docs/ISSUES.md) | Lista de issues (generada desde `scripts/issues.mjs`) |
 
 ## Cómo se usa
